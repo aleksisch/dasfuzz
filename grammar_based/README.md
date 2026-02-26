@@ -26,7 +26,7 @@ Daslang build expects
 AFL requires special binary built by `AFL` compiler:
 ```
 cd /src/
-cmake -Bbuild -DDAS_ -DCMAKE_CXX_COMPILER=/AFLplusplus/afl-clang-fast++ -DCMAKE_C_COMPILER=/AFLplusplus/afl-clang-fast -GNinja -DCMAKE_BUILD_TYPE=Debug -DDAS_GLFW_DISABLED=ON
+cmake -Bbuild -DCMAKE_CXX_COMPILER=/AFLplusplus/afl-clang-fast++ -DCMAKE_C_COMPILER=/AFLplusplus/afl-clang-fast -GNinja -DCMAKE_BUILD_TYPE=Release -DDAS_GLFW_DISABLED=ON
 cmake --build build --target das_fuzz
 ```
 This repository contains modified `main.cpp` for daslang `main`, main
@@ -50,8 +50,9 @@ We set output directory to `./out`, after running some time there will be:
 - `default/crashes` - folder with all inputs that caused compiler crash
 - `default/hangs` - folder with all inputs that caused compiler hung
 
-Before submitting issue please run `afl-tmin` on your input to minimize it:
+Before submitting issue please run `afl-cmin` and `afl-tmin` on your input to minimize it:
 ```
+/AFLplusplus/afl-cmin -C -i ./out/default/crashes/ -o ./corpus_min -- /src/build/das_fuzz
 find ./out/default/crashes/ -name "id*" | xargs -I{} sh -c '/AFLplusplus/afl-tmin -i {} -o ./$(basename {}) -- /src/build/das_fuzz'
 ```
 
