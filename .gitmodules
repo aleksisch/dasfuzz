@@ -1,0 +1,6 @@
+[submodule "grammar_based/modules/daScript"]
+	path = grammar_based/modules/daScript
+	url = https://github.com/GaijinEntertainment/daScript/
+[submodule "grammar_based/modules/Grammar-Mutator"]
+	path = grammar_based/modules/Grammar-Mutator
+	url = https://github.com/AFLplusplus/Grammar-Mutator
