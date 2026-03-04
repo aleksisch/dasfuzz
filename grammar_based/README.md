@@ -26,7 +26,7 @@ Daslang build expects
 AFL requires special binary built by `AFL` compiler:
 ```
 cd /src/
-cmake -Bbuild -DCMAKE_CXX_COMPILER=/AFLplusplus/afl-clang-fast++ -DCMAKE_C_COMPILER=/AFLplusplus/afl-clang-fast -GNinja -DCMAKE_BUILD_TYPE=Release -DDAS_GLFW_DISABLED=ON
+cmake -Bbuild -DCMAKE_CXX_COMPILER=/AFLplusplus/afl-clang-fast++ -DCMAKE_C_COMPILER=/AFLplusplus/afl-clang-fast -GNinja -DCMAKE_BUILD_TYPE=Release -DDAS_GLFW_DISABLED=ON -DDAS_NO_ASSERTIONS=0
 cmake --build build --target das_fuzz
 ```
 This repository contains modified `main.cpp` for daslang `main`, main
