@@ -17,19 +17,11 @@ def is_func_type(t : DasType) : bool {
     return t == DasType.tFunc1Int || t == DasType.tFunc1UInt || t == DasType.tFunc1Float || t == DasType.tFunc1Double || t == DasType.tFunc1Int64 || t == DasType.tFunc1UInt64 || t == DasType.tFunc2Int || t == DasType.tFunc2UInt || t == DasType.tFunc2Float || t == DasType.tFunc2Double || t == DasType.tFunc2Int64 || t == DasType.tFunc2UInt64
 }
 
-def find_symbols_by_type(state : AssemblyState; t : DasType; var result : array<string>&) {
-    for (sym in state.symbols) {
-        if (sym.sym_type == t) {
-            result |> push(sym.name)
-        }
-    }
-}
-
 def can_use_brick(state : AssemblyState; brick : Brick) : bool {
     for (pre_sym in brick.constraint.pre) {
         var found = false
         for (s in state.symbols) {
-            if (s.sym_type == pre_sym.sym_type) {
+            if (sym_matches(s, pre_sym)) {
                 found = true
                 break
             }
@@ -41,9 +33,13 @@ def can_use_brick(state : AssemblyState; brick : Brick) : bool {
     return true
 }
 
-def pick_symbol(state : AssemblyState; t : DasType) : string {
+def pick_symbol(state : AssemblyState; required : TypedSymbol) : string {
     var candidates : array<string>
-    find_symbols_by_type(state, t, candidates)
+    for (sym in state.symbols) {
+        if (sym_matches(sym, required)) {
+            candidates |> push(sym.name)
+        }
+    }
     if (length(candidates) == 0) {
         return ""
     }
@@ -57,7 +53,7 @@ def instantiate_brick(brick : Brick; state : AssemblyState) : string {
     var mapping : table<string; string>
     for (pre_sym in brick.constraint.pre) {
         if (!key_exists(mapping, pre_sym.name)) {
-            mapping[pre_sym.name] = pick_symbol(state, pre_sym.sym_type)
+            mapping[pre_sym.name] = pick_symbol(state, pre_sym)
         }
     }
     var new_var_idx = state.var_counter
@@ -113,6 +109,8 @@ def hash_cast(name : string; t : DasType) : string {
         return "int(" + name + ")"
     } elif (t == DasType.tBool) {
         return "(" + name + " ? 1 : 0)"
+    } elif (t == DasType.tString) {
+        return "length(" + name + ")"
     }
     return "0"
 }
@@ -151,10 +149,10 @@ def assemble(pool : BrickPool; i_max : int; p_blk : float) : string {
             }
             if (!is_in_pre) {
                 if (is_func_type(post_sym.sym_type)) {
-                    state.symbols |> push(make_sym("fn_{state.func_counter}", post_sym.sym_type))
+                    state.symbols |> push(make_sym("fn_{state.func_counter}", post_sym.sym_type, post_sym.flags))
                     state.func_counter++
                 } else {
-                    state.symbols |> push(make_sym("v_{state.var_counter}", post_sym.sym_type))
+                    state.symbols |> push(make_sym("v_{state.var_counter}", post_sym.sym_type, post_sym.flags))
                     state.var_counter++
                 }
             }
@@ -171,7 +169,7 @@ def assemble(pool : BrickPool; i_max : int; p_blk : float) : string {
     }
     hash_lines |> push("    print(\"\{_hash\}\\n\")")
     return build_string() <| $(var writer) {
-        writer |> write("options gen2\n\n")
+        writer |> write("options gen2\n\nrequire strings\nrequire daslib/strings_boost\n\n")
         for (line in top_lines) {
             writer |> write(line)
             writer |> write("\n\n")
