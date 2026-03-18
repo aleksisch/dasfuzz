@@ -31,9 +31,14 @@ enum DasType {
 }
 
 // A typed symbol: (name, type)
+bitfield SymFlags {
+    nonzero
+}
+
 struct TypedSymbol {
     name : string
     sym_type : DasType
+    flags : SymFlags
 }
 
 // Assembly constraint: precondition (what's needed) + postcondition (what's provided)
@@ -98,13 +103,14 @@ def random_literal(t : DasType) : string {
     } elif (t == DasType.tBool) {
         return random_int(rng_seed) > 0 ? "true" : "false"
     } elif (t == DasType.tString) {
-        return "\"hello\""
+        let strs = fixed_array("hello", "world", "foo", "bar", "test", " ", "abc", "123", "Hello World", "")
+        return "\"" + strs[random_int(rng_seed) % length(strs)] + "\""
     }
     return "0"
 }
 
 // Arithmetic ops valid for numeric types
-let ARITH_OPS = fixed_array("+", "-", "*", "/")
+let ARITH_OPS = fixed_array("+", "-", "*")
 let CMP_OPS = fixed_array("==", "!=", "<", ">", "<=", ">=")
 let BITWISE_OPS = fixed_array("&", "|", "^", "<<", ">>")
 
@@ -150,11 +156,27 @@ def is_integer(t : DasType) : bool {
     return t == DasType.tInt || t == DasType.tUInt || t == DasType.tInt64 || t == DasType.tUInt64
 }
 
-def make_sym(n : string; t : DasType) : TypedSymbol {
+def make_sym(n : string; t : DasType; f : SymFlags = SymFlags(0)) : TypedSymbol {
     var s : TypedSymbol
     s.name = n
     s.sym_type = t
+    s.flags = f
     return s
+}
+
+def make_sym_nz(n : string; t : DasType) : TypedSymbol {
+    return make_sym(n, t, SymFlags.nonzero)
+}
+
+def sym_matches(candidate : TypedSymbol; required : TypedSymbol) : bool {
+    if (candidate.sym_type != required.sym_type) {
+        return false
+    }
+    // If required has nonzero flag, candidate must also have it
+    if ((required.flags & SymFlags.nonzero) != SymFlags(0) && (candidate.flags & SymFlags.nonzero) == SymFlags(0)) {
+        return false
+    }
+    return true
 }
 
 def add_brick(var pool : BrickPool&; code : string; var pre : array<TypedSymbol>&; var post : array<TypedSymbol>&; num_sym : int; placement : BrickPlacement = BrickPlacement.IN_MAIN) {
@@ -190,6 +212,38 @@ def init_arithmetic_bricks(var pool : BrickPool&) {
             post |> push(make_sym("s1", t))
             post |> push(make_sym("s2", t))
             add_brick(pool, "var #s2# = #s0# " + op + " #s1#", pre, post, 3)
+        }
+        // division: s0 / s1 where s1 is nonzero
+        {
+            var pre : array<TypedSymbol>
+            var post : array<TypedSymbol>
+            pre |> push(make_sym("s0", t))
+            pre |> push(make_sym_nz("s1", t))
+            post |> push(make_sym("s0", t))
+            post |> push(make_sym_nz("s1", t))
+            post |> push(make_sym("s2", t))
+            add_brick(pool, "var #s2# = #s0# / #s1#", pre, post, 3)
+        }
+        // make nonzero: s1 = s0 != T(0) ? s0 : T(1)
+        {
+            var pre : array<TypedSymbol>
+            var post : array<TypedSymbol>
+            pre |> push(make_sym("s0", t))
+            post |> push(make_sym("s0", t))
+            post |> push(make_sym_nz("s1", t))
+            if (t == DasType.tFloat) {
+                add_brick(pool, "var #s1# = #s0# != 0.0 ? #s0# : 1.0", pre, post, 2)
+            } elif (t == DasType.tDouble) {
+                add_brick(pool, "var #s1# = #s0# != 0.0lf ? #s0# : 1.0lf", pre, post, 2)
+            } elif (t == DasType.tUInt) {
+                add_brick(pool, "var #s1# = #s0# != uint(0) ? #s0# : uint(1)", pre, post, 2)
+            } elif (t == DasType.tInt64) {
+                add_brick(pool, "var #s1# = #s0# != int64(0) ? #s0# : int64(1)", pre, post, 2)
+            } elif (t == DasType.tUInt64) {
+                add_brick(pool, "var #s1# = #s0# != uint64(0) ? #s0# : uint64(1)", pre, post, 2)
+            } else {
+                add_brick(pool, "var #s1# = #s0# != 0 ? #s0# : 1", pre, post, 2)
+            }
         }
         // unary negate: var s1 = -s0
         {
@@ -302,12 +356,225 @@ def init_arithmetic_bricks(var pool : BrickPool&) {
         post |> push(make_sym("s1", DasType.tUInt))
         add_brick(pool, "var #s1# = uint(#s0#)", pre, post, 2)
     }
+    // --- Strings ---
+    init_string_bricks(pool)
     // --- For loops (bounded with range) ---
     init_for_loop_bricks(pool)
     // --- Functions ---
     init_function_bricks(pool)
     // --- If/elif/else ---
     init_if_bricks(pool)
+}
+
+def init_string_bricks(var pool : BrickPool&) {
+    // String literal
+    // Pre: {} -> Post: {s0: string}
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        post |> push(make_sym("s0", DasType.tString))
+        add_brick(pool, "var #s0# = #lit:string#", pre, post, 1)
+    }
+    // String concatenation: s0 + s1 -> s2
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tString))
+        add_brick(pool, "var #s2# = #s0# + #s1#", pre, post, 3)
+    }
+    // length(s0) -> int
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tInt))
+        add_brick(pool, "var #s1# = length(#s0#)", pre, post, 2)
+    }
+    // to_upper(s0) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = to_upper(#s0#)", pre, post, 2)
+    }
+    // to_lower(s0) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = to_lower(#s0#)", pre, post, 2)
+    }
+    // reverse(s0) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = reverse(#s0#)", pre, post, 2)
+    }
+    // slice(s0, 0, int) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tInt))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tInt))
+        post |> push(make_sym("s2", DasType.tString))
+        add_brick(pool, "var #s2# = slice(#s0#, 0, #s1#)", pre, post, 3)
+    }
+    // find(s0, s1) -> int
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tInt))
+        add_brick(pool, "var #s2# = find(#s0#, #s1#)", pre, post, 3)
+    }
+    // starts_with(s0, s1) -> bool
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tBool))
+        add_brick(pool, "var #s2# = starts_with(#s0#, #s1#)", pre, post, 3)
+    }
+    // ends_with(s0, s1) -> bool
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tBool))
+        add_brick(pool, "var #s2# = ends_with(#s0#, #s1#)", pre, post, 3)
+    }
+    // replace(s0, s1, s2) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        pre |> push(make_sym("s2", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tString))
+        post |> push(make_sym("s3", DasType.tString))
+        add_brick(pool, "var #s3# = replace(#s0#, #s1#, #s2#)", pre, post, 4)
+    }
+    // strip(s0) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = strip(#s0#)", pre, post, 2)
+    }
+    // repeat(s0, int) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = repeat(#s0#, 3)", pre, post, 2)
+    }
+    // empty(s0) -> bool
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tBool))
+        add_brick(pool, "var #s1# = empty(#s0#)", pre, post, 2)
+    }
+    // s0 == s1 -> bool
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tBool))
+        add_brick(pool, "var #s2# = #s0# == #s1#", pre, post, 3)
+    }
+    // s0 != s1 -> bool
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tBool))
+        add_brick(pool, "var #s2# = #s0# != #s1#", pre, post, 3)
+    }
+    // character_at(s0, 0) -> int
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tInt))
+        add_brick(pool, "var #s1# = character_at(#s0#, 0)", pre, post, 2)
+    }
+    // to_char(int) -> string
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tInt))
+        post |> push(make_sym("s0", DasType.tInt))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = to_char(#s0#)", pre, post, 2)
+    }
+    // int -> string via string builder
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tInt))
+        post |> push(make_sym("s0", DasType.tInt))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = \"\{#s0#\}\"", pre, post, 2)
+    }
+    // float -> string via string builder
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tFloat))
+        post |> push(make_sym("s0", DasType.tFloat))
+        post |> push(make_sym("s1", DasType.tString))
+        add_brick(pool, "var #s1# = \"\{#s0#\}\"", pre, post, 2)
+    }
+    // contains(s0, s1) -> bool  (from strings_boost)
+    {
+        var pre : array<TypedSymbol>
+        var post : array<TypedSymbol>
+        pre |> push(make_sym("s0", DasType.tString))
+        pre |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s0", DasType.tString))
+        post |> push(make_sym("s1", DasType.tString))
+        post |> push(make_sym("s2", DasType.tBool))
+        add_brick(pool, "var #s2# = contains(#s0#, #s1#)", pre, post, 3)
+    }
 }
 
 def init_for_loop_bricks(var pool : BrickPool&) {

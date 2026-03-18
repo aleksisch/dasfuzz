@@ -68,6 +68,8 @@ def main() {
     print("Brick pool: {length(pool.bricks)} bricks\n")
     var total_crashes = 0
     var total_compile_errors = 0
+    var total_mismatches = 0
+    var total_timeouts = 0
     var total_ok = 0
     mkdir(cfg.crash_dir)
     for (test_id in range(cfg.num_tests)) {
@@ -83,15 +85,24 @@ def main() {
                 fwrite(f, program)
             }
             print("[CRASH] Test {test_id} -> {crash_file}\n")
+        } elif (result == ExecResult.HASH_MISMATCH) {
+            total_mismatches++
+            let mismatch_file = "{cfg.crash_dir}/mismatch_{test_id}.das"
+            fopen(mismatch_file, "wb") <| $(f) {
+                fwrite(f, program)
+            }
+            print("[MISMATCH] Test {test_id} -> interp vs jit differ -> {mismatch_file}\n")
         } elif (result == ExecResult.COMPILE_ERROR) {
             total_compile_errors++
+        } elif (result == ExecResult.TIMEOUT) {
+            total_timeouts++
         } else {
             total_ok++
         }
         if ((test_id + 1) % 100 == 0) {
-            print("Progress: {test_id + 1}/{cfg.num_tests} | ok={total_ok} compile_err={total_compile_errors} crashes={total_crashes}\n")
+            print("Progress: {test_id + 1}/{cfg.num_tests} | ok={total_ok} err={total_compile_errors} crash={total_crashes} mismatch={total_mismatches} timeout={total_timeouts}\n")
         }
     }
     print("\n=== Done ===\n")
-    print("Total: {cfg.num_tests} | OK: {total_ok} | Compile errors: {total_compile_errors} | Crashes: {total_crashes}\n")
+    print("Total: {cfg.num_tests} | OK: {total_ok} | Compile errors: {total_compile_errors} | Crashes: {total_crashes} | Mismatches: {total_mismatches} | Timeouts: {total_timeouts}\n")
 }
