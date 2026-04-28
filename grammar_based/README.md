@@ -58,8 +58,31 @@ find ./out/default/crashes/ -name "id*" | xargs -I{} sh -c '/AFLplusplus/afl-tmi
 
 ### Parallel fuzzing
 Fuzzing requires a lot of resources, running in single thread is extremely
-inefficient. There is no `single-command` to make all the above parallel.
-See [AFL documentation](https://aflplus.plus/docs/parallel_fuzzing/) on how to run on multiple threads.
+inefficient. AFL++ supports parallel fuzzing by running one main instance
+and multiple secondary instances that share a single output directory.
+
+Start the main fuzzer (`-M`):
+```
+LD_LIBRARY_PATH=/src/modules/Grammar-Mutator/ TREES_PATH=./trees AFL_CUSTOM_MUTATOR_LIBRARY=/src/modules/Grammar-Mutator/libgrammarmutator-type.so AFL_CUSTOM_MUTATOR_ONLY=1 /AFLplusplus/afl-fuzz -M fuzzer01 -i ./seeds -o ./out -- /src/build/das_fuzz
+```
+
+Start as many secondary fuzzers (`-S`) as you have spare cores:
+```
+LD_LIBRARY_PATH=/src/modules/Grammar-Mutator/ TREES_PATH=./trees AFL_CUSTOM_MUTATOR_LIBRARY=/src/modules/Grammar-Mutator/libgrammarmutator-type.so AFL_CUSTOM_MUTATOR_ONLY=1 /AFLplusplus/afl-fuzz -S fuzzer02 -i ./seeds -o ./out -- /src/build/das_fuzz
+LD_LIBRARY_PATH=/src/modules/Grammar-Mutator/ TREES_PATH=./trees AFL_CUSTOM_MUTATOR_LIBRARY=/src/modules/Grammar-Mutator/libgrammarmutator-type.so AFL_CUSTOM_MUTATOR_ONLY=1 /AFLplusplus/afl-fuzz -S fuzzer03 -i ./seeds -o ./out -- /src/build/das_fuzz
+```
+
+All instances share the same `-o ./out` directory — each one creates its own
+subdirectory (`out/fuzzer01/`, `out/fuzzer02/`, etc.) and periodically syncs
+findings with the others.
+
+Use `tmux` or `screen` to run each instance in a separate pane/window.
+To check the status of all running instances at a glance:
+```
+/AFLplusplus/afl-whatsup ./out
+```
+
+See [AFL documentation](https://aflplus.plus/docs/parallel_fuzzing/) for more details.
 
 ## Grammar conversion
 Daslang uses Bison. Many thanks to https://www.chrysalide.re/ for publishing
@@ -70,3 +93,10 @@ To convert grammar simply run:
 ```
 python3 grammar_based/convert.py grammar.ypp > daslang_grammar.json
 ```
+
+`convert.py` also injects UnitTest C++ binding non-terminals (types, enums,
+hardcoded function calls) and applies a weight bias so the AFL Grammar-Mutator
+picks them often enough to stress those bindings. Edit `UNIT_TEST_RULES` /
+`BIAS` at the top of the script to tune what gets generated and how often;
+re-run `convert.py` to regenerate the JSON (idempotent — running it twice
+produces the same output).

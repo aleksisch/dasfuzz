@@ -150,7 +150,6 @@ __lexer_tokens = {
     "','": lambda x, y: ',',
     "'": lambda x, y: "'",
     "DAS_EMIT_COMMA": define_default(','),
-    "DAS_EMIT_COMMA": define_default(','),
     'NAME': define_IDENTIFIER,
     'HEX_BYTES': define_HEX_BYTES,
     'FULL_MASK': define_FULL_MASK,
@@ -305,18 +304,18 @@ __lexer_tokens = {
     "']'"                   : lambda x, y: "]",
     "'+'"                   : lambda x, y: "+",
     "'-'"                   : lambda x, y: "-",
-    "'*'"                   : lambda x, y: "-",
-    "'<'"                   : lambda x, y: "-",
-    "'>'"                   : lambda x, y: "-",
-    "'<='"                   : lambda x, y: "-",
-    "'>='"                   : lambda x, y: "-",
-    "'&'"                   : lambda x, y: "-",
-    "'^'"                   : lambda x, y: "-",
-    "'^^'"                   : lambda x, y: "-",
-    "'?'"                   : lambda x, y: "-",
+    "'*'"                   : lambda x, y: "*",
+    "'<'"                   : lambda x, y: "<",
+    "'>'"                   : lambda x, y: ">",
+    "'<='"                   : lambda x, y: "<=",
+    "'>='"                   : lambda x, y: ">=",
+    "'&'"                   : lambda x, y: "&",
+    "'^'"                   : lambda x, y: "^",
+    "'^^'"                   : lambda x, y: "^^",
+    "'?'"                   : lambda x, y: "?",
     "UNARY_PLUS"            : lambda x, y: "+",
     "UNARY_MINUS"            : lambda x, y: "-",
-    "'&&'"                   : lambda x, y: "-",
+    "'&&'"                   : lambda x, y: "&&",
     "'~'"                   : lambda x, y: "~",
     "'@'"                   : lambda x, y: "@",
     "'.'"                   : lambda x, y: ".",
@@ -357,6 +356,360 @@ __lexer_tokens = {
     'MTAG_F'              : define_default("$f"),
     'MTAG_DOTDOTDOT'      : define_default("..."),
 }
+
+
+# ---------------------------------------------------------------------------
+# UnitTest extras + bias.
+#
+# When this script is re-run on the .ypp source, the resulting JSON should
+# already include the UnitTest C++ binding surface plus a weight bias toward
+# those constructs (so the AFL Grammar-Mutator picks them often enough to
+# stress the bindings). Rather than hand-editing the generated JSON, the
+# additions and weights live here and are applied uniformly by every run.
+#
+# Tokens follow the same wire format as the rest of the tree: each token is
+# the literal JSON text (a quoted nonterminal reference like `"<expr>"` or
+# a quoted literal like `" TestObjectFoo "`). The helpers below build that.
+# ---------------------------------------------------------------------------
+
+def _NT(name):
+    """A reference to a nonterminal."""
+    return '"<%s>"' % name
+
+def _LIT(text):
+    """A literal that should be emitted verbatim in fuzzed output."""
+    return '"%s"' % text.replace('\\', '\\\\').replace('"', '\\"')
+
+
+# New non-terminals to inject after parsing.
+UNIT_TEST_RULES = {
+    'unit_test_require': [[_LIT('require UnitTest;\n')]],
+    'unit_test_type': [
+        [_LIT(' TestObjectFoo ')],   [_LIT(' TestObjectBar ')],
+        [_LIT(' TestObjectSmart ')], [_LIT(' TestObjectNotLocal ')],
+        [_LIT(' TestObjectNotNullPtr ')], [_LIT(' FancyClass ')],
+        [_LIT(' SomeDummyType ')],   [_LIT(' Point3 ')], [_LIT(' Point3Array ')],
+        [_LIT(' FooArray ')],        [_LIT(' ByteCode ')],
+        [_LIT(' BigEntityId ')],     [_LIT(' EntityId ')],
+        [_LIT(' SceneNodeId ')],     [_LIT(' SampleVariant ')],
+    ],
+    'unit_test_enum_type': [
+        [_LIT(' SomeEnum ')], [_LIT(' SomeEnum98 ')], [_LIT(' SomeEnum_16 ')],
+        [_LIT(' GooEnum ')],  [_LIT(' GooEnum98 ')],  [_LIT(' OpCode ')],
+    ],
+    'unit_test_enum': [
+        [_LIT(' SomeEnum.zero ')], [_LIT(' SomeEnum.one ')], [_LIT(' SomeEnum.two ')],
+        [_LIT(' SomeEnum98.zero ')], [_LIT(' SomeEnum98.one ')], [_LIT(' SomeEnum98.two ')],
+        [_LIT(' SomeEnum_16.zero ')], [_LIT(' SomeEnum_16.one ')], [_LIT(' SomeEnum_16.two ')],
+        [_LIT(' GooEnum.regular ')], [_LIT(' GooEnum.hazardous ')],
+        [_LIT(' GooEnum98.soft ')],  [_LIT(' GooEnum98.hard ')],
+        [_LIT(' OpCode.op_nop ')], [_LIT(' OpCode.op_mov_a_arg ')],
+        [_LIT(' OpCode.op_mov_arg_b ')], [_LIT(' OpCode.op_dec_a ')],
+        [_LIT(' OpCode.op_cmple_a_low_zx ')], [_LIT(' OpCode.op_cjmp ')],
+        [_LIT(' OpCode.op_mov_c_a ')], [_LIT(' OpCode.op_mov_a_low_zx ')],
+        [_LIT(' OpCode.op_mov_b_low_zx ')], [_LIT(' OpCode.op_xchange_a_b ')],
+        [_LIT(' OpCode.op_add_b_a ')], [_LIT(' OpCode.op_loop ')],
+        [_LIT(' OpCode.op_return_b ')],
+    ],
+    'unit_test_constant': [[_LIT(' UNIT_TEST_CONSTANT ')]],
+    # Calls into the C++ binding surface from modules/dasUnitTest/test_handles.cpp.
+    'unit_test_call': [
+        [_LIT(' testFoo ('), _NT('expr'), _LIT(')')],
+        [_LIT(' set_foo_data ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' testAdd ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' getSamplePoint3 ()')],
+        [_LIT(' doubleSamplePoint3 ('), _NT('expr'), _LIT(')')],
+        [_LIT(' project_to_nearest_navmesh_point ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' makeDummy ()')],
+        [_LIT(' takeDummy ('), _NT('expr'), _LIT(')')],
+        [_LIT(' makeTestObjectSmart ()')],
+        [_LIT(' countTestObjectSmart ('), _NT('expr'), _LIT(')')],
+        [_LIT(' getTotalTestObjectSmart ()')],
+        [_LIT(' fooPtr2Ref ('), _NT('expr'), _LIT(')')],
+        [_LIT(' getPtr ()')],
+        [_LIT(' makeSampleI ()')],
+        [_LIT(' makeSampleF ()')],
+        [_LIT(' makeSampleS ()')],
+        [_LIT(' evalByteCode ('), _NT('expr'), _LIT(')')],
+        [_LIT(' test_abi_mad ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' testGetDiv ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' testGetNan ()')],
+        [_LIT(' test_das_string ('), _NT('expr_full_block'), _LIT(')')],
+        [_LIT(' printw ('), _NT('expr'), _LIT(')')],
+        [_LIT(' hit_me ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
+        [_LIT(' efn_flip ('), _NT('expr'), _LIT(')')],
+        [_LIT(' efn_takeOne_giveTwo ('), _NT('expr'), _LIT(')')],
+        [_LIT(' efn_takeOne_giveTwo_98 ('), _NT('expr'), _LIT(')')],
+        [_LIT(' make_invalid_id ()')],
+        [_LIT(' CppS1Size ()')],
+        [_LIT(' CppS2Size ()')],
+        [_LIT(' CppS2DOffset ()')],
+        [_LIT(' testPoint3Array ('), _NT('expr'), _LIT(','), _NT('expr_full_block'), _LIT(')')],
+        [_LIT(' testFooArray ('), _NT('expr'), _LIT(','), _NT('expr_full_block'), _LIT(')')],
+        [_LIT(' testCMRES ()')],
+    ],
+}
+
+
+# Weight bias: rule_name -> [(alt, total_count_after_normalisation)].
+# Idempotent: each run normalises the count of the targeted alt to exactly
+# this value, regardless of how many copies were present before.
+BIAS = {
+    'expr': [
+        ([_NT('unit_test_call')],     12),
+        ([_NT('unit_test_enum')],      6),
+        ([_NT('unit_test_constant')],  3),
+    ],
+    'expression_any': [
+        ([_NT('unit_test_call'), _LIT(';\n')], 6),
+    ],
+    'name_in_namespace': [
+        ([_NT('unit_test_type')], 6),
+    ],
+    'basic_type_declaration': [
+        ([_NT('unit_test_type')], 4),
+    ],
+    'expr_call': [
+        ([_NT('unit_test_call')], 6),
+    ],
+}
+
+
+# Alternatives that empirically generate noise (compile errors that don't
+# exercise interesting compiler paths). Each entry is a list of token
+# strings; every matching alt is dropped from the rule. Tightening the
+# grammar here cuts the share of pure-typecheck-noise inputs and gives the
+# fuzzer more cycles on shapes that actually reach the back end.
+REMOVE_ALTS = {
+    # Module decl can only appear as the very first declaration; it's
+    # re-introduced as a START prologue variant below. Generic
+    # `require <name>` always fails because <name> resolves to
+    # var1/var2/var3, none of which are real modules — keep only the
+    # UnitTest alt of <require_decl>. Typedef/expect are still allowed
+    # at program scope (REPLACE_RULES gives them a terminator).
+    'program': [
+        [_NT('program'), _NT('module_decl')],
+        [_NT('program'), _NT('require_decl')],
+    ],
+    # Enum *type* names (GooEnum, OpCode, …) shouldn't appear as bare value
+    # expressions. <unit_test_enum> already covers `EnumName.value` form,
+    # which is the only correct form.
+    'name_in_namespace': [
+        [_NT('unit_test_enum_type')],
+    ],
+    # Stale alts from earlier convert.py iterations that emitted a literal
+    # `\n` (backslash + n) instead of a real newline — the daslang lexer
+    # rejects the backslash as an invalid token.
+    'unit_test_require': [
+        [_LIT('require UnitTest\\n')],
+    ],
+    'expression_any': [
+        [_NT('unit_test_call'), _LIT(';\\n')],
+    ],
+    # Bare `;` inside struct body is rejected — parser needs a field/method
+    # declaration. Function prototypes (`def name;` without a body) are
+    # also rejected by ds2 in struct contexts.
+    'struct_variable_declaration_list': [
+        [_NT('struct_variable_declaration_list'), _NT('das_emit_semicolon')],
+        [_NT('struct_variable_declaration_list'), _NT('das_def'),
+         _NT('optional_constant'), _NT('function_declaration_header'), _LIT(';\n')],
+    ],
+}
+
+
+# Fresh top-level alts for <START>: emit `module` / `require UnitTest` /
+# `options` lines once, before any other declarations. Avoids the
+# "module name has to be first" error and ensures UnitTest is reachable
+# without polluting the recursive <program> rule.
+START_PROLOGUE = [
+    # Default — most fuzz inputs start with require UnitTest only.
+    [_NT('unit_test_require'), _NT('program'), _NT('global_main_declaration')],
+    # Some inputs declare a module first (must precede any other decl).
+    [_NT('module_decl'), _NT('unit_test_require'),
+     _NT('program'), _NT('global_main_declaration')],
+]
+
+
+# Whole-rule replacements. Whatever was previously defined for these names is
+# discarded; the value below becomes the rule. Useful for fixing rules whose
+# default form encodes a wrong literal (e.g. an `[export]` baked into every
+# `def`, which is invalid inside struct/class bodies).
+REPLACE_RULES = {
+    # Plain `def ` keyword — no [export] annotation. Used for struct/class
+    # member functions and other non-top-level definitions.
+    'das_def': [[_LIT(' def ')]],
+    # Top-level annotated `def`. Only valid for global functions.
+    'das_export_def': [[_LIT('\n[export]\ndef ')]],
+    # Global function decls take the export form.
+    'global_function_declaration': [[_NT('das_export_def'), _NT('function_declaration')]],
+    # main() is a global function; same export prefix.
+    # Earlier versions embedded a `print("OOOOOO{<expr>}")` here as a marker,
+    # but format-string `{` / `}` collide with `{` / `}` produced inside the
+    # generated expression (table literals, blocks) and create spurious
+    # syntax errors.
+    # Body is always at least one non-empty statement — `def main {}` and
+    # `def main { ; }` waste a fuzz run since the rest of the grammar
+    # never gets exercised. <expression_any_nonempty> is derived from
+    # <expression_any> in apply_extras_and_bias() by filtering out the
+    # bare `;\n` alt.
+    'global_main_declaration': [[
+        _NT('das_export_def'), _LIT('main'),
+        _LIT('{\n'),
+        _NT('expression_any_nonempty'),
+        _NT('expressions'),
+        _LIT('}'),
+        _NT('expression_block_finally'),
+    ]],
+    # ds2 syntax is `class template Foo {}` / `struct template Foo {}` —
+    # the keyword order in the original grammar (`template class`) is wrong
+    # and produces "unexpected template, expecting struct or class".
+    'class_or_struct': [
+        [_NT('das_class')],
+        [_NT('das_struct')],
+        [_NT('das_class'), _NT('das_template')],
+        [_NT('das_struct'), _NT('das_template')],
+    ],
+    # Top-level facts must end with a newline / semicolon. Without a
+    # terminator the parser keeps consuming tokens from the next line and
+    # then errors on whatever follows ("unexpected '(' expecting newline").
+    'module_decl': [
+        [_NT('das_module'), _NT('name'), _LIT(';\n')],
+        [_NT('das_module'), _NT('name'), _NT('das_public'),  _LIT(';\n')],
+        [_NT('das_module'), _NT('name'), _NT('das_private'), _LIT(';\n')],
+    ],
+    'require_decl': [
+        [_NT('das_require'), _LIT(' UnitTest '), _LIT(';\n')],
+    ],
+    # ds2 `options` only accepts an annotation_argument_list (name=value
+    # pairs where value is a literal — no expressions, no calls).
+    'options_decl': [
+        [_NT('das_options'), _NT('name'), _LIT(';\n')],
+        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('das_true'),  _LIT(';\n')],
+        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('das_false'), _LIT(';\n')],
+        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('expr_numeric_const'), _LIT(';\n')],
+        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('string_constant'),    _LIT(';\n')],
+    ],
+    # Enum / bitfield bodies must not start with a comma — split into a
+    # non-empty list helper so leading-comma forms become unreachable.
+    'enum_list': [
+        [],
+        [_NT('enum_list_nonempty')],
+    ],
+    'enum_list_nonempty': [
+        [_NT('enum_expression')],
+        [_NT('enum_list_nonempty'), _NT('commas'), _NT('enum_expression')],
+    ],
+    'bitfield_alias_bits': [
+        [],
+        [_NT('bitfield_alias_bits_nonempty')],
+    ],
+    'bitfield_alias_bits_nonempty': [
+        [_NT('name')],
+        [_NT('bitfield_alias_bits_nonempty'), _NT('commas'), _NT('name')],
+    ],
+    'typedef_decl': [
+        [_NT('das_typedef'), _NT('name'), _LIT(' = '),
+         _NT('type_declaration_no_options'), _LIT(';\n')],
+    ],
+    'expect_decl': [
+        [_NT('das_expect'), _NT('name'),
+         _NT('begin_string'), _NT('character_sequence'), _NT('end_string'),
+         _LIT(';\n')],
+    ],
+    # Add spaces around `=` / `<-` so a trailing type modifier like `&` does
+    # not lex-merge with a following `=` into `&=` (causing the
+    # "unexpected &= expecting <- or := or '='" error).
+    'copy_or_move': [
+        [_LIT(' = ')],
+        [_NT('larrow')],
+    ],
+    'copy_or_move_or_clone': [
+        [_LIT(' = ')],
+        [_NT('larrow')],
+        [_NT('cloneequ')],
+    ],
+}
+
+
+def apply_extras_and_bias(tree):
+    """Inject UnitTest non-terminals and re-weight key rules.
+
+    Mutates and returns ``tree`` in-place.
+    """
+    # Replace whole rules first (overrides anything previously set).
+    for name, alts in REPLACE_RULES.items():
+        tree[name] = list(alts)
+    # Add new rules (or extend if already present).
+    for name, alts in UNIT_TEST_RULES.items():
+        existing = tree.get(name, [])
+        for alt in alts:
+            if alt not in existing:
+                existing.append(alt)
+        tree[name] = existing
+    # Drop noisy alts.
+    for rule, drop in REMOVE_ALTS.items():
+        alts = tree.get(rule)
+        if alts is None:
+            sys.stderr.write("warning: remove rule %r missing in grammar\n" % rule)
+            continue
+        tree[rule] = [a for a in alts if a not in drop]
+    # Derive <expression_any_nonempty> from <expression_any> by stripping
+    # the empty-statement alt. Used by <global_main_declaration> to force
+    # at least one real statement in the body.
+    ea = tree.get('expression_any')
+    if ea is not None:
+        empty_stmt = [_LIT(';\n')]
+        tree['expression_any_nonempty'] = [a for a in ea if a != empty_stmt]
+    # Re-weight target alternatives.
+    for rule, targets in BIAS.items():
+        alts = tree.get(rule)
+        if alts is None:
+            sys.stderr.write("warning: bias rule %r missing in grammar\n" % rule)
+            continue
+        for alt, desired in targets:
+            kept = [a for a in alts if a != alt]
+            alts = kept + ([alt] * desired)
+        tree[rule] = alts
+    return tree
+
+
+def apply_to_json(path):
+    """Apply extras / removals / bias to an already-generated JSON in place.
+
+    Useful when the active grammar is not regenerated from a .ypp on every
+    edit but we still want one source of truth for these transforms.
+    """
+    import json
+    with open(path, 'r') as f:
+        data = json.load(f)
+    # Tokens in a JSON-encoded grammar are bare strings ('<expr>', ' foo ').
+    # The transforms in this module use the raw "<expr>" / "\" foo \"" form
+    # used at parse time — convert both directions.
+    def to_raw(tok):
+        if tok.startswith('<') and tok.endswith('>'):
+            return _NT(tok[1:-1])
+        return _LIT(tok.replace('\\', '\\\\').replace('"', '\\"')) if False else '"%s"' % tok.replace('\\', '\\\\').replace('"', '\\"')
+    def from_raw(tok):
+        # raw is `"<x>"` or `"literal"` — strip outer quotes and unescape.
+        assert tok.startswith('"') and tok.endswith('"')
+        s = tok[1:-1]
+        return s.replace('\\"', '"').replace('\\\\', '\\')
+    raw = {}
+    for rule, alts in data.items():
+        # data keys are strings like "<rule>"; strip wrappers for our tree shape.
+        name = rule[1:-1] if rule.startswith('<') and rule.endswith('>') else rule
+        raw[name] = [[to_raw(t) for t in alt] for alt in alts]
+    raw = apply_extras_and_bias(raw)
+    out = {}
+    for name, alts in raw.items():
+        key = '<%s>' % name
+        out[key] = [[from_raw(t) for t in alt] for alt in alts]
+    # Also force <START> to the configured prologue.
+    if '<START>' in out:
+        out['<START>'] = [[from_raw(t) for t in alt] for alt in START_PROLOGUE]
+    with open(path, 'w') as f:
+        json.dump(out, f, indent=4)
+        f.write('\n')
 
 
 def remove_grammar_comments(grammar):
@@ -650,6 +1003,10 @@ if __name__ == '__main__':
 
     # Cf. https://github.com/AFLplusplus/Grammar-Mutator/blob/stable/doc/customizing-grammars.md
 
+    if len(sys.argv) >= 3 and sys.argv[1] == '--apply':
+        apply_to_json(sys.argv[2])
+        sys.exit(0)
+
     with open(sys.argv[1], 'r') as fd:
         grammar = fd.read()
 
@@ -666,6 +1023,8 @@ if __name__ == '__main__':
     tree = simplify_tree(tree)
 
     tree = remove_indirect_left_recursion(tree)
+
+    tree = apply_extras_and_bias(tree)
 
     output_rules(tree)
 
