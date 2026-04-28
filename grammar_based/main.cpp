@@ -35,6 +35,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifdef DAS_FUZZ_AOT_CHECK
+#include <clang-c/Index.h>
+#endif
+
 using namespace das;
 
 // ---------------------------------------------------------------------------
@@ -63,6 +67,151 @@ __AFL_FUZZ_INIT();
 struct NullWriter : public TextWriter {
     virtual void output() override { clear(); }
 };
+
+// ---------------------------------------------------------------------------
+// libclang AOT C++ syntax checker.
+//
+// Flow:
+//   1. Build a precompiled-header (PCH) once at startup that contains the
+//      AOT preamble (`#include <daScript/...>` headers from AOT_INCLUDES
+//      plus AOT_HEADERS' platform pragmas). Saves to /tmp.
+//   2. Per fuzz input, after daslang generates AOT C++ into a TextWriter,
+//      pass the text to clang_parseTranslationUnit with -fsyntax-only
+//      -include-pch <preamble.pch>. PCH skips the multi-second header
+//      parse; -fsyntax-only skips IR/codegen.
+//   3. Count error-severity diagnostics. If DAS_FUZZ_DIAG is set, print
+//      them. Otherwise just consume.
+//
+// libclang call cost without PCH: ~1-2 s per parse (header chain).
+// With PCH: ~30-100 ms per parse.
+// ---------------------------------------------------------------------------
+#ifdef DAS_FUZZ_AOT_CHECK
+
+static CXIndex   g_cxIndex   = nullptr;
+static char      g_pchPath[] = "/tmp/das_fuzz_aot_XXXXXX.pch";
+static bool      g_pchReady  = false;
+
+// Common args for both PCH build and per-input parse.
+static const char * kClangCommonArgs[] = {
+    "-std=c++17",
+    "-fno-rtti",
+    "-fno-exceptions",
+    "-DNDEBUG=1",
+    "-DDAS_NO_ASSERTIONS",
+    "-DDAS_DEBUGGER=0",
+    "-DDAS_FUSION=2",
+    "-Wno-everything",          // diagnostics noise — we only care about errors
+    "-I", DAS_FUZZ_DAS_INCLUDE,
+    "-I", DAS_FUZZ_FMT_INCLUDE,
+    "-I", DAS_FUZZ_UNITTEST_INCLUDE,
+};
+static constexpr int kClangCommonArgc =
+    sizeof(kClangCommonArgs) / sizeof(kClangCommonArgs[0]);
+
+static void buildAotPch() {
+    g_cxIndex = clang_createIndex(/*excludeDeclarations*/0, /*displayDiagnostics*/0);
+    if (!g_cxIndex) return;
+
+    // Pick a unique filename. mkstemps wants suffix length.
+    int fd = mkstemps(g_pchPath, /*suffixlen=*/4);
+    if (fd < 0) return;
+    close(fd);
+    unlink(g_pchPath);  // libclang will recreate it.
+
+    // Preamble: just the AOT_INCLUDES header chain. Anything per-program
+    // (namespaces, function bodies) goes after the PCH on the per-input
+    // parse.
+    std::string preamble;
+    preamble.append(AOT_INCLUDES);
+    preamble.append("\n");
+
+    CXUnsavedFile unsaved;
+    unsaved.Filename = "preamble.h";
+    unsaved.Contents = preamble.data();
+    unsaved.Length   = (unsigned long)preamble.size();
+
+    // -x c++-header makes clang treat input as a header to be precompiled.
+    const char * args[kClangCommonArgc + 2];
+    args[0] = "-x";
+    args[1] = "c++-header";
+    for (int i = 0; i < kClangCommonArgc; ++i) args[2 + i] = kClangCommonArgs[i];
+
+    CXTranslationUnit tu = nullptr;
+    CXErrorCode rc = clang_parseTranslationUnit2(
+        g_cxIndex, "preamble.h",
+        args, kClangCommonArgc + 2,
+        &unsaved, 1,
+        CXTranslationUnit_ForSerialization,
+        &tu);
+    if (rc != CXError_Success || !tu) {
+        if (tu) clang_disposeTranslationUnit(tu);
+        return;
+    }
+    int sv = clang_saveTranslationUnit(tu, g_pchPath, clang_defaultSaveOptions(tu));
+    clang_disposeTranslationUnit(tu);
+    if (sv == CXSaveError_None) {
+        g_pchReady = true;
+        atexit([]{ if (g_pchReady) unlink(g_pchPath); });
+    }
+}
+
+// Returns number of error-severity diagnostics; 0 means "compiles".
+static unsigned aotCheckCpp(const char * src, unsigned len) {
+    if (!g_cxIndex) return 0;
+    CXUnsavedFile unsaved;
+    unsaved.Filename = "fuzz_aot.cpp";
+    unsaved.Contents = src;
+    unsaved.Length   = len;
+
+    // -x c++ -fsyntax-only -include-pch <pch> + common args.
+    const char * args[kClangCommonArgc + 6];
+    int n = 0;
+    args[n++] = "-x";
+    args[n++] = "c++";
+    args[n++] = "-fsyntax-only";
+    if (g_pchReady) {
+        args[n++] = "-include-pch";
+        args[n++] = g_pchPath;
+    }
+    for (int i = 0; i < kClangCommonArgc; ++i) args[n++] = kClangCommonArgs[i];
+
+    CXTranslationUnit tu = nullptr;
+    CXErrorCode rc = clang_parseTranslationUnit2(
+        g_cxIndex, "fuzz_aot.cpp",
+        args, n,
+        &unsaved, 1,
+        CXTranslationUnit_None,
+        &tu);
+    if (rc != CXError_Success || !tu) {
+        if (tu) clang_disposeTranslationUnit(tu);
+        return 1;  // treat parser bail as one error
+    }
+    unsigned errors = 0;
+    unsigned ndiag  = clang_getNumDiagnostics(tu);
+    bool diagOn = getenv("DAS_FUZZ_DIAG") != nullptr;
+    for (unsigned i = 0; i < ndiag; ++i) {
+        CXDiagnostic d = clang_getDiagnostic(tu, i);
+        CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(d);
+        if (sev >= CXDiagnostic_Error) {
+            ++errors;
+            if (diagOn) {
+                CXString s = clang_formatDiagnostic(d, clang_defaultDiagnosticDisplayOptions());
+                fprintf(stdout, "[aot-cc] %s\n", clang_getCString(s));
+                clang_disposeString(s);
+            }
+        }
+        clang_disposeDiagnostic(d);
+    }
+    clang_disposeTranslationUnit(tu);
+    return errors;
+}
+
+#else
+
+static inline void     buildAotPch()                                        {}
+static inline unsigned aotCheckCpp(const char * /*src*/, unsigned /*len*/) { return 0; }
+
+#endif // DAS_FUZZ_AOT_CHECK
 
 // ---------------------------------------------------------------------------
 // Mode-specific per-input compile passes.
@@ -109,7 +258,9 @@ static void runAotPass(const unsigned char * buf, uint32_t len) {
     if ( program && !program->failed() ) {
         auto pctx = SimulateWithErrReport(program, logs);
         if ( pctx ) {
-            NullWriter tw;
+            // Capture the AOT C++ in a real TextWriter so we can hand it
+            // to libclang. The previous NullWriter dropped the bytes.
+            TextWriter tw;
             tw << AOT_INCLUDES;
             bool noAotModule = false;
             program->library.foreach_in_order([&](Module * mod){
@@ -134,6 +285,11 @@ static void runAotPass(const unsigned char * buf, uint32_t len) {
                     }
                 }
                 tw << AOT_FOOTER;
+
+                // Send the generated C++ through clang's frontend. Detects
+                // codegen / template / hash-mismatch bugs in daslang's AOT
+                // output that simulate alone won't catch.
+                aotCheckCpp(tw.data(), (unsigned)tw.tellp());
             }
         }
     }
@@ -179,6 +335,10 @@ int main(int /*argc*/, char ** /*argv*/) {
     NEED_MODULE(Module_UnitTest);
 
     Module::Initialize();
+
+    // Build the libclang PCH preamble before AFL forks so every child
+    // inherits the read-only PCH file via the filesystem.
+    buildAotPch();
 
     // -----------------------------------------------------------------------
     // Deferred fork point.  AFL++ forks here; each child already has all
