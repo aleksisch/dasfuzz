@@ -535,8 +535,24 @@ START_PROLOGUE = [
 # default form encodes a wrong literal (e.g. an `[export]` baked into every
 # `def`, which is invalid inside struct/class bodies).
 REPLACE_RULES = {
-    # Plain `def ` keyword — no [export] annotation. Used for struct/class
-    # member functions and other non-top-level definitions.
+    'program': [
+        [_NT('structure_declaration')],
+        [_NT('enum_declaration')],
+        [_NT('global_let')],
+        [_NT('global_function_declaration')],
+        [_NT('variant_alias_declaration')],
+        [_NT('tuple_alias_declaration')],
+        [_NT('bitfield_alias_declaration')],
+        [_NT('options_decl')],
+        [_NT('program'), _NT('structure_declaration')],
+        [_NT('program'), _NT('enum_declaration')],
+        [_NT('program'), _NT('global_let')],
+        [_NT('program'), _NT('global_function_declaration')],
+        [_NT('program'), _NT('variant_alias_declaration')],
+        [_NT('program'), _NT('tuple_alias_declaration')],
+        [_NT('program'), _NT('bitfield_alias_declaration')],
+        [_NT('program'), _NT('options_decl')],
+    ],
     'das_def': [[_LIT(' def ')]],
     # Top-level annotated `def`. Only valid for global functions.
     'das_export_def': [[_LIT('\n[export]\ndef ')]],
