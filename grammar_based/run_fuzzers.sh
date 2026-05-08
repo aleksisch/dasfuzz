@@ -31,18 +31,13 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
     exit 1
 fi
 
-launch() {
-    local name=$1 flag=$2
-    tmux new-window -t "$SESSION" -n "$name" \
-        "$AFL $flag $name -i $SEEDS -o $OUT -- $BIN; exec bash"
-}
-
-tmux new-session -d -s "$SESSION" -n main \
-    "$AFL -M fuzzer01 -i $SEEDS -o $OUT -- $BIN; exec bash"
+tmux new-session -d -s "$SESSION" -n fuzzer01 \
+    "$AFL -t 2000 -M fuzzer01 -i $SEEDS -o $OUT -- $BIN; exec bash"
 
 for i in $(seq 2 "$N"); do
     id=$(printf "fuzzer%02d" "$i")
-    launch "$id" "-S"
+    tmux new-window -d -t "$SESSION:$i" -n "$id" \
+        "$AFL -t 2000 -S $id -i $SEEDS -o $OUT -- $BIN; exec bash"
 done
 
 echo "launched $N fuzzers in tmux session '$SESSION'"

@@ -28,6 +28,7 @@
 #include "daScript/misc/sysos.h"
 #include "daScript/ast/aot_templates.h"
 #include "daScript/ast/ast_aot_cpp.h"
+#include "daScript/ast/dyn_modules.h"
 #include "module_unitTest.h"
 
 #include <unistd.h>
@@ -229,71 +230,111 @@ static FileAccessPtr makeAccess(const unsigned char * buf, uint32_t len) {
     return access;
 }
 
-// AOT pass — mirror utils/daScript/main.cpp's compile() but write to NullWriter
-// (no disk I/O). Exercises aotCpp / registerAotCpp / validateAotCpp codegen.
-static void runAotPass(const unsigned char * buf, uint32_t len) {
-    auto access = makeAccess(buf, len);
-    if (!access) return;
+// AOT driver — pre-loaded daslib/aot_cpp.das. Mirrors utils/daScript/main.cpp's
+// aot_compile(): compile the script once, simulate to a context, find aot(),
+// then per fuzz input restart() + evalWithCatch() to regenerate C++.
+// AOT C++ emitter is no longer a C++ method on Program; lives in daslib.
+static ProgramPtr  g_aotDriverProgram;
+static ContextPtr  g_aotDriverCtx;
+static SimFunction * g_aotFn = nullptr;
+static CodeOfPolicies g_aotInputCop;
+static char g_fuzzPath[64];   // /dev/shm/__fuzz_<pid>__.das — set in main
 
+static void setupAotDriver() {
+    auto access = make_smart<FsFileAccess>();
     ModuleGroup dummyGroup;
-    CodeOfPolicies policies;
-    policies.aot                       = true;
-    policies.aot_module                = true;
-    policies.aot_macros                = true;
-    policies.export_all                = true;          // needed for aot to export macros
-    policies.stack                     = 1 * 1024 * 1024; // aot macros need huge stack
-    policies.fail_on_no_aot            = false;
-    policies.fail_on_lack_of_aot_export = false;
-    policies.version_2_syntax          = true;
-
+    CodeOfPolicies stub;
+    stub.version_2_syntax = true;
+    stub.aot_module       = true;
     NullWriter logs;
-    daScriptEnvironment::getBound()->g_isInAot = true;
-    auto program = compileDaScript("__fuzz__.das", access, logs, dummyGroup, policies);
-    if ( program && program->failed() && getenv("DAS_FUZZ_DIAG") ) {
-        for ( auto & err : program->errors ) {
+    string aotCppPath = getDasRoot() + "/daslib/aot_cpp.das";
+    g_aotDriverProgram = compileDaScript(aotCppPath, access, logs, dummyGroup, stub);
+    if ( !g_aotDriverProgram || g_aotDriverProgram->failed() ) {
+        fprintf(stdout, "fuzz: failed to compile daslib/aot_cpp.das\n");
+        if ( g_aotDriverProgram ) for ( auto & err : g_aotDriverProgram->errors ) {
             fprintf(stdout, "%s\n",
                 reportError(err.at, err.what, err.extra, err.fixme, err.cerr).c_str());
         }
+        return;
     }
-    if ( program && !program->failed() ) {
-        auto pctx = SimulateWithErrReport(program, logs);
-        if ( pctx ) {
-            // Capture the AOT C++ in a real TextWriter so we can hand it
-            // to libclang. The previous NullWriter dropped the bytes.
-            TextWriter tw;
-            tw << AOT_INCLUDES;
-            bool noAotModule = false;
-            program->library.foreach_in_order([&](Module * mod){
-                if ( !mod->name.empty() ) {
-                    if ( mod->aotRequire(tw) == ModuleAotType::no_aot ) {
-                        noAotModule = true;
-                    }
-                }
-                return true;
-            }, program->getThisModule());
-            if ( !program->options.getBoolOption("no_aot", false) && !noAotModule ) {
-                tw << AOT_HEADERS;
-                {
-                    NamespaceGuard das_guard(tw, "das");
-                    {
-                        NamespaceGuard anon_guard(tw, program->thisNamespace);
-                        daScriptEnvironment::getBound()->g_Program = program;
-                        program->aotCpp(*pctx, tw, /*cross_platform=*/false);
-                        daScriptEnvironment::getBound()->g_Program.reset();
-                        program->registerAotCpp(tw, *pctx, false);
-                        program->validateAotCpp(tw, *pctx);
-                    }
-                }
-                tw << AOT_FOOTER;
+    g_aotDriverCtx = SimulateWithErrReport(g_aotDriverProgram, logs);
+    if ( !g_aotDriverCtx ) return;
+    bool isUnique = false;
+    g_aotFn = g_aotDriverCtx->findFunction("aot", isUnique);
+    if ( !g_aotFn ) {
+        fprintf(stdout, "fuzz: daslib aot() not found\n");
+        return;
+    }
 
-                // Send the generated C++ through clang's frontend. Detects
-                // codegen / template / hash-mismatch bugs in daslang's AOT
-                // output that simulate alone won't catch.
-                aotCheckCpp(tw.data(), (unsigned)tw.tellp());
+    // Policies that daslib aot() will pass when (re)compiling the fuzz input.
+    g_aotInputCop.aot                        = false;
+    g_aotInputCop.aot_lib                    = false;
+    g_aotInputCop.ignore_shared_modules      = false;
+    g_aotInputCop.fail_on_no_aot             = false;
+    g_aotInputCop.fail_on_lack_of_aot_export = false;
+    g_aotInputCop.version_2_syntax           = true;
+    g_aotInputCop.export_all                 = true;
+    g_aotInputCop.aot_macros                 = true;
+    g_aotInputCop.stack                      = 1 * 1024 * 1024;
+}
+
+// AOT pass — write fuzz input to tmpfs, invoke daslib aot() on it, feed the
+// generated C++ to libclang. daslib/aot_cpp.das opens its own FsFileAccess
+// from the path we pass — no in-memory overlay possible, so we go through
+// /dev/shm (RAM-backed, ~µs per write).
+static void runAotPass(const unsigned char * buf, uint32_t len) {
+    if ( !g_aotFn || !g_aotDriverCtx ) return;
+
+    FILE * f = fopen(g_fuzzPath, "wb");
+    if ( !f ) return;
+    fwrite(buf, 1, len, f);
+    fclose(f);
+
+    daScriptEnvironment::getBound()->g_isInAot = true;
+
+    string inputStr = g_fuzzPath;
+    vec4f args[4];
+    args[0] = cast<char *>::from((char *)inputStr.c_str());
+    args[1] = cast<bool>::from(false);   // paranoid_validation
+    args[2] = cast<bool>::from(false);   // cross_platform
+    args[3] = cast<CodeOfPolicies *>::from(&g_aotInputCop);
+
+    g_aotDriverCtx->restart();
+    vec4f ret = g_aotDriverCtx->evalWithCatch(g_aotFn, args);
+    if ( !g_aotDriverCtx->getException() ) {
+        const char * resultStr = cast<char *>::to(ret);
+        if ( resultStr && resultStr[0] ) {
+            unsigned errs = aotCheckCpp(resultStr, (unsigned)strlen(resultStr));
+            // Errors here mean daslang produced AOT C++ that clang rejects —
+            // a daslang bug. Crash so AFL saves the input under crashes/.
+            if ( errs > 0 ) {
+                if ( getenv("DAS_FUZZ_DIAG") ) {
+                    fprintf(stdout, "[aot-cc] %u error(s); generated C++:\n%s\n",
+                            errs, resultStr);
+                }
+                abort();
             }
         }
     }
+
     daScriptEnvironment::getBound()->g_isInAot = false;
+}
+
+// Plain compile pass — gate for the AOT/JIT passes. If this rejects the
+// input, no point spending time in the heavier paths.
+static bool runCompilePass(const unsigned char * buf, uint32_t len) {
+    auto access = makeAccess(buf, len);
+    if ( !access ) return false;
+
+    ModuleGroup dummyGroup;
+    CodeOfPolicies policies;
+    policies.fail_on_no_aot             = false;
+    policies.fail_on_lack_of_aot_export = false;
+    policies.version_2_syntax           = true;
+
+    NullWriter logs;
+    auto program = compileDaScript("__fuzz__.das", access, logs, dummyGroup, policies);
+    return program && !program->failed();
 }
 
 // JIT pass — mirror utils/daScript/main.cpp's compile_and_run() JIT branch
@@ -334,17 +375,45 @@ int main(int /*argc*/, char ** /*argv*/) {
     NEED_ALL_DEFAULT_MODULES;
     NEED_MODULE(Module_UnitTest);
 
+    // das_fuzz binary doesn't live under <root>/bin/, so the auto-resolve in
+    // getDasRoot() falls back to ".". Override explicitly: env DAS_ROOT, or
+    // a compile-time fallback at the source tree.
+    if ( const char * env = getenv("DAS_ROOT") ) {
+        setDasRoot(env);
+    } else {
+#ifdef DAS_FUZZ_DAS_ROOT
+        setDasRoot(DAS_FUZZ_DAS_ROOT);
+#endif
+    }
+
     Module::Initialize();
 
-    // Build the libclang PCH preamble before AFL forks so every child
-    // inherits the read-only PCH file via the filesystem.
-    buildAotPch();
+    // Register dynamic module mappings (llvm/* -> modules/dasLLVM/*, etc.) by
+    // walking <dasRoot>/modules/*/.das_module — same thing daslang main does.
+    {
+        TextWriter dynLog;
+        auto dynAccess = make_smart<FsFileAccess>();
+        require_dynamic_modules(dynAccess, getDasRoot(), "", dynLog);
+    }
+
+    if ( !getenv("DAS_FUZZ_NO_AOT") ) {
+        // Build the libclang PCH preamble before AFL forks so every child
+        // inherits the read-only PCH file via the filesystem.
+        buildAotPch();
+
+        // Compile + simulate daslib/aot_cpp.das once. Children inherit ctx via fork.
+        setupAotDriver();
+    }
 
     // -----------------------------------------------------------------------
     // Deferred fork point.  AFL++ forks here; each child already has all
     // modules registered and initialised.
     // -----------------------------------------------------------------------
     __AFL_INIT();
+
+    // Per-fuzzer tmpfs path. After __AFL_INIT the persistent child has its
+    // own pid — 20 parallel das_fuzz instances now write distinct files.
+    snprintf(g_fuzzPath, sizeof(g_fuzzPath), "/dev/shm/__fuzz_%d__.das", (int)getpid());
 
     // Must be assigned before __AFL_LOOP (AFL++ shared-memory protocol).
     unsigned char * buf = __AFL_FUZZ_TESTCASE_BUF;
@@ -359,8 +428,9 @@ int main(int /*argc*/, char ** /*argv*/) {
 
         // AFL++ catches any crash signal automatically. Each pass has its
         // own access object because TextFileInfo owns the source buffer.
-        runAotPass(buf, len);
-        if ( !getenv("DAS_FUZZ_DIAG") ) runJitPass(buf, len);
+        if ( !runCompilePass(buf, len) ) continue;
+        if ( !getenv("DAS_FUZZ_NO_AOT") ) runAotPass(buf, len);
+        if ( !getenv("DAS_FUZZ_NO_JIT") ) runJitPass(buf, len);
     }
 
     Module::Shutdown();
