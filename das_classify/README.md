@@ -57,7 +57,7 @@ required positional; `--out`, `--bin`, `--dasroot` are optional flags with defau
 
 ```sh
 # from the repo root (dasfuzz/)
-D2=$HOME/daScript2/daScript2          # has popen_argv + matching daslib
+D2=$HOME/daScript2/daScript           # has popen_argv + matching daslib
 $D2/bin/daslang_static -dasroot $D2 \
     das_classify/classify.das -- <input_dir> [--out DIR] [--bin PATH] [--dasroot PATH]
 
@@ -94,3 +94,45 @@ aot_cxx_error/<id>/...           same layout, grouped by clang error: message
 
 `id` is the hex hash of the signature. Tune `TIMEOUT` / `TOP_N` and the default
 `BIN`/`DASROOT` at the top of `classify.das`.
+
+## Minimize the grouped crashes
+
+Once `classify.das` has produced `crash_groups_das/<KIND>/<sig>/`, shrink one
+repro per group with `afl-tmin`:
+
+```sh
+# from das_classify/ — minimizes every group -> minimized/<KIND>/<sig>.das
+JOBS=4 bash minimize_groups.sh [results_dir] [out_dir]
+```
+
+`minimize_groups.sh` reads each group's `sample.input`, takes the `KIND` from the
+folder and the run mode from `signature.txt`, and drives `afl-tmin` against
+**`class_oracle.sh`** — a per-class oracle that only reports a crash when the
+group's *exact* failure reproduces:
+
+| KIND            | oracle check                                            |
+|-----------------|---------------------------------------------------------|
+| `crash`         | daslang (in that mode) faults (signal, not OOM/timeout) |
+| `aot_cxx_error` | `daslang -aot` output fails `clang -fsyntax-only`       |
+| `assert`        | output contains `verify failed` (daslang's verify(), rc=1) |
+
+This is why we **don't** minimize against the instrumented `das_fuzz`: das_fuzz
+aborts on *any* of {daslang crash, AOT crash, libclang error, JIT crash}, so
+`afl-tmin` drifts to a different/simpler abort and the minimized file stops
+reproducing the original bug. The per-class oracle is faithful by construction.
+
+Oracle mechanics (matter if you change them): testcase is fed on **stdin** (no
+`@@` — afl-tmin's faux forkserver writes its temp file asynchronously and the
+child loses the race); memory is capped with `ulimit -v` (no systemd/D-Bus
+needed); the oracle exits **99** on reproduce, surfaced to afl-tmin via
+`AFL_CRASH_EXITCODE=99` (the `-x`/`-n` flags don't work in afl-tmin 4.34a).
+Because the oracle is a plain script the runner sets `AFL_NO_FORKSRV=1`
+(execve-per-run) and `ulimit -c 0` (crashes would dump multi-GB cores).
+`class_oracle.sh`'s optional `SIG` env (a `grep -E` pattern) pins the exact
+signature to prevent within-class drift.
+
+Verify the `aot_cxx_error` repros still fail clang:
+
+```sh
+bash verify_min.sh [minimized/aot_cxx_error]   # prints OK reproduces / DRIFT
+```
