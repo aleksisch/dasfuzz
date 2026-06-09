@@ -22,7 +22,7 @@
 
 #include <daScript/daScript.h>
 #include "daScript/daScriptModule.h"
-#include "daScript/das_common.h"
+#include "daScript/misc/das_common.h"
 #include "daScript/simulate/fs_file_info.h"
 #include "daScript/misc/platform.h"
 #include "daScript/misc/sysos.h"
@@ -393,7 +393,7 @@ int main(int /*argc*/, char ** /*argv*/) {
     {
         TextWriter dynLog;
         auto dynAccess = make_smart<FsFileAccess>();
-        require_dynamic_modules(dynAccess, getDasRoot(), "", dynLog);
+        require_dynamic_modules(dynAccess, getDasRoot(), "", {}, dynLog);
     }
 
     if ( !getenv("DAS_FUZZ_NO_AOT") ) {
