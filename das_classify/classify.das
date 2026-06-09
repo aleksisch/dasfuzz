@@ -42,10 +42,10 @@ struct Args {
     out : string = "crash_groups_das"
 
     @clarg_doc = "daslang_static binary (full build, has popen_argv)"
-    bin : string = "/home/alexey-churkin/daScript2/daScript2/bin/daslang_static"
+    bin : string = "/home/alexey-churkin/daScript2/daScript/bin/daslang_static"
 
-    @clarg_doc = "daslang root, passed as -dasroot"
-    dasroot : string = "/home/alexey-churkin/daScript2/daScript2"
+    @clarg_doc = "daslang root, passed as -dasroot (must match bin)"
+    dasroot : string = "/home/alexey-churkin/daScript2/daScript"
 }
 
 // Args is threaded into the worker functions as a parameter (NOT via globals):
@@ -98,14 +98,60 @@ def is_crash(out : string) : bool {
     return find(out, "CRASH:") >= 0 || find(out, "Program received signal") >= 0
 }
 
-// Reduce one gdb backtrace line to "func@file:line"; "" if not a frame.
+// Internal compiler invariant failures: DAS_VERIFY trips ("verify failed: ...")
+// or the env Initialize/Shutdown balance check fires at exit. These exit nonzero
+// with NO signal and NO "CRASH:" marker, so is_crash misses them and they'd be
+// silently lumped into compile_error fuzzer-noise — but they are real bugs.
+def is_assert(out : string) : bool {
+    return find(out, "verify failed:") >= 0 || find(out, "Initialize/Shutdown not balanced") >= 0
+}
+
+// Signature for an assert: the "verify failed: <cond>, <file>:<line>" lines with
+// the absolute path reduced to a basename so it groups across machines.
+def normalize_assert(out : string) : string {
+    var msgs : array<string>
+    for (ln in split(out, "\n")) {
+        let i = find(ln, "verify failed:")
+        if (i >= 0) {
+            var m = strip(slice(ln, i))
+            let c = find(m, ", ")               // "..., <abspath>:<line>" -> basename
+            if (c >= 0) { m = "{slice(m, 0, c)}, {basename(strip(slice(m, c + 2)))}" }
+            if (!contains(msgs, m)) { msgs |> push(m) }
+        }
+        if (length(msgs) >= 3) { break }
+    }
+    if (empty(msgs) && find(out, "Initialize/Shutdown not balanced") >= 0) {
+        msgs |> push("env Initialize/Shutdown not balanced")
+    }
+    if (empty(msgs)) { msgs |> push("ASSERT_UNKNOWN") }
+    return join(msgs, " || ")
+}
+
+// Reduce one gdb backtrace line to a stable frame key; "" if not a frame.
+// Two gdb formats, depending on whether the build carries source-line info:
+//   with debug lines:  "#N 0x.. in FUNC (args) at file:line"   -> "func@file:line"
+//   stripped library:  "#N 0x.. in FUNC () from lib.so"        -> "FUNC"
+// Without the second case, a stripped .so (e.g. liblibDaScriptDyn_runtime.so)
+// yields no " at " on any line, every frame parses to "", and gdb_sig collapses
+// to the constant "UNPARSED" -> unrelated crashes merge into one group.
 def extract_frame(line : string) : string {
     let s = strip(line)
     if (!starts_with(s, "#")) { return "" }
-    let atpos = find(line, " at ")
-    if (atpos < 0) { return "" }
-    let paren = find(line, " (")
     let inpos = find(line, " in ")
+    let atpos = find(line, " at ")
+    if (atpos < 0) {
+        // No source location. Key on the demangled signature between " in " and
+        // the " from <lib>" suffix, dropping gdb's trailing " ()" no-args marker.
+        if (inpos < 0) { return "" }
+        var fn = slice(line, inpos + 4)
+        let frompos = find(fn, " from ")
+        if (frompos >= 0) { fn = slice(fn, 0, frompos) }
+        fn = strip(fn)
+        let n = length(fn)
+        if (n >= 3 && slice(fn, n - 3) == " ()") { fn = strip(slice(fn, 0, n - 3)) }
+        return fn
+    }
+    let paren = find(line, " (")
     var fn = ""
     if (inpos >= 0 && (paren < 0 || inpos < paren)) {
         let endf = (paren >= 0 && paren > inpos) ? paren : length(line)
@@ -157,7 +203,10 @@ def gdb_sig(cfg : Args; path : string; mode : string) : string {
                  "-ex", "run", "-ex", "bt 64", "-ex", "quit", "--args"]
     for (c in das_argv(cfg, path, mode)) { args |> push(c) }
     var out : string
-    run_and_capture(args, out, TIMEOUT + TIMEOUT)
+    // Cap the whole gdb+child subtree: gdb re-runs the crasher, and a
+    // memory-exhausting input here escapes the cap otherwise (gdb forks the
+    // child, the scope captures the subtree). gdb itself is tiny.
+    run_and_capture(limited(args), out, TIMEOUT + TIMEOUT)
     if (find(out, "Program received signal") < 0) { return "mode={mode}|NO_CRASH" }
     var frames : array<string>
     for (ln in split(out, "\n")) {
@@ -190,6 +239,9 @@ def classify_one(cfg : Args; path : string) : Res {
         idx++
         if (is_crash(out)) {
             r.kind = "crash"; r.mode = mode; r.sig = gdb_sig(cfg, path, mode); return r
+        }
+        if (is_assert(out)) {
+            r.kind = "assert"; r.mode = mode; r.sig = normalize_assert(out); return r
         }
         if (rc == popen_timed_out) { sawTimeout = true }
         if (rc == 9) { sawOom = true }          // SIGKILL == cgroup OOM
@@ -256,6 +308,7 @@ def main {
     mkdir("{out}/.aot_tmp")
     mkdir("{out}/crash")
     mkdir("{out}/aot_cxx_error")
+    mkdir("{out}/assert")
 
     var results : array<Res>
     with_job_que() {
@@ -281,8 +334,9 @@ def main {
         }
     }
 
-    var crash_g : table<string; array<string>>
-    var aot_g   : table<string; array<string>>
+    var crash_g  : table<string; array<string>>
+    var aot_g    : table<string; array<string>>
+    var assert_g : table<string; array<string>>
     var normals : array<string>
     var timeouts : array<string>
     var ooms : array<string>
@@ -292,6 +346,8 @@ def main {
             crash_g[r.sig] |> push(r.path)
         } elif (r.kind == "aot_cxx_error") {
             aot_g[r.sig] |> push(r.path)
+        } elif (r.kind == "assert") {
+            assert_g[r.sig] |> push(r.path)
         } elif (r.kind == "timeout") {
             timeouts |> push(r.path)
         } elif (r.kind == "oom") {
@@ -315,11 +371,16 @@ def main {
     for (sig in aot_keys) {
         idx |> push(write_group(out, "aot_cxx_error", sig, aot_g[sig]))
     }
+    var assert_keys : array<string>
+    for (k in keys(assert_g)) { assert_keys |> push(k) }
+    for (sig in assert_keys) {
+        idx |> push(write_group(out, "assert", sig, assert_g[sig]))
+    }
     fwrite("{out}/index.tsv", join(idx, "\n") + "\n")
     fwrite("{out}/normal_list.txt", join(normals, "\n") + "\n")
     fwrite("{out}/timeouts.txt", join(timeouts, "\n") + "\n")
     fwrite("{out}/oom_list.txt", join(ooms, "\n") + "\n")
 
-    print("normal={length(normals)}  compile_errors={cerr_count}  aot_cxx_error_groups={length(aot_g)}  crash_groups={length(crash_g)}  timeouts={length(timeouts)}  oom={length(ooms)}\n")
+    print("normal={length(normals)}  compile_errors={cerr_count}  aot_cxx_error_groups={length(aot_g)}  assert_groups={length(assert_g)}  crash_groups={length(crash_g)}  timeouts={length(timeouts)}  oom={length(ooms)}\n")
     print("output in {out}/\n")
 }
