@@ -185,10 +185,13 @@
         ]
     ],
     "<expression_else>": [
-        [],
+        [
+            "\n"
+        ],
         [
             "<das_else>",
-            "<expression_else_block>"
+            "<expression_else_block>",
+            "\n"
         ],
         [
             "<elif_or_static_elif>",
@@ -237,24 +240,14 @@
         [
             "{\n",
             "<expressions>",
-            "}",
-            "<expression_block_finally>"
-        ],
-        [
-            "<expression_if_one_liner>",
-            ";\n"
+            "}"
         ]
     ],
     "<expression_else_block>": [
         [
             "{\n",
             "<expressions>",
-            "}",
-            "<expression_block_finally>"
-        ],
-        [
-            "<expression_if_one_liner>",
-            ";\n"
+            "}"
         ]
     ],
     "<expression_if_then_else>": [
@@ -651,9 +644,13 @@
     "<expression_try_catch>": [
         [
             "<das_try>",
-            "<expression_block>",
+            "{\n",
+            "<expressions>",
+            "} ",
             "<das_catch>",
-            "<expression_block>"
+            "{\n",
+            "<expressions>",
+            "}\n"
         ]
     ],
     "<kwd_let_var_or_nothing>": [
@@ -1059,6 +1056,60 @@
     ],
     "<expr>": [
         [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<das_true>"
+        ],
+        [
+            "<das_true>"
+        ],
+        [
+            "<das_false>"
+        ],
+        [
+            "<das_false>"
+        ],
+        [
+            "<string_builder>"
+        ],
+        [
+            "<string_builder>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<expr_numeric_const>"
+        ],
+        [
+            "<das_true>"
+        ],
+        [
+            "<safe_call>"
+        ],
+        [
+            "<safe_call>"
+        ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
             "<das_null>"
         ],
         [
@@ -1253,23 +1304,19 @@
         ],
         [
             "<addadd>",
-            "<expr>",
-            "<pre_inc>"
+            "<expr>"
         ],
         [
             "<subsub>",
-            "<expr>",
-            "<pre_dec>"
+            "<expr>"
         ],
         [
             "<expr>",
-            "<addadd>",
-            "<post_inc>"
+            "<addadd>"
         ],
         [
             "<expr>",
-            "<subsub>",
-            "<post_dec>"
+            "<subsub>"
         ],
         [
             "(",
@@ -1394,14 +1441,14 @@
             "<expr_full_block>"
         ],
         [
-            "<expr>",
+            "<expr_call>",
             "<lpipe>",
             "<expr>"
         ],
         [
             "<expr>",
             "<rpipe>",
-            "<expr>"
+            "<expr_call>"
         ],
         [
             "<expr>",
@@ -1419,9 +1466,6 @@
         ],
         [
             "<expr_typeinfo>"
-        ],
-        [
-            "<expr_qmacro>"
         ],
         [
             "<expr_address_of>"
@@ -2045,7 +2089,7 @@
             ","
         ],
         [
-            ";\n"
+            ";"
         ]
     ],
     "<table_type_pair>": [
@@ -3061,6 +3105,21 @@
         ],
         [
             "var3"
+        ],
+        [
+            "var4"
+        ],
+        [
+            "var5"
+        ],
+        [
+            "var6"
+        ],
+        [
+            "var7"
+        ],
+        [
+            "var8"
         ]
     ],
     "<hex_bytes>": [
@@ -3826,37 +3885,41 @@
     "<options_decl>": [
         [
             "<das_options>",
-            "<name>",
+            "<option_name>",
             ";\n"
         ],
         [
             "<das_options>",
-            "<name>",
+            "<option_name>",
             " = ",
             "<das_true>",
             ";\n"
         ],
         [
             "<das_options>",
-            "<name>",
+            "<option_name>",
             " = ",
             "<das_false>",
             ";\n"
         ],
         [
             "<das_options>",
-            "<name>",
-            " = ",
-            "<expr_numeric_const>",
-            ";\n"
-        ],
-        [
-            "<das_options>",
-            "<name>",
-            " = ",
-            "<string_constant>",
-            ";\n"
+            "stack = 4096;\n"
         ]
+    ],
+    "<option_name>": [
+        [ "no_aot" ],
+        [ "log" ],
+        [ "rtti" ],
+        [ "unsafe_table_lookup" ],
+        [ "persistent_heap" ],
+        [ "gc" ],
+        [ "no_global_heap" ],
+        [ "intern_strings" ],
+        [ "multiple_contexts" ],
+        [ "solid_context" ],
+        [ "relaxed_pointer_const" ],
+        [ "debugger" ]
     ],
     "<typedef_decl>": [
         [
@@ -3992,12 +4055,6 @@
             "<",
             "<type_declaration_no_options>",
             ">",
-            ")"
-        ],
-        [
-            "<das_typedecl>",
-            "(",
-            "<expr>",
             ")"
         ]
     ],
@@ -4213,6 +4270,18 @@
         [
             " UNIT_TEST_CONSTANT "
         ]
+    ],
+    "<safe_call>": [
+        [ " getSamplePoint3 ()" ],
+        [ " makeDummy ()" ],
+        [ " getTotalTestObjectSmart ()" ],
+        [ " getPtr ()" ],
+        [ " makeSampleI ()" ],
+        [ " makeSampleF ()" ],
+        [ " makeSampleS ()" ],
+        [ " testGetNan ()" ],
+        [ " CppS1Size ()" ],
+        [ " CppS2Size ()" ]
     ],
     "<unit_test_call>": [
         [
