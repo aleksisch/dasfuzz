@@ -169,7 +169,16 @@ def assemble(pool : BrickPool; i_max : int; p_blk : float) : string {
     }
     hash_lines |> push("    print(\"\{_hash\}\\n\")")
     return build_string() <| $(var writer) {
-        writer |> write("options gen2\n\nrequire strings\nrequire daslib/strings_boost\n\n")
+        writer |> write("options gen2\noptions gc\n\nrequire strings\nrequire daslib/strings_boost\nrequire math\n\n")
+        // Standard helpers referenced by advanced bricks: a struct, a bounded recursive
+        // function, a generic (untyped-arg) function, an enum, a heap-escaping allocator
+        // (returns a `new` pointer that outlives its frame -> GC-managed), and a generator.
+        writer |> write("struct Pair2 \{ a : int; b : int \}\n")
+        writer |> write("def rec_sum(n : int) : int \{ if (n <= 0) \{ return 0 \}; return n + rec_sum(n - 1) \}\n")
+        writer |> write("def gmul(a, b) \{ return a * b \}\n")
+        writer |> write("enum Col3 \{ R, G, B \}\n")
+        writer |> write("def mk_pair(v : int) \{ var p = new Pair2; p.a = v; p.b = v * 2; return p \}\n")
+        writer |> write("def gen_upto(n : int) : iterator<int> \{ return generator<int>() <| $() \{ for (i in range(n)) \{ yield i \}; return false; \} \}\n\n")
         for (line in top_lines) {
             writer |> write(line)
             writer |> write("\n\n")
