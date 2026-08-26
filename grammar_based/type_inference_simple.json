@@ -12,14 +12,6 @@
             "<global_main_declaration>"
         ]
     ],
-    "<unit_test_require>": [
-        [
-            "require UnitTest\n"
-        ],
-        [
-            "require UnitTest;\n"
-        ]
-    ],
     "<program>": [
         [
             "<structure_declaration>"
@@ -88,10 +80,33 @@
     ],
     "<SEMICOLON>": [
         [
-            ";\n"
+            ";"
         ],
         [
             "<das_emit_semicolon>"
+        ]
+    ],
+    "<top_level_reader_macro>": [
+        [
+            "<expr_reader>",
+            ";"
+        ]
+    ],
+    "<optional_public_or_private_module>": [
+        [],
+        [
+            "<das_public>"
+        ],
+        [
+            "<das_private>"
+        ]
+    ],
+    "<module_name>": [
+        [
+            "$"
+        ],
+        [
+            "<name>"
         ]
     ],
     "<optional_not_required>": [
@@ -99,6 +114,15 @@
         [
             "!",
             "<das_inscope>"
+        ]
+    ],
+    "<module_declaration>": [
+        [
+            "<das_module>",
+            "<module_name>",
+            "<optional_shared>",
+            "<optional_public_or_private_module>",
+            "<optional_not_required>"
         ]
     ],
     "<character_sequence>": [
@@ -110,13 +134,11 @@
         ],
         [
             "<character_sequence>",
-            "<string_character>",
             "<string_character>"
         ],
         [
             "<character_sequence>",
-            "<string_character_esc>",
-            "<string_character>"
+            "<string_character_esc>"
         ]
     ],
     "<string_constant>": [
@@ -148,16 +170,14 @@
         [],
         [
             "<string_builder_body>",
-            "<character_sequence>",
-            "<string_character>"
+            "<character_sequence>"
         ],
         [
             "<string_builder_body>",
             "<begin_string_expr>",
             "<expr>",
             "<optional_format_string>",
-            "<end_string_expr>",
-            "<begin_string_expr>"
+            "<end_string_expr>"
         ]
     ],
     "<string_builder>": [
@@ -165,6 +185,139 @@
             "<begin_string>",
             "<string_builder_body>",
             "<end_string>"
+        ]
+    ],
+    "<reader_character_sequence>": [
+        [
+            "<string_character>"
+        ],
+        [
+            "<reader_character_sequence>",
+            "<string_character>"
+        ]
+    ],
+    "<expr_reader>": [
+        [
+            "%",
+            "<name_in_namespace>",
+            "<reader_character_sequence>"
+        ]
+    ],
+    "<options_declaration>": [
+        [
+            "<das_options>",
+            "<annotation_argument_list>"
+        ]
+    ],
+    "<require_declaration>": [
+        [
+            "<das_require>",
+            "<require_module>"
+        ]
+    ],
+    "<require_module_name>": [
+        [
+            "<name>"
+        ],
+        [
+            "%",
+            "<require_module_name>"
+        ],
+        [
+            ".",
+            "/",
+            "<require_module_name>"
+        ],
+        [
+            "<dotdot>",
+            "/",
+            "<require_module_name>"
+        ],
+        [
+            "%",
+            "/",
+            "<require_module_name>"
+        ],
+        [
+            "<require_module_name>",
+            ".",
+            "<name>"
+        ],
+        [
+            "<require_module_name>",
+            "/",
+            "<name>"
+        ]
+    ],
+    "<optional_require_guard>": [
+        [],
+        [
+            "?",
+            "<require_module_name>"
+        ]
+    ],
+    "<require_module>": [
+        [
+            "<optional_require_guard>",
+            "<require_module_name>",
+            "<is_public_module>"
+        ],
+        [
+            "<optional_require_guard>",
+            "<require_module_name>",
+            "<das_as>",
+            "<name>",
+            "<is_public_module>"
+        ]
+    ],
+    "<is_public_module>": [
+        [],
+        [
+            "<das_public>"
+        ]
+    ],
+    "<expect_declaration>": [
+        [
+            "<das_expect>",
+            "<expect_list>"
+        ]
+    ],
+    "<expect_list>": [
+        [
+            "<expect_error>"
+        ],
+        [
+            "<expect_list>",
+            ",",
+            "<expect_error>"
+        ]
+    ],
+    "<expect_error>": [
+        [
+            "<integer>"
+        ],
+        [
+            "<integer>",
+            ":",
+            "<integer>"
+        ]
+    ],
+    "<expression_label>": [
+        [
+            "<das_label>",
+            "<integer>",
+            ":"
+        ]
+    ],
+    "<expression_goto>": [
+        [
+            "<das_goto>",
+            "<das_label>",
+            "<integer>"
+        ],
+        [
+            "<das_goto>",
+            "<expr>"
         ]
     ],
     "<elif_or_static_elif>": [
@@ -184,6 +337,12 @@
             "<das_emit_semicolon>"
         ]
     ],
+    "<optional_emit_semis>": [
+        [],
+        [
+            "<emit_semis>"
+        ]
+    ],
     "<expression_else>": [
         [
             "\n"
@@ -196,7 +355,7 @@
         [
             "<elif_or_static_elif>",
             "(",
-            "<expr>",
+            "<expr_bool>",
             ")",
             "<expression_else_block>",
             "<expression_else>"
@@ -219,15 +378,28 @@
     ],
     "<expression_if_one_liner>": [
         [
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "<expression_return>"
+        ],
+        [
+            "<expression_yield>"
+        ],
+        [
+            "<das_break>"
+        ],
+        [
+            "<das_continue>"
         ]
     ],
     "<semis>": [
         [
-            ";\n"
+            ";"
+        ],
+        [
+            "<semis>",
+            ";"
         ]
     ],
     "<optional_semis>": [
@@ -238,23 +410,33 @@
     ],
     "<expression_if_block>": [
         [
-            "{\n",
+            "{",
             "<expressions>",
-            "}"
+            "}",
+            "<expression_block_finally>"
+        ],
+        [
+            "<expression_if_one_liner>",
+            ";"
         ]
     ],
     "<expression_else_block>": [
         [
-            "{\n",
+            "{",
             "<expressions>",
-            "}"
+            "}",
+            "<expression_block_finally>"
+        ],
+        [
+            "<expression_if_one_liner>",
+            ";"
         ]
     ],
     "<expression_if_then_else>": [
         [
             "<if_or_static_if>",
             "(",
-            "<expr>",
+            "<expr_bool>",
             ")",
             "<expression_if_block>",
             "<expression_else>"
@@ -265,7 +447,7 @@
             "<expression_if_one_liner>",
             "<das_if>",
             "(",
-            "<expr>",
+            "<expr_bool>",
             ")",
             "<expression_else_one_liner>",
             ";\n"
@@ -276,6 +458,17 @@
             "<name>"
         ],
         [
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<name>",
+            "<das_aka>",
+            "<name>"
+        ],
+        [
             "(",
             "<tuple_expansion>",
             ")"
@@ -283,6 +476,21 @@
         [
             "<for_variable_name_with_pos_list>",
             ",",
+            "<name>"
+        ],
+        [
+            "<for_variable_name_with_pos_list>",
+            ",",
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<for_variable_name_with_pos_list>",
+            ",",
+            "<name>",
+            "<das_aka>",
             "<name>"
         ],
         [
@@ -296,11 +504,20 @@
     "<expression_for_loop>": [
         [
             "<das_for>",
+            "<optional_for_annotations>",
             "(",
             "<for_variable_name_with_pos_list>",
             "<das_in>",
             "<expr_list>",
             ")",
+            "<optional_emit_semis>",
+            "<expression_block>"
+        ]
+    ],
+    "<expression_unsafe>": [
+        [
+            "<das_unsafe>",
+            "<optional_emit_semis>",
             "<expression_block>"
         ]
     ],
@@ -308,17 +525,32 @@
         [
             "<das_while>",
             "(",
-            "<expr>",
+            "<expr_bool>",
             ")",
             "<expression_block>"
         ]
     ],
+    "<with_keyword_on>": [
+        []
+    ],
     "<expression_with>": [
         [
+            "<with_keyword_on>",
             "<das_with>",
             "(",
             "<expr>",
             ")",
+            "<optional_emit_semis>",
+            "<expression_block>"
+        ],
+        [
+            "<with_keyword_on>",
+            "<das_with>",
+            "(",
+            "<das_module>",
+            "<require_module_name>",
+            ")",
+            "<optional_emit_semis>",
             "<expression_block>"
         ]
     ],
@@ -328,15 +560,244 @@
             "<name>",
             "=",
             "<expr>"
+        ],
+        [
+            "<das_typedef>",
+            "<name>",
+            "=",
+            "<type_declaration>"
+        ]
+    ],
+    "<annotation_argument_value>": [
+        [
+            "<string_constant>"
+        ],
+        [
+            "<name>"
+        ],
+        [
+            "<integer>"
+        ],
+        [
+            "<das_float>"
+        ],
+        [
+            "<das_true>"
+        ],
+        [
+            "<das_false>"
+        ]
+    ],
+    "<annotation_argument_value_list>": [
+        [
+            "<annotation_argument_value>"
+        ],
+        [
+            "<annotation_argument_value_list>",
+            ",",
+            "<annotation_argument_value>"
+        ]
+    ],
+    "<annotation_argument_name>": [
+        [
+            "<name>"
+        ],
+        [
+            "<das_type>"
+        ],
+        [
+            "<das_in>"
+        ],
+        [
+            "<das_default>"
+        ]
+    ],
+    "<annotation_argument>": [
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<string_constant>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<name>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<double_at>",
+            "<name>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<integer>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<das_float>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<das_true>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "<das_false>"
+        ],
+        [
+            "<annotation_argument_name>"
+        ],
+        [
+            "<annotation_argument_name>",
+            "=",
+            "(",
+            "<annotation_argument_value_list>",
+            ")"
+        ]
+    ],
+    "<annotation_argument_list>": [
+        [
+            "<annotation_argument>"
+        ],
+        [
+            "<annotation_argument_list>",
+            ",",
+            "<annotation_argument>"
         ]
     ],
     "<metadata_argument_list>": [
         [
-            "@"
+            "<at_field>",
+            "<annotation_argument>",
+            "<optional_emit_semis>"
         ],
         [
             "<metadata_argument_list>",
-            "@"
+            "<at_field>",
+            "<annotation_argument>",
+            "<optional_emit_semis>"
+        ]
+    ],
+    "<optional_for_annotations>": [
+        [],
+        [
+            "[",
+            "<annotation_argument_list>",
+            "]"
+        ],
+        [
+            "<metadata_argument_list>"
+        ]
+    ],
+    "<annotation_declaration_name>": [
+        [
+            "export"
+        ],
+        [
+            "sideeffects"
+        ],
+        [
+            "unsafe_operation"
+        ],
+        [
+            "no_aot"
+        ],
+        [
+            "deprecated"
+        ],
+        [
+            "hybrid"
+        ],
+        [
+            "unused_argument"
+        ],
+        [
+            "generic"
+        ],
+        [
+            "init"
+        ],
+        [
+            "finalize"
+        ],
+        [
+            "jit"
+        ]
+    ],
+    "<annotation_declaration_basic>": [
+        [
+            "<annotation_declaration_name>"
+        ],
+        [
+            "<annotation_declaration_name>",
+            "(",
+            "<annotation_argument_list>",
+            ")"
+        ]
+    ],
+    "<annotation_declaration>": [
+        [
+            "<annotation_declaration_basic>"
+        ],
+        [
+            "!",
+            "<annotation_declaration>"
+        ],
+        [
+            "<annotation_declaration>",
+            "<andand>",
+            "<annotation_declaration>"
+        ],
+        [
+            "<annotation_declaration>",
+            "<oror>",
+            "<annotation_declaration>"
+        ],
+        [
+            "<annotation_declaration>",
+            "<xorxor>",
+            "<annotation_declaration>"
+        ],
+        [
+            "(",
+            "<annotation_declaration>",
+            ")"
+        ],
+        [
+            "<rpipe>",
+            "<annotation_declaration>"
+        ]
+    ],
+    "<annotation_list>": [
+        [
+            "<annotation_declaration>"
+        ],
+        [
+            "<annotation_list>",
+            ",",
+            "<annotation_declaration>"
+        ]
+    ],
+    "<optional_annotation_list>": [
+        [],
+        [
+            "[",
+            "<annotation_list>",
+            "]"
+        ]
+    ],
+    "<optional_annotation_list_with_emit_semis>": [
+        [],
+        [
+            "[",
+            "<annotation_list>",
+            "]",
+            "<optional_emit_semis>"
         ]
     ],
     "<optional_function_argument_list>": [
@@ -355,29 +816,599 @@
         [],
         [
             ":",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
+        ],
+        [
+            "<rarrow>",
+            "<type_declaration>"
         ]
     ],
     "<function_name>": [
         [
             "<name>"
+        ],
+        [
+            "<das_operator>",
+            "!"
+        ],
+        [
+            "<das_operator>",
+            "~"
+        ],
+        [
+            "<das_operator>",
+            "<addequ>"
+        ],
+        [
+            "<das_operator>",
+            "<subequ>"
+        ],
+        [
+            "<das_operator>",
+            "<mulequ>"
+        ],
+        [
+            "<das_operator>",
+            "<divequ>"
+        ],
+        [
+            "<das_operator>",
+            "<modequ>"
+        ],
+        [
+            "<das_operator>",
+            "<andequ>"
+        ],
+        [
+            "<das_operator>",
+            "<orequ>"
+        ],
+        [
+            "<das_operator>",
+            "<xorequ>"
+        ],
+        [
+            "<das_operator>",
+            "<andandequ>"
+        ],
+        [
+            "<das_operator>",
+            "<ororequ>"
+        ],
+        [
+            "<das_operator>",
+            "<xorxorequ>"
+        ],
+        [
+            "<das_operator>",
+            "<andand>"
+        ],
+        [
+            "<das_operator>",
+            "<oror>"
+        ],
+        [
+            "<das_operator>",
+            "<xorxor>"
+        ],
+        [
+            "<das_operator>",
+            "+"
+        ],
+        [
+            "<das_operator>",
+            "-"
+        ],
+        [
+            "<das_operator>",
+            "*"
+        ],
+        [
+            "<das_operator>",
+            "/"
+        ],
+        [
+            "<das_operator>",
+            "%"
+        ],
+        [
+            "<das_operator>",
+            "<"
+        ],
+        [
+            "<das_operator>",
+            ">"
+        ],
+        [
+            "<das_operator>",
+            "<dotdot>"
+        ],
+        [
+            "<das_operator>",
+            "<equequ>"
+        ],
+        [
+            "<das_operator>",
+            "<notequ>"
+        ],
+        [
+            "<das_operator>",
+            "<leequ>"
+        ],
+        [
+            "<das_operator>",
+            "<grequ>"
+        ],
+        [
+            "<das_operator>",
+            "&"
+        ],
+        [
+            "<das_operator>",
+            "|"
+        ],
+        [
+            "<das_operator>",
+            "^"
+        ],
+        [
+            "<addadd>",
+            "<das_operator>"
+        ],
+        [
+            "<subsub>",
+            "<das_operator>"
+        ],
+        [
+            "<das_operator>",
+            "<addadd>"
+        ],
+        [
+            "<das_operator>",
+            "<subsub>"
+        ],
+        [
+            "<das_operator>",
+            "<shl>"
+        ],
+        [
+            "<das_operator>",
+            "<shr>"
+        ],
+        [
+            "<das_operator>",
+            "<shlequ>"
+        ],
+        [
+            "<das_operator>",
+            "<shrequ>"
+        ],
+        [
+            "<das_operator>",
+            "<rotl>"
+        ],
+        [
+            "<das_operator>",
+            "<rotr>"
+        ],
+        [
+            "<das_operator>",
+            "<rotlequ>"
+        ],
+        [
+            "<das_operator>",
+            "<rotrequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "="
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<larrow>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<cloneequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<addequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<subequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<mulequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<divequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<modequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<andequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<orequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<xorequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<andandequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<ororequ>"
+        ],
+        [
+            "<das_operator>",
+            "[",
+            "]",
+            "<xorxorequ>"
+        ],
+        [
+            "<das_operator>",
+            "<qbra>",
+            "]"
+        ],
+        [
+            "<das_operator>",
+            "."
+        ],
+        [
+            "<das_operator>",
+            "<qdot>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<cloneequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<addequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<subequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<mulequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<divequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<modequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<andequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<orequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<xorequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<andandequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<ororequ>"
+        ],
+        [
+            "<das_operator>",
+            ".",
+            "<name>",
+            "<xorxorequ>"
+        ],
+        [
+            "<das_operator>",
+            "<qdot>",
+            "<name>"
+        ],
+        [
+            "<das_operator>",
+            "<cloneequ>"
+        ],
+        [
+            "<das_operator>",
+            "<das_delete>"
+        ],
+        [
+            "<das_operator>",
+            "<qq>"
+        ],
+        [
+            "<das_operator>",
+            "<das_is>"
+        ],
+        [
+            "<das_operator>",
+            "<das_as>"
+        ],
+        [
+            "<das_operator>",
+            "<das_is>",
+            "<name>"
+        ],
+        [
+            "<das_operator>",
+            "<das_as>",
+            "<name>"
+        ],
+        [
+            "<das_operator>",
+            "<das_is>",
+            "<das_type_name>"
+        ],
+        [
+            "<das_operator>",
+            "<das_as>",
+            "<das_type_name>"
+        ],
+        [
+            "<das_operator>",
+            "?",
+            "<das_as>"
+        ],
+        [
+            "<das_operator>",
+            "?",
+            "<das_as>",
+            "<name>"
+        ],
+        [
+            "<das_operator>",
+            "?",
+            "<das_as>",
+            "<das_type_name>"
+        ],
+        [
+            "<das_type_name>"
         ]
     ],
-    "<global_main_declaration>": [
+    "<das_type_name>": [
         [
-            "<das_export_def>",
-            "main",
-            "{\n",
-            "<expression_any_nonempty>",
-            "<expressions>",
-            "}",
-            "<expression_block_finally>"
+            "<das_tbool>"
+        ],
+        [
+            "<das_tstring>"
+        ],
+        [
+            "<das_tint>"
+        ],
+        [
+            "<das_tint2>"
+        ],
+        [
+            "<das_tint3>"
+        ],
+        [
+            "<das_tint4>"
+        ],
+        [
+            "<das_tuint>"
+        ],
+        [
+            "<das_tuint2>"
+        ],
+        [
+            "<das_tuint3>"
+        ],
+        [
+            "<das_tuint4>"
+        ],
+        [
+            "<das_tfloat>"
+        ],
+        [
+            "<das_tfloat2>"
+        ],
+        [
+            "<das_tfloat3>"
+        ],
+        [
+            "<das_tfloat4>"
+        ],
+        [
+            "<das_trange>"
+        ],
+        [
+            "<das_turange>"
+        ],
+        [
+            "<das_trange64>"
+        ],
+        [
+            "<das_turange64>"
+        ],
+        [
+            "<das_tint64>"
+        ],
+        [
+            "<das_tuint64>"
+        ],
+        [
+            "<das_tdouble>"
+        ],
+        [
+            "<das_tint8>"
+        ],
+        [
+            "<das_tuint8>"
+        ],
+        [
+            "<das_tint16>"
+        ],
+        [
+            "<das_tuint16>"
+        ],
+        [
+            "<das_tfloat16>"
+        ],
+        [
+            "<das_thalf2>"
+        ],
+        [
+            "<das_thalf3>"
+        ],
+        [
+            "<das_thalf4>"
+        ],
+        [
+            "<das_thalf8>"
+        ],
+        [
+            "<das_tshort2>"
+        ],
+        [
+            "<das_tshort3>"
+        ],
+        [
+            "<das_tshort4>"
+        ],
+        [
+            "<das_tshort8>"
+        ],
+        [
+            "<das_tushort2>"
+        ],
+        [
+            "<das_tushort3>"
+        ],
+        [
+            "<das_tushort4>"
+        ],
+        [
+            "<das_tushort8>"
+        ],
+        [
+            "<das_tbyte2>"
+        ],
+        [
+            "<das_tbyte3>"
+        ],
+        [
+            "<das_tbyte4>"
+        ],
+        [
+            "<das_tbyte8>"
+        ],
+        [
+            "<das_tbyte16>"
+        ],
+        [
+            "<das_tubyte2>"
+        ],
+        [
+            "<das_tubyte3>"
+        ],
+        [
+            "<das_tubyte4>"
+        ],
+        [
+            "<das_tubyte8>"
+        ],
+        [
+            "<das_tubyte16>"
+        ]
+    ],
+    "<optional_template>": [
+        [],
+        [
+            "<das_template>"
         ]
     ],
     "<global_function_declaration>": [
         [
             "<das_export_def>",
             "<function_declaration>"
+        ]
+    ],
+    "<optional_public_or_private_function>": [
+        [],
+        [
+            "<das_private>"
+        ],
+        [
+            "<das_public>"
         ]
     ],
     "<function_declaration_header>": [
@@ -389,46 +1420,58 @@
     ],
     "<function_declaration>": [
         [
+            "<optional_public_or_private_function>",
             "<function_declaration_header>",
-            "<expression_block>"
+            "<optional_emit_semis>",
+            "<block_or_simple_block>"
         ]
     ],
     "<expression_block_finally>": [
-        [
-            "\n"
-        ],
+        [],
         [
             "<das_finally>",
-            "{\n",
+            "{",
             "<expressions>",
-            "}\n"
+            "}"
         ]
     ],
     "<expression_block>": [
         [
-            "{\n",
+            "{",
             "<expressions>",
             "}",
             "<expression_block_finally>"
         ]
     ],
-    "<expr_call_pipe>": [
+    "<expr_call_pipe_no_bracket>": [
         [
             "<expr_call>",
+            "<expr_full_block_assumed_piped>"
+        ],
+        [
+            "<expr_method_call_no_bracket>",
+            "<expr_full_block_assumed_piped>"
+        ],
+        [
+            "<expr_field_no_bracket>",
+            "<expr_full_block_assumed_piped>"
+        ],
+        [
+            "<expr_named_call>",
             "<expr_full_block_assumed_piped>"
         ]
     ],
     "<expression_any>": [
         [
-            ";\n"
+            ";"
         ],
         [
-            "<expr_assign>",
-            ";\n"
+            "<expr_assign_no_bracket>",
+            ";"
         ],
         [
             "<expression_delete>",
-            ";\n"
+            ";"
         ],
         [
             "<expression_let>"
@@ -437,18 +1480,33 @@
             "<expression_while_loop>"
         ],
         [
+            "<expression_unsafe>"
+        ],
+        [
             "<expression_with>"
         ],
         [
             "<expression_with_alias>",
-            ";\n"
+            ";"
         ],
         [
             "<expression_for_loop>"
         ],
         [
+            "<das_break>",
+            ";"
+        ],
+        [
+            "<das_continue>",
+            ";"
+        ],
+        [
             "<expression_return>",
-            ";\n"
+            ";"
+        ],
+        [
+            "<expression_yield>",
+            ";"
         ],
         [
             "<expression_if_then_else>"
@@ -460,27 +1518,22 @@
             "<expression_try_catch>"
         ],
         [
+            "<expression_label>",
+            ";"
+        ],
+        [
+            "<expression_goto>",
+            ";"
+        ],
+        [
             "<das_pass>",
-            ";\n"
+            ";"
         ],
         [
-            "<expression_break>"
-        ],
-        [
-            "<expression_continue>"
-        ],
-        [
-            "<expression_static_if>"
-        ],
-        [
-            "<expression_unsafe>"
-        ],
-        [
-            "<expression_assert>",
-            ";\n"
-        ],
-        [
-            "<expression_bare_block>"
+            "{",
+            "<expressions>",
+            "}",
+            "<expression_block_finally>"
         ],
         [
             "<unit_test_call>",
@@ -505,6 +1558,42 @@
         [
             "<unit_test_call>",
             ";\n"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
         ]
     ],
     "<expressions>": [
@@ -530,12 +1619,12 @@
     ],
     "<type_declaration_no_options_list>": [
         [
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ],
         [
             "<type_declaration_no_options_list>",
             "<c_or_s>",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ]
     ],
     "<name_in_namespace>": [
@@ -577,13 +1666,14 @@
         ],
         [
             "<das_delete>",
+            "<das_explicit>",
             "<expr>"
         ]
     ],
     "<new_type_declaration>": [
         [
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -599,6 +1689,7 @@
             "<das_newt>",
             "<new_type_declaration>",
             "(",
+            "<use_initializer>",
             ")"
         ],
         [
@@ -619,6 +1710,7 @@
             "<das_newt>",
             "<new_type_declaration>",
             "(",
+            "<das_uninitialized>",
             "<make_struct_single>",
             ")"
         ],
@@ -641,16 +1733,23 @@
             "<expr>"
         ]
     ],
+    "<expression_yield>": [
+        [
+            "<das_yield>",
+            "<expr>"
+        ],
+        [
+            "<das_yield>",
+            "<larrow>",
+            "<expr>"
+        ]
+    ],
     "<expression_try_catch>": [
         [
             "<das_try>",
-            "{\n",
-            "<expressions>",
-            "} ",
+            "<expression_block>",
             "<das_catch>",
-            "{\n",
-            "<expressions>",
-            "}\n"
+            "<expression_block>"
         ]
     ],
     "<kwd_let_var_or_nothing>": [
@@ -695,7 +1794,7 @@
             "<type_declaration_no_options>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
         ],
         [
             "(",
@@ -704,13 +1803,14 @@
             "<optional_ref>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
         ]
     ],
     "<expression_let>": [
         [
             "<kwd_let>",
             "<optional_in_scope>",
+            "<optional_field_annotation>",
             "<let_variable_declaration>"
         ],
         [
@@ -721,9 +1821,77 @@
         [
             "<kwd_let>",
             "<optional_in_scope>",
-            "{\n",
+            "{",
             "<variable_declaration_list>",
-            "}\n"
+            "}"
+        ]
+    ],
+    "<expr_cast>": [
+        [
+            "<das_cast>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<das_upcast>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<das_reinterpret>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
+        ]
+    ],
+    "<expr_type_decl>": [
+        [
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ]
+    ],
+    "<expr_type_info>": [
+        [
+            "<das_typeinfo>",
+            "<name_in_namespace>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<das_typeinfo>",
+            "<name_in_namespace>",
+            "<",
+            "<name>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<das_typeinfo>",
+            "<name_in_namespace>",
+            "<",
+            "<name>",
+            "<c_or_s>",
+            "<name>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
         ]
     ],
     "<expr_list>": [
@@ -731,8 +1899,18 @@
             "<expr>"
         ],
         [
+            "<larrow>",
+            "<expr>"
+        ],
+        [
             "<expr_list>",
             ",",
+            "<expr>"
+        ],
+        [
+            "<expr_list>",
+            ",",
+            "<larrow>",
             "<expr>"
         ]
     ],
@@ -742,12 +1920,12 @@
         ],
         [
             "<mapto>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "<mapto>",
             "<larrow>",
-            "<expr>"
+            "<expr_no_bracket>"
         ]
     ],
     "<block_or_lambda>": [
@@ -758,8 +1936,7 @@
             "@"
         ],
         [
-            "@",
-            "@"
+            "<double_at>"
         ]
     ],
     "<capture_entry>": [
@@ -778,12 +1955,6 @@
         [
             "<cloneequ>",
             "<name>"
-        ],
-        [
-            "<name>",
-            "(",
-            "<name>",
-            ")"
         ]
     ],
     "<capture_list>": [
@@ -808,24 +1979,28 @@
     "<expr_full_block>": [
         [
             "<block_or_lambda>",
+            "<optional_annotation_list>",
             "<optional_capture_list>",
             "<optional_function_argument_list>",
             "<optional_function_type>",
+            "<optional_emit_semis>",
             "<block_or_simple_block>"
         ]
     ],
     "<expr_full_block_assumed_piped>": [
         [
             "<block_or_lambda>",
+            "<optional_annotation_list>",
             "<optional_capture_list>",
             "<optional_function_argument_list>",
             "<optional_function_type>",
-            "<expression_block>"
+            "<optional_emit_semis>",
+            "<block_or_simple_block>"
         ],
         [
-            "{\n",
+            "{",
             "<expressions>",
-            "}\n"
+            "}"
         ]
     ],
     "<expr_numeric_const>": [
@@ -848,102 +2023,115 @@
             "<das_float>"
         ],
         [
+            "<das_float16_const>"
+        ],
+        [
             "<double>"
         ]
     ],
-    "<expr_assign>": [
+    "<expr_assign_no_bracket>": [
         [
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "=",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<larrow>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<larrow>",
+            "<make_table_decl>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<larrow>",
+            "<array_comprehension>"
+        ],
+        [
+            "<expr_no_bracket>",
             "<cloneequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<andequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<orequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<xorequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<andandequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<ororequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<xorxorequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<addequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<subequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<mulequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<divequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<modequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<shlequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<shrequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rotlequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rotrequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ]
     ],
     "<expr_named_call>": [
@@ -964,35 +2152,182 @@
             "<make_struct_fields>",
             "]",
             ")"
+        ],
+        [
+            "<name_in_namespace>",
+            "(",
+            "<expr_list>",
+            ",",
+            "<make_struct_fields>",
+            ")"
+        ]
+    ],
+    "<expr_method_call_no_bracket>": [
+        [
+            "<expr_no_bracket>",
+            "<rarrow>",
+            "<name>",
+            "(",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<rarrow>",
+            "<name>",
+            "(",
+            "<expr_list>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<rarrow>",
+            "<name>",
+            "(",
+            "[",
+            "<make_struct_fields>",
+            "]",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<rarrow>",
+            "<name>",
+            "(",
+            "<expr_list>",
+            ",",
+            "<make_struct_fields>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<rarrow>",
+            "<name>",
+            "(",
+            "<make_struct_fields>",
+            ")"
         ]
     ],
     "<func_addr_name>": [
         [
             "<name_in_namespace>"
+        ],
+        [
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
         ]
     ],
     "<func_addr_expr>": [
         [
-            "@",
-            "@",
+            "<double_at>",
             "<func_addr_name>"
         ],
         [
-            "@",
-            "@",
+            "<double_at>",
             "<",
             "<type_declaration_no_options>",
             ">",
             "<func_addr_name>"
         ],
         [
-            "@",
-            "@",
+            "<double_at>",
             "<",
             "<optional_function_argument_list>",
             "<optional_function_type>",
             ">",
             "<func_addr_name>"
+        ]
+    ],
+    "<expr_field_no_bracket>": [
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            ".",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notdot>",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>",
+            "(",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>",
+            "(",
+            "<expr_list>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notdot>",
+            "<name>",
+            "(",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notdot>",
+            "<name>",
+            "(",
+            "<expr_list>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>",
+            "(",
+            "[",
+            "<make_struct_fields>",
+            "]",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>",
+            "(",
+            "<expr_list>",
+            ",",
+            "<make_struct_fields>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<name>",
+            "(",
+            "<make_struct_fields>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<basic_type_declaration>",
+            "(",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<basic_type_declaration>",
+            "(",
+            "<expr_list>",
+            ")"
         ]
     ],
     "<expr_call>": [
@@ -1004,6 +2339,7 @@
         [
             "<name_in_namespace>",
             "(",
+            "<das_uninitialized>",
             ")"
         ],
         [
@@ -1015,6 +2351,7 @@
         [
             "<name_in_namespace>",
             "(",
+            "<das_uninitialized>",
             "<make_struct_single>",
             ")"
         ],
@@ -1056,59 +2393,79 @@
     ],
     "<expr>": [
         [
-            "<expr_numeric_const>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr_numeric_const>"
+            "<make_table_decl>"
         ],
         [
-            "<expr_numeric_const>"
+            "<array_comprehension>"
         ],
         [
-            "<expr_numeric_const>"
+            "<unit_test_call>"
         ],
         [
-            "<expr_numeric_const>"
+            "<unit_test_call>"
         ],
         [
-            "<expr_numeric_const>"
+            "<unit_test_call>"
         ],
         [
-            "<das_true>"
+            "<unit_test_call>"
         ],
         [
-            "<das_true>"
+            "<unit_test_call>"
         ],
         [
-            "<das_false>"
+            "<unit_test_call>"
         ],
         [
-            "<das_false>"
+            "<unit_test_call>"
         ],
         [
-            "<string_builder>"
+            "<unit_test_call>"
         ],
         [
-            "<string_builder>"
+            "<unit_test_call>"
         ],
         [
-            "<expr_numeric_const>"
+            "<unit_test_call>"
         ],
         [
-            "<expr_numeric_const>"
+            "<unit_test_call>"
         ],
         [
-            "<das_true>"
-        ],
-        [
-            "<safe_call>"
-        ],
-        [
-            "<safe_call>"
+            "<unit_test_call>"
         ],
         [
             "<unit_test_enum>"
         ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
+            "<unit_test_enum>"
+        ],
+        [
+            "<unit_test_constant>"
+        ],
+        [
+            "<unit_test_constant>"
+        ],
+        [
+            "<unit_test_constant>"
+        ]
+    ],
+    "<expr_no_bracket>": [
         [
             "<das_null>"
         ],
@@ -1119,10 +2476,13 @@
             "<expr_numeric_const>"
         ],
         [
+            "<expr_reader>"
+        ],
+        [
             "<string_builder>"
         ],
         [
-            "<make_decl>"
+            "<make_decl_no_bracket>"
         ],
         [
             "<das_true>"
@@ -1131,191 +2491,304 @@
             "<das_false>"
         ],
         [
-            "<expr>",
-            ".",
-            "<name>"
+            "<expr_field_no_bracket>"
         ],
         [
+            "<mtag_e>",
+            "(",
             "<expr>",
-            ".",
-            ".",
-            "<name>"
+            ")"
         ],
         [
+            "<mtag_i>",
+            "(",
             "<expr>",
-            ".",
-            "<name>",
+            ")"
+        ],
+        [
+            "<mtag_v>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<mtag_b>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<mtag_a>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<mtag_dotdotdot>"
+        ],
+        [
+            "<mtag_c>",
+            "(",
+            "<expr>",
+            ")",
             "(",
             ")"
         ],
         [
+            "<mtag_c>",
+            "(",
             "<expr>",
-            ".",
-            "<name>",
+            ")",
             "(",
             "<expr_list>",
             ")"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ".",
-            "<name>",
+            "<mtag_f>",
             "(",
-            "[",
-            "<make_struct_fields>",
-            "]",
+            "<expr>",
             ")"
         ],
         [
-            "<expr>",
-            ".",
-            "<basic_type_declaration>",
+            "<expr_no_bracket>",
+            "<qdot>",
+            "<mtag_f>",
             "(",
+            "<expr>",
             ")"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ".",
-            "<basic_type_declaration>",
+            ".",
+            "<mtag_f>",
             "(",
-            "<expr_list>",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notdot>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            ".",
+            "<qdot>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqdot>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<das_as>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notas>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "?",
+            "<das_as>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqas>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<das_is>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notis>",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<double_at>",
+            "<mtag_c>",
+            "(",
+            "<expr>",
             ")"
         ],
         [
             "!",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "~",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "+",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "-",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<shl>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<shr>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rotl>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rotr>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "+",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "-",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "*",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "/",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "%",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ">",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<equequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<notequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<leequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<grequ>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "&",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "|",
+            "<expr_no_bracket>"
+        ],
+        [
+            "<expr_no_bracket>",
             "^",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<andand>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<oror>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<xorxor>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<dotdot>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "<addadd>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
             "<subsub>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<addadd>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<subsub>"
         ],
         [
@@ -1330,40 +2803,57 @@
             ")"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "[",
             "<expr>",
             "]"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ".",
             "[",
             "<expr>",
             "]"
         ],
         [
+            "<expr_no_bracket>",
+            "<notbra>",
             "<expr>",
+            "]"
+        ],
+        [
+            "<expr_no_bracket>",
             "<qbra>",
             "<expr>",
             "]"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ".",
             "<qbra>",
             "<expr>",
             "]"
         ],
         [
+            "<expr_no_bracket>",
+            "<notqbra>",
             "<expr>",
+            "]"
+        ],
+        [
+            "<expr_no_bracket>",
             "<qdot>",
             "<name>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             ".",
             "<qdot>",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqdot>",
             "<name>"
         ],
         [
@@ -1373,66 +2863,175 @@
             "<expr_call>"
         ],
         [
+            "*",
+            "<expr_no_bracket>"
+        ],
+        [
+            "<das_deref>",
+            "(",
             "<expr>",
+            ")"
+        ],
+        [
+            "<das_addr>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<das_addr>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<expr_generator>"
+        ],
+        [
+            "<expr_no_bracket>",
             "<qq>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<notqq>",
+            "<expr_no_bracket>"
+        ],
+        [
+            "<expr_no_bracket>",
             "?",
-            "<expr>",
+            "<expr_no_bracket>",
             ":",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<das_is>",
+            "<das_type>",
+            "<",
+            "<type_declaration_no_options>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
             "<das_is>",
             "<basic_type_declaration>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<das_is>",
             "<name>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<notis>",
+            "<das_type>",
+            "<",
+            "<type_declaration_no_options>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notis>",
+            "<basic_type_declaration>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notis>",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
             "<das_as>",
             "<name>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<das_as>",
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
             "<das_as>",
             "<basic_type_declaration>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "<notas>",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notas>",
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notas>",
+            "<basic_type_declaration>"
+        ],
+        [
+            "<expr_no_bracket>",
             "?",
             "<das_as>",
             "<name>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
+            "?",
+            "<das_as>",
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
             "?",
             "<das_as>",
             "<basic_type_declaration>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqas>",
+            "<name>"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqas>",
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
+            "<expr_no_bracket>",
+            "<notqas>",
+            "<basic_type_declaration>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_decl>"
+        ],
+        [
+            "<expr_cast>"
         ],
         [
             "<expr_new>"
         ],
         [
-            "<expr>",
-            "<rarrow>",
-            "<name>",
-            "(",
-            ")"
-        ],
-        [
-            "<expr>",
-            "<rarrow>",
-            "<name>",
-            "(",
-            "<expr_list>",
-            ")"
+            "<expr_method_call_no_bracket>"
         ],
         [
             "<expr_named_call>"
@@ -1441,97 +3040,88 @@
             "<expr_full_block>"
         ],
         [
-            "<expr_call>",
+            "<expr_no_bracket>",
             "<lpipe>",
-            "<expr>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rpipe>",
-            "<expr_call>"
+            "<expr_no_bracket>"
         ],
         [
-            "<expr>",
+            "<expr_no_bracket>",
             "<rpipe>",
             "<basic_type_declaration>"
         ],
         [
-            "<expr_call_pipe>"
+            "<expr_call_pipe_no_bracket>"
         ],
         [
-            "<expr_cast>"
+            "<das_unsafe>",
+            "(",
+            "<expr>",
+            ")"
         ],
         [
-            "<expr_unsafe>"
+            "<expr_no_bracket>",
+            "<mapto>",
+            "<expr_no_bracket>"
         ],
         [
-            "<expr_typeinfo>"
+            "<expr_no_bracket>",
+            "<mapto>",
+            "<make_table_decl>"
         ],
         [
-            "<expr_address_of>"
+            "<expr_no_bracket>",
+            "<mapto>",
+            "<array_comprehension>"
+        ]
+    ],
+    "<expr_generator>": [
+        [
+            "<das_generator>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "<optional_capture_list>",
+            "(",
+            ")"
         ],
         [
-            "<unit_test_call>"
+            "<das_generator>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "<optional_capture_list>",
+            "(",
+            "<expr>",
+            ")"
         ],
         [
-            "<unit_test_call>"
+            "<das_generator>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "<optional_capture_list>",
+            "<optional_emit_semis>",
+            "<expression_block>"
+        ]
+    ],
+    "<optional_field_annotation>": [
+        [],
+        [
+            "<metadata_argument_list>"
+        ]
+    ],
+    "<optional_override>": [
+        [],
+        [
+            "<das_override>"
         ],
         [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_call>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_enum>"
-        ],
-        [
-            "<unit_test_constant>"
-        ],
-        [
-            "<unit_test_constant>"
-        ],
-        [
-            "<unit_test_constant>"
+            "<das_sealed>"
         ]
     ],
     "<optional_constant>": [
@@ -1540,8 +3130,27 @@
             "<das_const>"
         ]
     ],
+    "<optional_public_or_private_member_variable>": [
+        [],
+        [
+            "<das_public>"
+        ],
+        [
+            "<das_private>"
+        ]
+    ],
+    "<optional_static_member_variable>": [
+        [],
+        [
+            "<das_static>"
+        ]
+    ],
     "<structure_variable_declaration>": [
         [
+            "<optional_field_annotation>",
+            "<optional_static_member_variable>",
+            "<optional_override>",
+            "<optional_public_or_private_member_variable>",
             "<variable_declaration>"
         ]
     ],
@@ -1549,27 +3158,58 @@
         [],
         [
             "<struct_variable_declaration_list>",
-            "<structure_variable_declaration>",
-            ";\n"
+            "<das_typedef>",
+            "<name>",
+            "=",
+            "<type_declaration>",
+            ";"
         ],
         [
             "<struct_variable_declaration_list>",
+            "<structure_variable_declaration>",
+            ";"
+        ],
+        [
+            "<struct_variable_declaration_list>",
+            "<optional_annotation_list_with_emit_semis>",
             "<das_def>",
+            "<optional_public_or_private_member_variable>",
+            "<das_abstract>",
             "<optional_constant>",
             "<function_declaration_header>",
-            "<expression_block>"
+            ";"
+        ],
+        [
+            "<struct_variable_declaration_list>",
+            "<optional_annotation_list_with_emit_semis>",
+            "<das_def>",
+            "<optional_public_or_private_member_variable>",
+            "<optional_static_member_variable>",
+            "<optional_override>",
+            "<optional_constant>",
+            "<function_declaration_header>",
+            "<optional_emit_semis>",
+            "<block_or_simple_block>"
         ]
     ],
     "<function_argument_declaration_no_type>": [
         [
+            "<optional_field_annotation>",
             "<kwd_let_var_or_nothing>",
             "<variable_declaration_no_type>"
         ]
     ],
     "<function_argument_declaration_type>": [
         [
+            "<optional_field_annotation>",
             "<kwd_let_var_or_nothing>",
             "<variable_declaration_type>"
+        ],
+        [
+            "<mtag_a>",
+            "(",
+            "<expr>",
+            ")"
         ]
     ],
     "<function_argument_list>": [
@@ -1581,12 +3221,12 @@
         ],
         [
             "<function_argument_declaration_no_type>",
-            ";\n",
+            ";",
             "<function_argument_list>"
         ],
         [
             "<function_argument_declaration_type>",
-            ";\n",
+            ";",
             "<function_argument_list>"
         ],
         [
@@ -1597,12 +3237,12 @@
     ],
     "<tuple_type>": [
         [
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ],
         [
             "<name>",
             ":",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ]
     ],
     "<tuple_type_list>": [
@@ -1630,7 +3270,7 @@
         [
             "<name>",
             ":",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ]
     ],
     "<variant_type_list>": [
@@ -1680,12 +3320,12 @@
         [
             "<variable_name_with_pos_list>",
             ":",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ],
         [
             "<variable_name_with_pos_list>",
             ":",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             "<copy_or_move>",
             "<expr>"
         ]
@@ -1720,8 +3360,34 @@
             "<name>"
         ],
         [
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<name>",
+            "<das_aka>",
+            "<name>"
+        ],
+        [
             "<let_variable_name_with_pos_list>",
             ",",
+            "<name>"
+        ],
+        [
+            "<let_variable_name_with_pos_list>",
+            ",",
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<let_variable_name_with_pos_list>",
+            ",",
+            "<name>",
+            "<das_aka>",
             "<name>"
         ]
     ],
@@ -1739,7 +3405,7 @@
         [],
         [
             "<variable_declaration_list>",
-            ";\n"
+            ";"
         ],
         [
             "<variable_declaration_list>",
@@ -1751,7 +3417,7 @@
             "<let_variable_name_with_pos_list>",
             ":",
             "<type_declaration_no_options>",
-            ";\n"
+            ";"
         ],
         [
             "<let_variable_name_with_pos_list>",
@@ -1759,14 +3425,14 @@
             "<type_declaration_no_options>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
         ],
         [
             "<let_variable_name_with_pos_list>",
             "<optional_ref>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
         ]
     ],
     "<global_let_variable_declaration>": [
@@ -1774,7 +3440,7 @@
             "<global_let_variable_name_with_pos_list>",
             ":",
             "<type_declaration_no_options>",
-            ";\n"
+            ";"
         ],
         [
             "<global_let_variable_name_with_pos_list>",
@@ -1782,36 +3448,57 @@
             "<type_declaration_no_options>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
         ],
         [
             "<global_let_variable_name_with_pos_list>",
             "<optional_ref>",
             "<copy_or_move_or_clone>",
             "<expr>",
-            ";\n"
+            ";"
+        ]
+    ],
+    "<optional_shared>": [
+        [],
+        [
+            "<das_shared>"
+        ]
+    ],
+    "<optional_public_or_private_variable>": [
+        [],
+        [
+            "<das_private>"
+        ],
+        [
+            "<das_public>"
         ]
     ],
     "<global_variable_declaration_list>": [
         [],
         [
             "<global_variable_declaration_list>",
-            ";\n"
+            ";"
         ],
         [
             "<global_variable_declaration_list>",
+            "<optional_field_annotation>",
             "<let_variable_declaration>"
         ]
     ],
     "<global_let>": [
         [
             "<kwd_let>",
-            "{\n",
+            "<optional_shared>",
+            "<optional_public_or_private_variable>",
+            "{",
             "<global_variable_declaration_list>",
-            "}\n"
+            "}"
         ],
         [
             "<kwd_let>",
+            "<optional_shared>",
+            "<optional_public_or_private_variable>",
+            "<optional_field_annotation>",
             "<global_let_variable_declaration>"
         ]
     ],
@@ -1840,11 +3527,51 @@
             "<enum_list_nonempty>"
         ]
     ],
+    "<optional_public_or_private_alias>": [
+        [],
+        [
+            "<das_private>"
+        ],
+        [
+            "<das_public>"
+        ]
+    ],
     "<single_alias>": [
         [
+            "<optional_public_or_private_alias>",
             "<name>",
             "=",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
+        ]
+    ],
+    "<alias_declaration>": [
+        [
+            "<das_typedef>",
+            "<single_alias>",
+            ";"
+        ],
+        [
+            "<das_typedef>",
+            "<distinct_alias>",
+            ";"
+        ]
+    ],
+    "<distinct_alias>": [
+        [
+            "<optional_public_or_private_alias>",
+            "<name>",
+            "<name>",
+            "=",
+            "<type_declaration>"
+        ]
+    ],
+    "<optional_public_or_private_enum>": [
+        [],
+        [
+            "<das_private>"
+        ],
+        [
+            "<das_public>"
         ]
     ],
     "<optional_enum_basic_type_declaration>": [
@@ -1869,20 +3596,44 @@
             "<das_emit_comma>"
         ]
     ],
+    "<optional_emit_commas>": [
+        [],
+        [
+            "<emit_commas>"
+        ]
+    ],
     "<enum_declaration>": [
         [
+            "<optional_annotation_list_with_emit_semis>",
             "<das_enum>",
+            "<optional_public_or_private_enum>",
             "<name>",
             "<optional_enum_basic_type_declaration>",
-            "{\n",
+            "<optional_emit_commas>",
+            "{",
             "<enum_list>",
             "<optional_commas>",
-            "}\n"
+            "}"
+        ]
+    ],
+    "<optional_structure_parent>": [
+        [],
+        [
+            ":",
+            "<name_in_namespace>"
+        ]
+    ],
+    "<optional_sealed>": [
+        [],
+        [
+            "<das_sealed>"
         ]
     ],
     "<structure_name>": [
         [
-            "<name>"
+            "<optional_sealed>",
+            "<name>",
+            "<optional_structure_parent>"
         ]
     ],
     "<class_or_struct>": [
@@ -1901,20 +3652,32 @@
             "<das_template>"
         ]
     ],
-    "<optional_struct_variable_declaration_list>": [
+    "<optional_public_or_private_structure>": [
+        [],
         [
-            ";\n"
+            "<das_private>"
         ],
         [
-            "{\n",
+            "<das_public>"
+        ]
+    ],
+    "<optional_struct_variable_declaration_list>": [
+        [
+            ";"
+        ],
+        [
+            "{",
             "<struct_variable_declaration_list>",
-            "}\n"
+            "}"
         ]
     ],
     "<structure_declaration>": [
         [
+            "<optional_annotation_list_with_emit_semis>",
             "<class_or_struct>",
+            "<optional_public_or_private_structure>",
             "<structure_name>",
+            "<optional_emit_semis>",
             "<optional_struct_variable_declaration_list>"
         ]
     ],
@@ -1923,8 +3686,34 @@
             "<name>"
         ],
         [
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<name>",
+            "<das_aka>",
+            "<name>"
+        ],
+        [
             "<variable_name_with_pos_list>",
             ",",
+            "<name>"
+        ],
+        [
+            "<variable_name_with_pos_list>",
+            ",",
+            "<mtag_i>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<variable_name_with_pos_list>",
+            ",",
+            "<name>",
+            "<das_aka>",
             "<name>"
         ]
     ],
@@ -1988,6 +3777,75 @@
         ],
         [
             "<das_tfloat4>"
+        ],
+        [
+            "<das_tfloat16>"
+        ],
+        [
+            "<das_thalf2>"
+        ],
+        [
+            "<das_thalf3>"
+        ],
+        [
+            "<das_thalf4>"
+        ],
+        [
+            "<das_thalf8>"
+        ],
+        [
+            "<das_tshort2>"
+        ],
+        [
+            "<das_tshort3>"
+        ],
+        [
+            "<das_tshort4>"
+        ],
+        [
+            "<das_tshort8>"
+        ],
+        [
+            "<das_tushort2>"
+        ],
+        [
+            "<das_tushort3>"
+        ],
+        [
+            "<das_tushort4>"
+        ],
+        [
+            "<das_tushort8>"
+        ],
+        [
+            "<das_tbyte2>"
+        ],
+        [
+            "<das_tbyte3>"
+        ],
+        [
+            "<das_tbyte4>"
+        ],
+        [
+            "<das_tbyte8>"
+        ],
+        [
+            "<das_tbyte16>"
+        ],
+        [
+            "<das_tubyte2>"
+        ],
+        [
+            "<das_tubyte3>"
+        ],
+        [
+            "<das_tubyte4>"
+        ],
+        [
+            "<das_tubyte8>"
+        ],
+        [
+            "<das_tubyte16>"
         ],
         [
             "<das_tvoid>"
@@ -2058,6 +3916,12 @@
             "(",
             "<name>",
             ")"
+        ],
+        [
+            "<mtag_t>",
+            "(",
+            "<expr>",
+            ")"
         ]
     ],
     "<bitfield_bits>": [
@@ -2066,7 +3930,12 @@
         ],
         [
             "<bitfield_bits>",
-            ";\n",
+            ";",
+            "<name>"
+        ],
+        [
+            "<bitfield_bits>",
+            ",",
             "<name>"
         ]
     ],
@@ -2076,9 +3945,35 @@
             "<bitfield_alias_bits_nonempty>"
         ]
     ],
+    "<bitfield_basic_type_declaration>": [
+        [],
+        [
+            ":",
+            "<das_tuint8>"
+        ],
+        [
+            ":",
+            "<das_tuint16>"
+        ],
+        [
+            ":",
+            "<das_tuint>"
+        ],
+        [
+            ":",
+            "<das_tuint64>"
+        ]
+    ],
     "<bitfield_type_declaration>": [
         [
             "<das_tbitfield>",
+            "<bitfield_basic_type_declaration>",
+            "<",
+            ">"
+        ],
+        [
+            "<das_tbitfield>",
+            "<bitfield_basic_type_declaration>",
             "<",
             "<bitfield_bits>",
             ">"
@@ -2094,12 +3989,12 @@
     ],
     "<table_type_pair>": [
         [
-            "<type_declaration_no_options>"
+            "<table_key_type>"
         ],
         [
-            "<type_declaration_no_options>",
+            "<table_key_type>",
             "<c_or_s>",
-            "<type_declaration_no_options>"
+            "<type_declaration>"
         ]
     ],
     "<dim_list>": [
@@ -2126,13 +4021,82 @@
     ],
     "<type_declaration_no_options>": [
         [
+            "<type_declaration_no_options_no_dim>"
+        ],
+        [
+            "<type_declaration_no_options_no_dim>",
+            "<dim_list>"
+        ]
+    ],
+    "<optional_expr_list_in_braces>": [
+        [],
+        [
+            "(",
+            "<expr_list>",
+            "<optional_comma>",
+            ")"
+        ]
+    ],
+    "<type_declaration_no_options_no_dim>": [
+        [
             "<basic_type_declaration>"
+        ],
+        [
+            "<auto_type_declaration>"
         ],
         [
             "<bitfield_type_declaration>"
         ],
         [
             "<name_in_namespace>"
+        ],
+        [
+            "<das_type>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
+            "<das_typedecl>",
+            "(",
+            "<expr>",
+            ")"
+        ],
+        [
+            "<name_in_namespace>",
+            "(",
+            "<optional_expr_list>",
+            ")"
+        ],
+        [
+            "$",
+            "<name_in_namespace>",
+            "<optional_expr_list_in_braces>"
+        ],
+        [
+            "<name_in_namespace>",
+            "<",
+            "<type_declaration_no_options_list>",
+            ">",
+            "<optional_expr_list_in_braces>"
+        ],
+        [
+            "$",
+            "<name_in_namespace>",
+            "<",
+            "<type_declaration_no_options_list>",
+            ">",
+            "<optional_expr_list_in_braces>"
+        ],
+        [
+            "<type_declaration_no_options>",
+            "-",
+            "[",
+            "]"
+        ],
+        [
+            "<type_declaration_no_options>",
+            "<das_explicit>"
         ],
         [
             "<type_declaration_no_options>",
@@ -2155,6 +4119,10 @@
         [
             "<type_declaration_no_options>",
             "#"
+        ],
+        [
+            "<type_declaration_no_options>",
+            "<das_implicit>"
         ],
         [
             "<type_declaration_no_options>",
@@ -2178,7 +4146,7 @@
         [
             "<das_smart_ptr>",
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -2188,7 +4156,7 @@
         [
             "<das_array>",
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -2198,12 +4166,18 @@
             ">"
         ],
         [
+            "<das_iterator>",
+            "<",
+            "<type_declaration>",
+            ">"
+        ],
+        [
             "<das_tblock>"
         ],
         [
             "<das_tblock>",
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -2219,7 +4193,7 @@
         [
             "<das_tfunction>",
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -2235,7 +4209,7 @@
         [
             "<das_tlambda>",
             "<",
-            "<type_declaration_no_options>",
+            "<type_declaration>",
             ">"
         ],
         [
@@ -2258,34 +4232,56 @@
             ">"
         ]
     ],
+    "<type_declaration>": [
+        [
+            "<type_declaration_no_options>"
+        ],
+        [
+            "<type_declaration>",
+            "|",
+            "<type_declaration_no_options>"
+        ],
+        [
+            "<type_declaration>",
+            "|",
+            "#"
+        ]
+    ],
     "<tuple_alias_declaration>": [
         [
             "<das_ttuple>",
+            "<optional_public_or_private_alias>",
             "<name>",
-            "{\n",
+            "<optional_emit_semis>",
+            "{",
             "<tuple_alias_type_list>",
             "<optional_semis>",
-            "}\n"
+            "}"
         ]
     ],
     "<variant_alias_declaration>": [
         [
             "<das_tvariant>",
+            "<optional_public_or_private_alias>",
             "<name>",
-            "{\n",
+            "<optional_emit_semis>",
+            "{",
             "<variant_alias_type_list>",
             "<optional_semis>",
-            "}\n"
+            "}"
         ]
     ],
     "<bitfield_alias_declaration>": [
         [
             "<das_tbitfield>",
+            "<optional_public_or_private_alias>",
             "<name>",
-            "{\n",
+            "<bitfield_basic_type_declaration>",
+            "<optional_emit_commas>",
+            "{",
             "<bitfield_alias_bits>",
             "<optional_commas>",
-            "}\n"
+            "}"
         ]
     ],
     "<make_decl>": [
@@ -2299,10 +4295,33 @@
             "<make_table_decl>"
         ],
         [
+            "<make_table_call>"
+        ],
+        [
             "<array_comprehension>"
         ],
         [
+            "<table_comprehension>"
+        ],
+        [
             "<make_tuple_call>"
+        ]
+    ],
+    "<make_decl_no_bracket>": [
+        [
+            "<make_struct_decl>"
+        ],
+        [
+            "<make_dim_decl>"
+        ],
+        [
+            "<make_tuple_call>"
+        ],
+        [
+            "<table_comprehension>"
+        ],
+        [
+            "<make_table_call>"
         ]
     ],
     "<make_struct_fields>": [
@@ -2327,6 +4346,42 @@
             "<make_struct_fields>",
             ",",
             "<name>",
+            "<cloneequ>",
+            "<expr>"
+        ],
+        [
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")",
+            "<copy_or_move>",
+            "<expr>"
+        ],
+        [
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")",
+            "<cloneequ>",
+            "<expr>"
+        ],
+        [
+            "<make_struct_fields>",
+            ",",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")",
+            "<copy_or_move>",
+            "<expr>"
+        ],
+        [
+            "<make_struct_fields>",
+            ",",
+            "<mtag_f>",
+            "(",
+            "<expr>",
+            ")",
             "<cloneequ>",
             "<expr>"
         ]
@@ -2372,6 +4427,12 @@
         ],
         []
     ],
+    "<use_initializer>": [
+        [],
+        [
+            "<das_uninitialized>"
+        ]
+    ],
     "<make_struct_decl>": [
         [
             "<das_struct>",
@@ -2379,6 +4440,7 @@
             "<type_declaration_no_options>",
             ">",
             "(",
+            "<use_initializer>",
             "<optional_make_struct_dim_decl>",
             ")"
         ],
@@ -2388,6 +4450,7 @@
             "<type_declaration_no_options>",
             ">",
             "(",
+            "<use_initializer>",
             "<optional_make_struct_dim_decl>",
             ")"
         ],
@@ -2397,18 +4460,27 @@
             "<variant_type_list>",
             ">",
             "(",
+            "<use_initializer>",
             "<make_variant_dim>",
             ")"
-        ]
-    ],
-    "<make_map_tuple>": [
-        [
-            "<expr>",
-            "<mapto>",
-            "<expr>"
         ],
         [
-            "<expr>"
+            "<das_tvariant>",
+            "<das_type>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "(",
+            "<use_initializer>",
+            "<make_variant_dim>",
+            ")"
+        ],
+        [
+            "<das_default>",
+            "<",
+            "<type_declaration_no_options>",
+            ">",
+            "<use_initializer>"
         ]
     ],
     "<make_tuple_call>": [
@@ -2425,6 +4497,7 @@
             "<tuple_type_list>",
             ">",
             "(",
+            "<use_initializer>",
             "<optional_make_struct_dim_decl>",
             ")"
         ]
@@ -2442,6 +4515,7 @@
             "<type_declaration_no_options>",
             ">",
             "(",
+            "<use_initializer>",
             "<optional_make_struct_dim_decl>",
             ")"
         ],
@@ -2452,6 +4526,7 @@
             "<tuple_type_list>",
             ">",
             "(",
+            "<use_initializer>",
             "<optional_make_struct_dim_decl>",
             ")"
         ],
@@ -2501,20 +4576,26 @@
     ],
     "<expr_map_tuple_list>": [
         [
-            "<make_map_tuple>"
+            "<expr>"
         ],
         [
             "<expr_map_tuple_list>",
             ",",
-            "<make_map_tuple>"
+            "<expr>"
         ]
+    ],
+    "<push_table_nesting>": [
+        []
     ],
     "<make_table_decl>": [
         [
-            "{\n",
-            "<optional_expr_map_tuple_list>",
-            "}\n"
-        ],
+            "{",
+            "<push_table_nesting>",
+            "<table_entry_list>",
+            "}"
+        ]
+    ],
+    "<make_table_call>": [
         [
             "<das_table>",
             "(",
@@ -2546,7 +4627,7 @@
     "<array_comprehension_where>": [
         [],
         [
-            ";\n",
+            ";",
             "<das_where>",
             "<expr>"
         ]
@@ -2557,7 +4638,7 @@
             ","
         ]
     ],
-    "<array_comprehension>": [
+    "<table_comprehension>": [
         [
             "[",
             "<das_for>",
@@ -2566,23 +4647,991 @@
             "<das_in>",
             "<expr_list>",
             ")",
-            ";\n",
+            ";",
             "<expr>",
             "<array_comprehension_where>",
             "]"
         ],
         [
-            "{\n",
+            "[",
+            "<das_iterator>",
             "<das_for>",
             "(",
             "<for_variable_name_with_pos_list>",
             "<das_in>",
             "<expr_list>",
             ")",
-            ";\n",
-            "<make_map_tuple>",
+            ";",
+            "<expr>",
             "<array_comprehension_where>",
+            "]"
+        ]
+    ],
+    "<array_comprehension>": [
+        [
+            "{",
+            "<push_table_nesting>",
+            "<optional_emit_semis>",
+            "<das_for>",
+            "(",
+            "<for_variable_name_with_pos_list>",
+            "<das_in>",
+            "<expr_list>",
+            ")",
+            ";",
+            "<expr>",
+            "<array_comprehension_where>",
+            "}"
+        ]
+    ],
+    "<table_entry_list>": [
+        [
+            "<expr>",
+            "<mapto>",
+            "<expr>"
+        ],
+        [
+            "<table_entry_list>",
+            ",",
+            "<expr>",
+            "<mapto>",
+            "<expr>"
+        ]
+    ],
+    "<table_key_type>": [
+        [
+            "int"
+        ],
+        [
+            "uint"
+        ],
+        [
+            "int64"
+        ],
+        [
+            "uint64"
+        ],
+        [
+            "string"
+        ]
+    ],
+    "<expression_break>": [
+        [
+            "<das_break>",
+            ";\n"
+        ],
+        [
+            "<das_break>",
+            "<das_if>",
+            "(",
+            "<expr_bool>",
+            ")",
+            ";\n"
+        ]
+    ],
+    "<expression_continue>": [
+        [
+            "<das_continue>",
+            ";\n"
+        ],
+        [
+            "<das_continue>",
+            "<das_if>",
+            "(",
+            "<expr_bool>",
+            ")",
+            ";\n"
+        ]
+    ],
+    "<das_def>": [
+        [
+            " def "
+        ]
+    ],
+    "<das_export_def>": [
+        [
+            "\n[export]\ndef "
+        ]
+    ],
+    "<global_main_declaration>": [
+        [
+            "<das_export_def>",
+            "main",
+            "{\n",
+            "<expression_any_nonempty>",
+            "<expressions>",
+            "}",
+            "<expression_block_finally>"
+        ]
+    ],
+    "<module_decl>": [
+        [
+            "<das_module>",
+            "<name>",
+            ";\n"
+        ],
+        [
+            "<das_module>",
+            "<name>",
+            "<das_public>",
+            ";\n"
+        ],
+        [
+            "<das_module>",
+            "<name>",
+            "<das_private>",
+            ";\n"
+        ]
+    ],
+    "<require_decl>": [
+        [
+            "<das_require>",
+            " UnitTest ",
+            ";\n"
+        ]
+    ],
+    "<options_decl>": [
+        [
+            "<das_options>",
+            "<unit_test_option>",
+            " = ",
+            "<das_true>",
+            ";\n"
+        ],
+        [
+            "<das_options>",
+            "<unit_test_option>",
+            " = ",
+            "<das_false>",
+            ";\n"
+        ]
+    ],
+    "<enum_list_nonempty>": [
+        [
+            "<enum_expression>"
+        ],
+        [
+            "<enum_list_nonempty>",
+            "<commas>",
+            "<enum_expression>"
+        ]
+    ],
+    "<bitfield_alias_bits_nonempty>": [
+        [
+            "<name>"
+        ],
+        [
+            "<bitfield_alias_bits_nonempty>",
+            "<commas>",
+            "<name>"
+        ]
+    ],
+    "<typedef_decl>": [
+        [
+            "<das_typedef>",
+            "<name>",
+            " = ",
+            "<type_declaration_no_options>",
+            ";\n"
+        ]
+    ],
+    "<expect_decl>": [
+        [
+            "<das_expect>",
+            "<name>",
+            "<begin_string>",
+            "<character_sequence>",
+            "<end_string>",
+            ";\n"
+        ]
+    ],
+    "<name>": [
+        [
+            "var1"
+        ],
+        [
+            "var2"
+        ],
+        [
+            "var3"
+        ],
+        [
+            "var4"
+        ],
+        [
+            "var5"
+        ],
+        [
+            "var6"
+        ],
+        [
+            "var7"
+        ],
+        [
+            "var8"
+        ],
+        [
+            "var9"
+        ],
+        [
+            "var10"
+        ],
+        [
+            "var11"
+        ],
+        [
+            "var12"
+        ],
+        [
+            "var13"
+        ],
+        [
+            "var14"
+        ],
+        [
+            "var15"
+        ],
+        [
+            "var16"
+        ],
+        [
+            "var17"
+        ],
+        [
+            "var18"
+        ],
+        [
+            "var19"
+        ],
+        [
+            "var20"
+        ],
+        [
+            "var21"
+        ],
+        [
+            "var22"
+        ],
+        [
+            "var23"
+        ],
+        [
+            "var24"
+        ],
+        [
+            "var25"
+        ],
+        [
+            "var26"
+        ],
+        [
+            "var27"
+        ],
+        [
+            "var28"
+        ],
+        [
+            "var29"
+        ],
+        [
+            "var30"
+        ],
+        [
+            "var31"
+        ],
+        [
+            "var32"
+        ],
+        [
+            "var33"
+        ],
+        [
+            "var34"
+        ],
+        [
+            "var35"
+        ],
+        [
+            "var36"
+        ],
+        [
+            "var37"
+        ],
+        [
+            "var38"
+        ],
+        [
+            "var39"
+        ],
+        [
+            "var40"
+        ],
+        [
+            "var41"
+        ],
+        [
+            "var42"
+        ],
+        [
+            "var43"
+        ],
+        [
+            "var44"
+        ],
+        [
+            "var45"
+        ],
+        [
+            "var46"
+        ],
+        [
+            "var47"
+        ],
+        [
+            "var48"
+        ],
+        [
+            "var49"
+        ],
+        [
+            "var50"
+        ],
+        [
+            "var51"
+        ],
+        [
+            "var52"
+        ],
+        [
+            "var53"
+        ],
+        [
+            "var54"
+        ],
+        [
+            "var55"
+        ],
+        [
+            "var56"
+        ],
+        [
+            "var57"
+        ],
+        [
+            "var58"
+        ],
+        [
+            "var59"
+        ],
+        [
+            "var60"
+        ],
+        [
+            "var61"
+        ],
+        [
+            "var62"
+        ],
+        [
+            "var63"
+        ],
+        [
+            "var64"
+        ]
+    ],
+    "<unit_test_require>": [
+        [
+            "require UnitTest;\n"
+        ]
+    ],
+    "<unit_test_type>": [
+        [
+            " TestObjectFoo "
+        ],
+        [
+            " TestObjectBar "
+        ],
+        [
+            " TestObjectSmart "
+        ],
+        [
+            " TestObjectNotLocal "
+        ],
+        [
+            " TestObjectNotNullPtr "
+        ],
+        [
+            " FancyClass "
+        ],
+        [
+            " SomeDummyType "
+        ],
+        [
+            " Point3 "
+        ],
+        [
+            " Point3Array "
+        ],
+        [
+            " FooArray "
+        ],
+        [
+            " ByteCode "
+        ],
+        [
+            " BigEntityId "
+        ],
+        [
+            " EntityId "
+        ],
+        [
+            " SceneNodeId "
+        ],
+        [
+            " SampleVariant "
+        ]
+    ],
+    "<unit_test_enum_type>": [
+        [
+            " SomeEnum "
+        ],
+        [
+            " SomeEnum98 "
+        ],
+        [
+            " SomeEnum_16 "
+        ],
+        [
+            " GooEnum "
+        ],
+        [
+            " GooEnum98 "
+        ],
+        [
+            " OpCode "
+        ]
+    ],
+    "<unit_test_enum>": [
+        [
+            " SomeEnum.zero "
+        ],
+        [
+            " SomeEnum.one "
+        ],
+        [
+            " SomeEnum.two "
+        ],
+        [
+            " SomeEnum98.zero "
+        ],
+        [
+            " SomeEnum98.one "
+        ],
+        [
+            " SomeEnum98.two "
+        ],
+        [
+            " SomeEnum_16.zero "
+        ],
+        [
+            " SomeEnum_16.one "
+        ],
+        [
+            " SomeEnum_16.two "
+        ],
+        [
+            " GooEnum.regular "
+        ],
+        [
+            " GooEnum.hazardous "
+        ],
+        [
+            " GooEnum98.soft "
+        ],
+        [
+            " GooEnum98.hard "
+        ],
+        [
+            " OpCode.op_nop "
+        ],
+        [
+            " OpCode.op_mov_a_arg "
+        ],
+        [
+            " OpCode.op_mov_arg_b "
+        ],
+        [
+            " OpCode.op_dec_a "
+        ],
+        [
+            " OpCode.op_cmple_a_low_zx "
+        ],
+        [
+            " OpCode.op_cjmp "
+        ],
+        [
+            " OpCode.op_mov_c_a "
+        ],
+        [
+            " OpCode.op_mov_a_low_zx "
+        ],
+        [
+            " OpCode.op_mov_b_low_zx "
+        ],
+        [
+            " OpCode.op_xchange_a_b "
+        ],
+        [
+            " OpCode.op_add_b_a "
+        ],
+        [
+            " OpCode.op_loop "
+        ],
+        [
+            " OpCode.op_return_b "
+        ]
+    ],
+    "<unit_test_constant>": [
+        [
+            " UNIT_TEST_CONSTANT "
+        ]
+    ],
+    "<expr_bool>": [
+        [
+            "<das_true>"
+        ],
+        [
+            "<das_false>"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " == ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " != ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " < ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " > ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " <= ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_numeric_const>",
+            " >= ",
+            "<expr_numeric_const>",
+            ")"
+        ],
+        [
+            "(!",
+            "<expr_bool>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_bool>",
+            " && ",
+            "<expr_bool>",
+            ")"
+        ],
+        [
+            "(",
+            "<expr_bool>",
+            " || ",
+            "<expr_bool>",
+            ")"
+        ]
+    ],
+    "<unit_test_option>": [
+        [
+            "indenting"
+        ],
+        [
+            "no_aot"
+        ],
+        [
+            "rtti"
+        ],
+        [
+            "optimize"
+        ],
+        [
+            "persistent_heap"
+        ],
+        [
+            "no_global_variables"
+        ],
+        [
+            "unsafe_table_lookup"
+        ],
+        [
+            "strict_smart_pointers"
+        ],
+        [
+            "no_unused_function_arguments"
+        ],
+        [
+            "no_unused_block_arguments"
+        ],
+        [
+            "remove_unused_symbols"
+        ]
+    ],
+    "<unit_test_stmt_closure>": [
+        [
+            " invoke($() {\n",
+            "<expression_any_nonempty>",
+            "}) ;\n"
+        ],
+        [
+            " invoke($( ",
+            "<name>",
+            ":int ) {\n",
+            "<expression_any_nonempty>",
+            "}, ",
+            "<expr_numeric_const>",
+            ") ;\n"
+        ],
+        [
+            " { var cv = 0 ;\n invoke(@ capture(<- cv)( cx:int ){ cv += cx; }, ",
+            "<expr_numeric_const>",
+            ") ;\n }\n"
+        ]
+    ],
+    "<unit_test_stmt_geniter>": [
+        [
+            " for ( ge in generator<int>() <| $() { yield ",
+            "<expr_numeric_const>",
+            "; yield ",
+            "<expr_numeric_const>",
+            "; return false; } ) {\n",
+            "<expression_any_nonempty>",
             "}\n"
+        ]
+    ],
+    "<unit_test_stmt_clone>": [
+        [
+            " { var ca : array<int>; var cb : array<int>; cb := ca; }\n"
+        ],
+        [
+            " { var ta : table<int;int>; var tb : table<int;int>; tb := ta; }\n"
+        ]
+    ],
+    "<unit_test_call>": [
+        [
+            " testFoo (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " set_foo_data (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " testAdd (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " getSamplePoint3 ()"
+        ],
+        [
+            " doubleSamplePoint3 (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " project_to_nearest_navmesh_point (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " makeDummy ()"
+        ],
+        [
+            " takeDummy (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " makeTestObjectSmart ()"
+        ],
+        [
+            " countTestObjectSmart (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " getTotalTestObjectSmart ()"
+        ],
+        [
+            " fooPtr2Ref (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " getPtr ()"
+        ],
+        [
+            " makeSampleI ()"
+        ],
+        [
+            " makeSampleF ()"
+        ],
+        [
+            " makeSampleS ()"
+        ],
+        [
+            " evalByteCode (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " test_abi_mad (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " testGetDiv (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " testGetNan ()"
+        ],
+        [
+            " test_das_string (",
+            "<expr_full_block>",
+            ")"
+        ],
+        [
+            " printw (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " hit_me (",
+            "<expr>",
+            ",",
+            "<expr>",
+            ",",
+            "<expr>",
+            ")"
+        ],
+        [
+            " efn_flip (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " efn_takeOne_giveTwo (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " efn_takeOne_giveTwo_98 (",
+            "<expr>",
+            ")"
+        ],
+        [
+            " make_invalid_id ()"
+        ],
+        [
+            " CppS1Size ()"
+        ],
+        [
+            " CppS2Size ()"
+        ],
+        [
+            " CppS2DOffset ()"
+        ],
+        [
+            " testPoint3Array (",
+            "<expr>",
+            ",",
+            "<expr_full_block>",
+            ")"
+        ],
+        [
+            " testFooArray (",
+            "<expr>",
+            ",",
+            "<expr_full_block>",
+            ")"
+        ],
+        [
+            " testCMRES ()"
+        ]
+    ],
+    "<expression_any_nonempty>": [
+        [
+            ";"
+        ],
+        [
+            "<expr_assign_no_bracket>",
+            ";"
+        ],
+        [
+            "<expression_delete>",
+            ";"
+        ],
+        [
+            "<expression_let>"
+        ],
+        [
+            "<expression_while_loop>"
+        ],
+        [
+            "<expression_unsafe>"
+        ],
+        [
+            "<expression_with>"
+        ],
+        [
+            "<expression_with_alias>",
+            ";"
+        ],
+        [
+            "<expression_for_loop>"
+        ],
+        [
+            "<das_break>",
+            ";"
+        ],
+        [
+            "<das_continue>",
+            ";"
+        ],
+        [
+            "<expression_return>",
+            ";"
+        ],
+        [
+            "<expression_yield>",
+            ";"
+        ],
+        [
+            "<expression_if_then_else>"
+        ],
+        [
+            "<expression_if_then_else_oneliner>"
+        ],
+        [
+            "<expression_try_catch>"
+        ],
+        [
+            "<expression_label>",
+            ";"
+        ],
+        [
+            "<expression_goto>",
+            ";"
+        ],
+        [
+            "<das_pass>",
+            ";"
+        ],
+        [
+            "{",
+            "<expressions>",
+            "}",
+            "<expression_block_finally>"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_call>",
+            ";\n"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_closure>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_geniter>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
+        ],
+        [
+            "<unit_test_stmt_clone>"
         ]
     ],
     "<plain_text>": [
@@ -2756,29 +5805,14 @@
     ],
     "<integer>": [
         [
-            "-",
-            "<unsigned_integer>"
-        ]
-    ],
-    "<long_integer>": [
-        [
-            "-",
-            "<unsigned_integer>"
-        ]
-    ],
-    "<das_float>": [
-        [
-            "<fnumber>",
-            "."
-        ],
-        [
-            "<number>",
-            ".",
             "<fnumber>"
         ],
         [
             "<number>",
-            ".",
+            "<fnumber>"
+        ],
+        [
+            "<number>",
             "<fnumber>",
             "<fnumber>"
         ]
@@ -2842,6 +5876,48 @@
         ],
         [
             "9"
+        ]
+    ],
+    "<long_integer>": [
+        [
+            "-",
+            "<unsigned_integer>"
+        ]
+    ],
+    "<das_float>": [
+        [
+            "<fnumber>",
+            "."
+        ],
+        [
+            "<number>",
+            ".",
+            "<fnumber>"
+        ],
+        [
+            "<number>",
+            ".",
+            "<fnumber>",
+            "<fnumber>"
+        ]
+    ],
+    "<das_float16_const>": [
+        [
+            "<number>",
+            ".",
+            "<fnumber>",
+            "h"
+        ],
+        [
+            "<number>",
+            "h"
+        ],
+        [
+            "<number>",
+            ".",
+            "<fnumber>",
+            "<fnumber>",
+            "h"
         ]
     ],
     "<double>": [
@@ -3085,41 +6161,7 @@
     ],
     "<das_emit_comma>": [
         [
-            " , "
-        ]
-    ],
-    "<name2>": [
-        [
-            "<id>",
-            "<id>",
-            "<id>",
-            "<idx>"
-        ]
-    ],
-    "<name>": [
-        [
-            "var1"
-        ],
-        [
-            "var2"
-        ],
-        [
-            "var3"
-        ],
-        [
-            "var4"
-        ],
-        [
-            "var5"
-        ],
-        [
-            "var6"
-        ],
-        [
-            "var7"
-        ],
-        [
-            "var8"
+            " \n "
         ]
     ],
     "<hex_bytes>": [
@@ -3213,6 +6255,48 @@
             "\""
         ]
     ],
+    "<kb>": [
+        [
+            "kb"
+        ],
+        [
+            "Kb"
+        ],
+        [
+            "kB"
+        ],
+        [
+            "KB"
+        ]
+    ],
+    "<mb>": [
+        [
+            "mb"
+        ],
+        [
+            "Mb"
+        ],
+        [
+            "mB"
+        ],
+        [
+            "MB"
+        ]
+    ],
+    "<gb>": [
+        [
+            "gb"
+        ],
+        [
+            "Gb"
+        ],
+        [
+            "gB"
+        ],
+        [
+            "GB"
+        ]
+    ],
     "<string_character>": [
         [
             "a"
@@ -3251,6 +6335,56 @@
             "l"
         ]
     ],
+    "<double_at>": [
+        [
+            " @@ "
+        ]
+    ],
+    "<at_field>": [
+        [
+            " @field "
+        ]
+    ],
+    "<notas>": [
+        [
+            " !as "
+        ]
+    ],
+    "<notis>": [
+        [
+            " !is "
+        ]
+    ],
+    "<notqas>": [
+        [
+            " !?as "
+        ]
+    ],
+    "<notdot>": [
+        [
+            " !. "
+        ]
+    ],
+    "<notqdot>": [
+        [
+            " !?. "
+        ]
+    ],
+    "<notbra>": [
+        [
+            " ![ "
+        ]
+    ],
+    "<notqbra>": [
+        [
+            " !?[ "
+        ]
+    ],
+    "<notqq>": [
+        [
+            " !?? "
+        ]
+    ],
     "<das_capture>": [
         [
             " capture "
@@ -3269,11 +6403,6 @@
     "<das_let>": [
         [
             " let "
-        ]
-    ],
-    "<das_def>": [
-        [
-            " def "
         ]
     ],
     "<das_while>": [
@@ -3321,6 +6450,16 @@
             " new "
         ]
     ],
+    "<das_typeinfo>": [
+        [
+            " typeinfo "
+        ]
+    ],
+    "<das_type>": [
+        [
+            " type "
+        ]
+    ],
     "<das_in>": [
         [
             " in "
@@ -3361,9 +6500,19 @@
             " null "
         ]
     ],
+    "<das_break>": [
+        [
+            " break "
+        ]
+    ],
     "<das_try>": [
         [
             " try "
+        ]
+    ],
+    "<das_options>": [
+        [
+            " options "
         ]
     ],
     "<das_table>": [
@@ -3371,9 +6520,24 @@
             " table "
         ]
     ],
+    "<das_expect>": [
+        [
+            " expect "
+        ]
+    ],
     "<das_const>": [
         [
             " const "
+        ]
+    ],
+    "<das_require>": [
+        [
+            " require "
+        ]
+    ],
+    "<das_operator>": [
+        [
+            " operator "
         ]
     ],
     "<das_enum>": [
@@ -3391,9 +6555,29 @@
             " delete "
         ]
     ],
+    "<das_deref>": [
+        [
+            " deref "
+        ]
+    ],
+    "<das_typedef>": [
+        [
+            " typedef "
+        ]
+    ],
+    "<das_typedecl>": [
+        [
+            " typedecl "
+        ]
+    ],
     "<das_with>": [
         [
             " with "
+        ]
+    ],
+    "<das_aka>": [
+        [
+            " aka "
         ]
     ],
     "<das_assume>": [
@@ -3401,9 +6585,44 @@
             " assume "
         ]
     ],
+    "<das_cast>": [
+        [
+            " cast "
+        ]
+    ],
+    "<das_override>": [
+        [
+            " override "
+        ]
+    ],
+    "<das_abstract>": [
+        [
+            " abstract "
+        ]
+    ],
+    "<das_upcast>": [
+        [
+            " upcast "
+        ]
+    ],
+    "<das_iterator>": [
+        [
+            " iterator "
+        ]
+    ],
     "<das_var>": [
         [
             " var "
+        ]
+    ],
+    "<das_addr>": [
+        [
+            " addr "
+        ]
+    ],
+    "<das_continue>": [
+        [
+            " continue "
         ]
     ],
     "<das_where>": [
@@ -3416,9 +6635,59 @@
             " pass "
         ]
     ],
+    "<das_reinterpret>": [
+        [
+            " reinterpret "
+        ]
+    ],
+    "<das_module>": [
+        [
+            " module "
+        ]
+    ],
+    "<das_public>": [
+        [
+            " public "
+        ]
+    ],
+    "<das_label>": [
+        [
+            " label "
+        ]
+    ],
+    "<das_goto>": [
+        [
+            " goto "
+        ]
+    ],
+    "<das_implicit>": [
+        [
+            " implicit "
+        ]
+    ],
+    "<das_explicit>": [
+        [
+            " explicit "
+        ]
+    ],
+    "<das_shared>": [
+        [
+            " shared "
+        ]
+    ],
+    "<das_private>": [
+        [
+            " private "
+        ]
+    ],
     "<das_smart_ptr>": [
         [
             " smart_ptr "
+        ]
+    ],
+    "<das_unsafe>": [
+        [
+            " unsafe "
         ]
     ],
     "<das_inscope>": [
@@ -3434,6 +6703,16 @@
     "<das_fixed_array>": [
         [
             " fixed_array "
+        ]
+    ],
+    "<das_default>": [
+        [
+            " default "
+        ]
+    ],
+    "<das_uninitialized>": [
+        [
+            " uninitialized "
         ]
     ],
     "<das_tbool>": [
@@ -3521,6 +6800,121 @@
             " float4 "
         ]
     ],
+    "<das_tfloat16>": [
+        [
+            " float16 "
+        ]
+    ],
+    "<das_thalf2>": [
+        [
+            " half2 "
+        ]
+    ],
+    "<das_thalf3>": [
+        [
+            " half3 "
+        ]
+    ],
+    "<das_thalf4>": [
+        [
+            " half4 "
+        ]
+    ],
+    "<das_thalf8>": [
+        [
+            " half8 "
+        ]
+    ],
+    "<das_tshort2>": [
+        [
+            " short2 "
+        ]
+    ],
+    "<das_tshort3>": [
+        [
+            " short3 "
+        ]
+    ],
+    "<das_tshort4>": [
+        [
+            " short4 "
+        ]
+    ],
+    "<das_tshort8>": [
+        [
+            " short8 "
+        ]
+    ],
+    "<das_tushort2>": [
+        [
+            " ushort2 "
+        ]
+    ],
+    "<das_tushort3>": [
+        [
+            " ushort3 "
+        ]
+    ],
+    "<das_tushort4>": [
+        [
+            " ushort4 "
+        ]
+    ],
+    "<das_tushort8>": [
+        [
+            " ushort8 "
+        ]
+    ],
+    "<das_tbyte2>": [
+        [
+            " byte2 "
+        ]
+    ],
+    "<das_tbyte3>": [
+        [
+            " byte3 "
+        ]
+    ],
+    "<das_tbyte4>": [
+        [
+            " byte4 "
+        ]
+    ],
+    "<das_tbyte8>": [
+        [
+            " byte8 "
+        ]
+    ],
+    "<das_tbyte16>": [
+        [
+            " byte16 "
+        ]
+    ],
+    "<das_tubyte2>": [
+        [
+            " ubyte2 "
+        ]
+    ],
+    "<das_tubyte3>": [
+        [
+            " ubyte3 "
+        ]
+    ],
+    "<das_tubyte4>": [
+        [
+            " ubyte4 "
+        ]
+    ],
+    "<das_tubyte8>": [
+        [
+            " ubyte8 "
+        ]
+    ],
+    "<das_tubyte16>": [
+        [
+            " ubyte16 "
+        ]
+    ],
     "<das_trange>": [
         [
             " range "
@@ -3599,6 +6993,21 @@
     "<das_tvariant>": [
         [
             " variant "
+        ]
+    ],
+    "<das_generator>": [
+        [
+            " generator "
+        ]
+    ],
+    "<das_yield>": [
+        [
+            " yield "
+        ]
+    ],
+    "<das_sealed>": [
+        [
+            " sealed "
         ]
     ],
     "<das_template>": [
@@ -3753,7 +7162,7 @@
     ],
     "<das_emit_semicolon>": [
         [
-            " ;\n"
+            " \n "
         ]
     ],
     "<begin_string_expr>": [
@@ -3856,705 +7265,9 @@
             " .. "
         ]
     ],
-    "<module_decl>": [
+    "<mtag_e>": [
         [
-            "<das_module>",
-            "<name>",
-            ";\n"
-        ],
-        [
-            "<das_module>",
-            "<name>",
-            "<das_public>",
-            ";\n"
-        ],
-        [
-            "<das_module>",
-            "<name>",
-            "<das_private>",
-            ";\n"
-        ]
-    ],
-    "<require_decl>": [
-        [
-            "<das_require>",
-            " UnitTest ",
-            ";\n"
-        ]
-    ],
-    "<options_decl>": [
-        [
-            "<das_options>",
-            "<option_name>",
-            ";\n"
-        ],
-        [
-            "<das_options>",
-            "<option_name>",
-            " = ",
-            "<das_true>",
-            ";\n"
-        ],
-        [
-            "<das_options>",
-            "<option_name>",
-            " = ",
-            "<das_false>",
-            ";\n"
-        ],
-        [
-            "<das_options>",
-            "stack = 4096;\n"
-        ]
-    ],
-    "<option_name>": [
-        [ "no_aot" ],
-        [ "log" ],
-        [ "rtti" ],
-        [ "unsafe_table_lookup" ],
-        [ "persistent_heap" ],
-        [ "gc" ],
-        [ "no_global_heap" ],
-        [ "intern_strings" ],
-        [ "multiple_contexts" ],
-        [ "solid_context" ],
-        [ "relaxed_pointer_const" ],
-        [ "debugger" ]
-    ],
-    "<typedef_decl>": [
-        [
-            "<das_typedef>",
-            "<name>",
-            " = ",
-            "<type_declaration_no_options>",
-            ";\n"
-        ]
-    ],
-    "<expect_decl>": [
-        [
-            "<das_expect>",
-            "<name>",
-            "<begin_string>",
-            "<character_sequence>",
-            "<end_string>",
-            ";\n"
-        ]
-    ],
-    "<expression_break>": [
-        [
-            "<das_break>",
-            ";\n"
-        ],
-        [
-            "<das_break>",
-            "<das_if>",
-            "(",
-            "<expr>",
-            ")",
-            ";\n"
-        ]
-    ],
-    "<expression_continue>": [
-        [
-            "<das_continue>",
-            ";\n"
-        ],
-        [
-            "<das_continue>",
-            "<das_if>",
-            "(",
-            "<expr>",
-            ")",
-            ";\n"
-        ]
-    ],
-    "<expression_static_if>": [
-        [
-            "<das_static_if>",
-            "(",
-            "<expr>",
-            ")",
-            "<expression_block>",
-            "<expression_else>"
-        ]
-    ],
-    "<expression_unsafe>": [
-        [
-            "<das_unsafe>",
-            "<expression_block>"
-        ]
-    ],
-    "<expression_bare_block>": [
-        [
-            "<expression_block>"
-        ]
-    ],
-    "<expression_assert>": [
-        [
-            "<das_assert>",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<das_verify>",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<das_panic>",
-            "(",
-            "<string_builder>",
-            ")"
-        ]
-    ],
-    "<expr_cast>": [
-        [
-            "<das_cast>",
-            "<",
-            "<type_declaration_no_options>",
-            ">",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<das_upcast>",
-            "<",
-            "<type_declaration_no_options>",
-            ">",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<das_reinterpret>",
-            "<",
-            "<type_declaration_no_options>",
-            ">",
-            "(",
-            "<expr>",
-            ")"
-        ]
-    ],
-    "<expr_unsafe>": [
-        [
-            "<das_unsafe>",
-            "(",
-            "<expr>",
-            ")"
-        ]
-    ],
-    "<expr_typeinfo>": [
-        [
-            "<das_typeinfo>",
-            "<name>",
-            "(",
-            "<das_type>",
-            "<",
-            "<type_declaration_no_options>",
-            ">",
-            ")"
-        ]
-    ],
-    "<expr_qmacro>": [
-        [
-            "<mtag_i>",
-            "(",
-            "<name>",
-            ")"
-        ],
-        [
-            "<mtag_v>",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<mtag_f>",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<mtag_e>",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<mtag_t>",
-            "(",
-            "<type_declaration_no_options>",
-            ")"
-        ],
-        [
-            "<mtag_b>",
-            "(",
-            "<expression_block>",
-            ")"
-        ],
-        [
-            "<mtag_a>",
-            "(",
-            "<expr_list>",
-            ")"
-        ],
-        [
-            "<mtag_c>",
-            "(",
-            "<expr>",
-            ")",
-            "(",
-            "<expr_list>",
-            ")"
-        ]
-    ],
-    "<expr_address_of>": [
-        [
-            "<das_addr>",
-            "(",
-            "<expr>",
-            ")"
-        ]
-    ],
-    "<unit_test_type>": [
-        [
-            " TestObjectFoo "
-        ],
-        [
-            " TestObjectBar "
-        ],
-        [
-            " TestObjectSmart "
-        ],
-        [
-            " TestObjectNotLocal "
-        ],
-        [
-            " TestObjectNotNullPtr "
-        ],
-        [
-            " FancyClass "
-        ],
-        [
-            " SomeDummyType "
-        ],
-        [
-            " Point3 "
-        ],
-        [
-            " Point3Array "
-        ],
-        [
-            " FooArray "
-        ],
-        [
-            " ByteCode "
-        ],
-        [
-            " BigEntityId "
-        ],
-        [
-            " EntityId "
-        ],
-        [
-            " SceneNodeId "
-        ],
-        [
-            " SampleVariant "
-        ]
-    ],
-    "<unit_test_enum_type>": [
-        [
-            " SomeEnum "
-        ],
-        [
-            " SomeEnum98 "
-        ],
-        [
-            " SomeEnum_16 "
-        ],
-        [
-            " GooEnum "
-        ],
-        [
-            " GooEnum98 "
-        ],
-        [
-            " OpCode "
-        ]
-    ],
-    "<unit_test_enum>": [
-        [
-            " SomeEnum.zero "
-        ],
-        [
-            " SomeEnum.one "
-        ],
-        [
-            " SomeEnum.two "
-        ],
-        [
-            " SomeEnum98.zero "
-        ],
-        [
-            " SomeEnum98.one "
-        ],
-        [
-            " SomeEnum98.two "
-        ],
-        [
-            " SomeEnum_16.zero "
-        ],
-        [
-            " SomeEnum_16.one "
-        ],
-        [
-            " SomeEnum_16.two "
-        ],
-        [
-            " GooEnum.regular "
-        ],
-        [
-            " GooEnum.hazardous "
-        ],
-        [
-            " GooEnum98.soft "
-        ],
-        [
-            " GooEnum98.hard "
-        ],
-        [
-            " OpCode.op_nop "
-        ],
-        [
-            " OpCode.op_mov_a_arg "
-        ],
-        [
-            " OpCode.op_mov_arg_b "
-        ],
-        [
-            " OpCode.op_dec_a "
-        ],
-        [
-            " OpCode.op_cmple_a_low_zx "
-        ],
-        [
-            " OpCode.op_cjmp "
-        ],
-        [
-            " OpCode.op_mov_c_a "
-        ],
-        [
-            " OpCode.op_mov_a_low_zx "
-        ],
-        [
-            " OpCode.op_mov_b_low_zx "
-        ],
-        [
-            " OpCode.op_xchange_a_b "
-        ],
-        [
-            " OpCode.op_add_b_a "
-        ],
-        [
-            " OpCode.op_loop "
-        ],
-        [
-            " OpCode.op_return_b "
-        ]
-    ],
-    "<unit_test_constant>": [
-        [
-            " UNIT_TEST_CONSTANT "
-        ]
-    ],
-    "<safe_call>": [
-        [ " getSamplePoint3 ()" ],
-        [ " makeDummy ()" ],
-        [ " getTotalTestObjectSmart ()" ],
-        [ " getPtr ()" ],
-        [ " makeSampleI ()" ],
-        [ " makeSampleF ()" ],
-        [ " makeSampleS ()" ],
-        [ " testGetNan ()" ],
-        [ " CppS1Size ()" ],
-        [ " CppS2Size ()" ]
-    ],
-    "<unit_test_call>": [
-        [
-            " testFoo (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " set_foo_data (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " testAdd (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " getSamplePoint3 ()"
-        ],
-        [
-            " doubleSamplePoint3 (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " project_to_nearest_navmesh_point (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " makeDummy ()"
-        ],
-        [
-            " takeDummy (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " makeTestObjectSmart ()"
-        ],
-        [
-            " countTestObjectSmart (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " getTotalTestObjectSmart ()"
-        ],
-        [
-            " fooPtr2Ref (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " getPtr ()"
-        ],
-        [
-            " makeSampleI ()"
-        ],
-        [
-            " makeSampleF ()"
-        ],
-        [
-            " makeSampleS ()"
-        ],
-        [
-            " evalByteCode (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " test_abi_mad (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " testGetDiv (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " testGetNan ()"
-        ],
-        [
-            " test_das_string (",
-            "<expr_full_block>",
-            ")"
-        ],
-        [
-            " printw (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " hit_me (",
-            "<expr>",
-            ",",
-            "<expr>",
-            ",",
-            "<expr>",
-            ")"
-        ],
-        [
-            " efn_flip (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " efn_takeOne_giveTwo (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " efn_takeOne_giveTwo_98 (",
-            "<expr>",
-            ")"
-        ],
-        [
-            " make_invalid_id ()"
-        ],
-        [
-            " CppS1Size ()"
-        ],
-        [
-            " CppS2Size ()"
-        ],
-        [
-            " CppS2DOffset ()"
-        ],
-        [
-            " testPoint3Array (",
-            "<expr>",
-            ",",
-            "<expr_full_block>",
-            ")"
-        ],
-        [
-            " testFooArray (",
-            "<expr>",
-            ",",
-            "<expr_full_block>",
-            ")"
-        ],
-        [
-            " testCMRES ()"
-        ]
-    ],
-    "<das_module>": [
-        [
-            " module "
-        ]
-    ],
-    "<das_require>": [
-        [
-            " require "
-        ]
-    ],
-    "<das_options>": [
-        [
-            " options "
-        ]
-    ],
-    "<das_public>": [
-        [
-            " public "
-        ]
-    ],
-    "<das_private>": [
-        [
-            " private "
-        ]
-    ],
-    "<das_typedef>": [
-        [
-            " typedef "
-        ]
-    ],
-    "<das_typedecl>": [
-        [
-            " typedecl "
-        ]
-    ],
-    "<das_typeinfo>": [
-        [
-            " typeinfo "
-        ]
-    ],
-    "<das_type>": [
-        [
-            " type "
-        ]
-    ],
-    "<das_expect>": [
-        [
-            " expect "
-        ]
-    ],
-    "<das_break>": [
-        [
-            " break "
-        ]
-    ],
-    "<das_continue>": [
-        [
-            " continue "
-        ]
-    ],
-    "<das_unsafe>": [
-        [
-            " unsafe "
-        ]
-    ],
-    "<das_cast>": [
-        [
-            " cast "
-        ]
-    ],
-    "<das_upcast>": [
-        [
-            " upcast "
-        ]
-    ],
-    "<das_reinterpret>": [
-        [
-            " reinterpret "
-        ]
-    ],
-    "<das_addr>": [
-        [
-            " addr "
-        ]
-    ],
-    "<das_aka>": [
-        [
-            " aka "
-        ]
-    ],
-    "<das_assert>": [
-        [
-            " assert "
-        ]
-    ],
-    "<das_verify>": [
-        [
-            " verify "
-        ]
-    ],
-    "<das_panic>": [
-        [
-            " panic "
-        ]
-    ],
-    "<das_yield>": [
-        [
-            " yield "
-        ]
-    ],
-    "<das_generator>": [
-        [
-            " generator "
+            " $$ "
         ]
     ],
     "<mtag_i>": [
@@ -4562,24 +7275,9 @@
             " $i "
         ]
     ],
-    "<mtag_f>": [
-        [
-            " $f "
-        ]
-    ],
     "<mtag_v>": [
         [
             " $v "
-        ]
-    ],
-    "<mtag_e>": [
-        [
-            " $$ "
-        ]
-    ],
-    "<mtag_t>": [
-        [
-            " $t "
         ]
     ],
     "<mtag_b>": [
@@ -4592,120 +7290,24 @@
             " $a "
         ]
     ],
+    "<mtag_t>": [
+        [
+            " $t "
+        ]
+    ],
     "<mtag_c>": [
         [
             " $c "
         ]
     ],
-    "<das_export_def>": [
+    "<mtag_f>": [
         [
-            "\n[export]\ndef "
+            " $f "
         ]
     ],
-    "<enum_list_nonempty>": [
+    "<mtag_dotdotdot>": [
         [
-            "<enum_expression>"
-        ],
-        [
-            "<enum_list_nonempty>",
-            "<commas>",
-            "<enum_expression>"
-        ]
-    ],
-    "<bitfield_alias_bits_nonempty>": [
-        [
-            "<name>"
-        ],
-        [
-            "<bitfield_alias_bits_nonempty>",
-            "<commas>",
-            "<name>"
-        ]
-    ],
-    "<expression_any_nonempty>": [
-        [
-            "<expr_assign>",
-            ";\n"
-        ],
-        [
-            "<expression_delete>",
-            ";\n"
-        ],
-        [
-            "<expression_let>"
-        ],
-        [
-            "<expression_while_loop>"
-        ],
-        [
-            "<expression_with>"
-        ],
-        [
-            "<expression_with_alias>",
-            ";\n"
-        ],
-        [
-            "<expression_for_loop>"
-        ],
-        [
-            "<expression_return>",
-            ";\n"
-        ],
-        [
-            "<expression_if_then_else>"
-        ],
-        [
-            "<expression_if_then_else_oneliner>"
-        ],
-        [
-            "<expression_try_catch>"
-        ],
-        [
-            "<das_pass>",
-            ";\n"
-        ],
-        [
-            "<expression_break>"
-        ],
-        [
-            "<expression_continue>"
-        ],
-        [
-            "<expression_static_if>"
-        ],
-        [
-            "<expression_unsafe>"
-        ],
-        [
-            "<expression_assert>",
-            ";\n"
-        ],
-        [
-            "<expression_bare_block>"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
-        ],
-        [
-            "<unit_test_call>",
-            ";\n"
+            " ... "
         ]
     ]
 }

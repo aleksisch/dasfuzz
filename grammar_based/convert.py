@@ -25,6 +25,19 @@ def define_SIGNED_INTEGER(name, last):
     print('    "<%s>": [ ["-", "<unsigned_integer>"] ]%s' % (name.lower(), ',' if not(last) else ''))
 
 
+def define_INTEGER(name, last):
+    """Create definition for the INTEGER token.
+
+    The lexer's INTEGER is a bare digit run — the sign is unary minus in the
+    grammar. Baking a '-' in here made every int literal negative and broke
+    every rule that wants a non-negative one (`label N:`, `goto label N`).
+    """
+
+    print('    "<%s>": [ ["<fnumber>"], ["<number>", "<fnumber>"], ["<number>", "<fnumber>", "<fnumber>"] ],' % name.lower())
+    print('    "<number>": [ ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ],')
+    print('    "<fnumber>": [ ["0"], ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ]%s' % (',' if not(last) else ''))
+
+
 def define_UNSIGNED_INTEGER(name, last):
     """Create definition for the UNSIGNED_INTEGER token."""
 
@@ -36,6 +49,14 @@ def define_FLOAT(name, last):
     """Create definition for the UNSIGNED_INTEGER token."""
 
     print('    "<%s>": [ ["<fnumber>", "."], ["<number>", ".", "<fnumber>"], ["<number>", ".", "<fnumber>", "<fnumber>"] ],' % name.lower())
+    print('    "<number>": [ ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ],')
+    print('    "<fnumber>": [ ["0"], ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ]%s' % (',' if not(last) else ''))
+
+
+def define_FLOAT16(name, last):
+    """Create definition for the DAS_FLOAT16_CONST token (float16 literal, 'h' suffix)."""
+
+    print('    "<%s>": [ ["<number>", ".", "<fnumber>", "h"], ["<number>", "h"], ["<number>", ".", "<fnumber>", "<fnumber>", "h"] ],' % name.lower())
     print('    "<number>": [ ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ],')
     print('    "<fnumber>": [ ["0"], ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"] ]%s' % (',' if not(last) else ''))
 
@@ -128,9 +149,10 @@ __lexer_tokens = {
     'RULE_IDENTIFIER': define_IDENTIFIER,
     'INFO_KEY': define_PLAIN_TEXT,
     'SIGNED_INTEGER': define_SIGNED_INTEGER,
-    'INTEGER': define_SIGNED_INTEGER,
+    'INTEGER': define_INTEGER,
     'LONG_INTEGER': define_SIGNED_INTEGER,
     'DAS_FLOAT': define_FLOAT,
+    'DAS_FLOAT16_CONST': define_FLOAT16,
     'DOUBLE': define_FLOAT,
     'UNSIGNED_INTEGER': define_UNSIGNED_INTEGER,
     'UNSIGNED_LONG_INTEGER': define_UNSIGNED_INTEGER,
@@ -149,7 +171,7 @@ __lexer_tokens = {
 
     "','": lambda x, y: ',',
     "'": lambda x, y: "'",
-    "DAS_EMIT_COMMA": define_default(','),
+    "DAS_EMIT_COMMA": define_default('\\n'),
     'NAME': define_IDENTIFIER,
     'HEX_BYTES': define_HEX_BYTES,
     'FULL_MASK': define_FULL_MASK,
@@ -161,6 +183,16 @@ __lexer_tokens = {
     'MB': define_MB,
     'GB': define_GB,
     'STRING_CHARACTER'    : define_CHAR,
+    'DOUBLE_AT'           : define_default("@@"),
+    'AT_FIELD'            : define_default("@field"),
+    'NOTAS'               : define_default("!as"),
+    'NOTIS'               : define_default("!is"),
+    'NOTQAS'              : define_default("!?as"),
+    'NOTDOT'              : define_default("!."),
+    'NOTQDOT'             : define_default("!?."),
+    'NOTBRA'              : define_default("!["),
+    'NOTQBRA'             : define_default("!?["),
+    'NOTQQ'               : define_default("!??"),
 
     'DAS_CAPTURE'         : define_default("capture"),
     'DAS_STRUCT'          : define_default("struct"),
@@ -246,6 +278,29 @@ __lexer_tokens = {
     'DAS_TFLOAT2'         : define_default("float2"),
     'DAS_TFLOAT3'         : define_default("float3"),
     'DAS_TFLOAT4'         : define_default("float4"),
+    'DAS_TFLOAT16'        : define_default("float16"),
+    'DAS_THALF2'          : define_default("half2"),
+    'DAS_THALF3'          : define_default("half3"),
+    'DAS_THALF4'          : define_default("half4"),
+    'DAS_THALF8'          : define_default("half8"),
+    'DAS_TSHORT2'         : define_default("short2"),
+    'DAS_TSHORT3'         : define_default("short3"),
+    'DAS_TSHORT4'         : define_default("short4"),
+    'DAS_TSHORT8'         : define_default("short8"),
+    'DAS_TUSHORT2'        : define_default("ushort2"),
+    'DAS_TUSHORT3'        : define_default("ushort3"),
+    'DAS_TUSHORT4'        : define_default("ushort4"),
+    'DAS_TUSHORT8'        : define_default("ushort8"),
+    'DAS_TBYTE2'          : define_default("byte2"),
+    'DAS_TBYTE3'          : define_default("byte3"),
+    'DAS_TBYTE4'          : define_default("byte4"),
+    'DAS_TBYTE8'          : define_default("byte8"),
+    'DAS_TBYTE16'         : define_default("byte16"),
+    'DAS_TUBYTE2'         : define_default("ubyte2"),
+    'DAS_TUBYTE3'         : define_default("ubyte3"),
+    'DAS_TUBYTE4'         : define_default("ubyte4"),
+    'DAS_TUBYTE8'         : define_default("ubyte8"),
+    'DAS_TUBYTE16'        : define_default("ubyte16"),
     'DAS_TRANGE'          : define_default("range"),
     'DAS_TURANGE'         : define_default("urange"),
     'DAS_TRANGE64'        : define_default("range64"),
@@ -325,7 +380,7 @@ __lexer_tokens = {
     "'/'"                   : lambda x, y: "/",
     ":"                   : lambda x, y: ":",
     "'%'"                   : lambda x, y: "%",
-    "DAS_EMIT_SEMICOLON"                   : define_default(";"),
+    "DAS_EMIT_SEMICOLON"                   : define_default("\\n"),
     "BEGIN_STRING_EXPR"                   : define_default("{"),
     "END_STRING_EXPR"                   : define_default("}"),
     'QDOT'                : define_default("?."),
@@ -412,6 +467,84 @@ UNIT_TEST_RULES = {
         [_LIT(' OpCode.op_return_b ')],
     ],
     'unit_test_constant': [[_LIT(' UNIT_TEST_CONSTANT ')]],
+    # Boolean-producing expressions for condition slots. The generic <expr>
+    # rule is ~90% numeric `int const`, so `if (5)` / `while (3)` / `assert(2)`
+    # constantly failed "condition must be boolean". <expr_bool> is wired into
+    # every condition slot (see REPLACE_RULES) so conditions are always well
+    # typed.
+    'expr_bool': [
+        [_NT('das_true')],
+        [_NT('das_false')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' == '), _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' != '), _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' < '),  _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' > '),  _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' <= '), _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('('), _NT('expr_numeric_const'), _LIT(' >= '), _NT('expr_numeric_const'), _LIT(')')],
+        [_LIT('(!'), _NT('expr_bool'), _LIT(')')],
+        [_LIT('('), _NT('expr_bool'), _LIT(' && '), _NT('expr_bool'), _LIT(')')],
+        [_LIT('('), _NT('expr_bool'), _LIT(' || '), _NT('expr_bool'), _LIT(')')],
+    ],
+    # Valid `options` names (a curated subset of real daslang bool options).
+    # The grammar's generic `options <name>` emitted arbitrary names like
+    # `options var3`, all rejected with "invalid option". Restricting the
+    # name to real options (see options_decl in REPLACE_RULES) kills that
+    # whole error bucket.
+    'unit_test_option': [
+        [_LIT('indenting')], [_LIT('no_aot')], [_LIT('rtti')],
+        [_LIT('optimize')], [_LIT('persistent_heap')],
+        [_LIT('no_global_variables')], [_LIT('unsafe_table_lookup')],
+        [_LIT('strict_smart_pointers')], [_LIT('no_unused_function_arguments')],
+        [_LIT('no_unused_block_arguments')], [_LIT('remove_unused_symbols')],
+    ],
+    # ---------------------------------------------------------------------
+    # New AOT-codegen-heavy statement families.
+    #
+    # The bugs found so far are all AOT C++ codegen defects, but whole
+    # feature areas were never emitted by the old bias. These add the ones
+    # with the most back-end surface that the grammar previously ignored:
+    # closures/captures (closure-struct codegen) and generators/iterators
+    # (coroutine state machine). Container clone (`:=`) exercises the
+    # generated clone/finalize helpers.
+    #
+    # Every form is fully self-contained — it declares whatever it needs
+    # inside its own scope and refers to no external/hardcoded decl, so no
+    # prelude is required and the program reaches AOT instead of dying in
+    # typecheck. All forms validated against daslang -aot.
+    # ---------------------------------------------------------------------
+    # Invoked closures/lambdas — exercise closure-struct + capture codegen.
+    'unit_test_stmt_closure': [
+        [_LIT(' invoke($() {\n'), _NT('expression_any_nonempty'), _LIT('}) ;\n')],
+        [_LIT(' invoke($( '), _NT('name'), _LIT(':int ) {\n'),
+         _NT('expression_any_nonempty'), _LIT('}, '), _NT('expr_numeric_const'), _LIT(') ;\n')],
+        # Move-capture lambda, self-contained in a bare block so the fixed
+        # capture var name never collides across repeats.
+        [_LIT(' { var cv = 0 ;\n invoke(@ capture(<- cv)( cx:int ){ cv += cx; }, '),
+         _NT('expr_numeric_const'), _LIT(') ;\n }\n')],
+    ],
+    # Inline generator/iterator consumption — coroutine state-machine codegen.
+    # The generator is built inline, so nothing external is referenced.
+    'unit_test_stmt_geniter': [
+        [_LIT(' for ( ge in generator<int>() <| $() { yield '),
+         _NT('expr_numeric_const'), _LIT('; yield '), _NT('expr_numeric_const'),
+         _LIT('; return false; } ) {\n'), _NT('expression_any_nonempty'), _LIT('}\n')],
+    ],
+    # Container clone (`:=`) — generated clone/finalize helpers. Self-contained
+    # bare block; fixed names scoped to the block so repeats never collide.
+    'unit_test_stmt_clone': [
+        [_LIT(' { var ca : array<int>; var cb : array<int>; cb := ca; }\n')],
+        [_LIT(' { var ta : table<int;int>; var tb : table<int;int>; tb := ta; }\n')],
+    ],
+    # Wire the new statement forms into the generic statement rule so they
+    # appear in main() and every function body. Added here (not via BIAS)
+    # because <expression_any_nonempty> is derived from <expression_any>
+    # before BIAS runs — these must exist on the rule first. BIAS then sets
+    # their weights.
+    'expression_any': [
+        [_NT('unit_test_stmt_closure')],
+        [_NT('unit_test_stmt_geniter')],
+        [_NT('unit_test_stmt_clone')],
+    ],
     # Calls into the C++ binding surface from modules/dasUnitTest/test_handles.cpp.
     'unit_test_call': [
         [_LIT(' testFoo ('), _NT('expr'), _LIT(')')],
@@ -462,6 +595,12 @@ BIAS = {
     ],
     'expression_any': [
         ([_NT('unit_test_call'), _LIT(';\n')], 6),
+        # New AOT-codegen-heavy constructs (see UNIT_TEST_RULES). Weighted so
+        # a meaningful share of statements exercise closures / generators /
+        # clone without drowning the rest.
+        ([_NT('unit_test_stmt_closure')], 5),
+        ([_NT('unit_test_stmt_geniter')], 4),
+        ([_NT('unit_test_stmt_clone')],   3),
     ],
     'name_in_namespace': [
         ([_NT('unit_test_type')], 6),
@@ -535,6 +674,36 @@ START_PROLOGUE = [
 # default form encodes a wrong literal (e.g. an `[export]` baked into every
 # `def`, which is invalid inside struct/class bodies).
 REPLACE_RULES = {
+    # Table keys must be a basic hashable type. The generic <type_declaration>
+    # yields `auto` / arrays / blocks, which is the single biggest compile-rate
+    # killer: "table key has to be declared as a basic 'hashable' type".
+    'table_type_pair': [
+        [_NT('table_key_type')],
+        [_NT('table_key_type'), _NT('c_or_s'), _NT('type_declaration')],
+    ],
+    # An empty `{}` table literal infers key type `auto`, which is not
+    # hashable -- the top compile-rate killer once table<K> was fixed. Force at
+    # least one `key => value` pair so the key type can be inferred.
+    'make_table_decl': [
+        [_LIT('{'), _NT('push_table_nesting'), _NT('table_entry_list'), _LIT('}')],
+    ],
+    'table_entry_list': [
+        [_NT('expr'), _NT('mapto'), _NT('expr')],
+        [_NT('table_entry_list'), _LIT(','), _NT('expr'), _NT('mapto'), _NT('expr')],
+    ],
+    'table_key_type': [
+        [_LIT('int')], [_LIT('uint')], [_LIT('int64')],
+        [_LIT('uint64')], [_LIT('string')],
+    ],
+    # Annotation names came from <name_in_namespace> (var1..var64), so every
+    # annotation was "annotation varN is not found". Use names that actually
+    # exist; all of these verified to compile on both functions and structs.
+    'annotation_declaration_name': [
+        [_LIT('export')], [_LIT('sideeffects')], [_LIT('unsafe_operation')],
+        [_LIT('no_aot')], [_LIT('deprecated')], [_LIT('hybrid')],
+        [_LIT('unused_argument')], [_LIT('generic')], [_LIT('init')],
+        [_LIT('finalize')], [_LIT('jit')],
+    ],
     'program': [
         [_NT('structure_declaration')],
         [_NT('enum_declaration')],
@@ -552,6 +721,39 @@ REPLACE_RULES = {
         [_NT('program'), _NT('tuple_alias_declaration')],
         [_NT('program'), _NT('bitfield_alias_declaration')],
         [_NT('program'), _NT('options_decl')],
+    ],
+    # Condition slots: draw from <expr_bool> (see UNIT_TEST_RULES) instead of
+    # the numeric-heavy generic <expr>, so if / while / assert / elif and the
+    # break-if / continue-if guards type-check.
+    'expression_if_then_else': [
+        [_NT('if_or_static_if'), _LIT('('), _NT('expr_bool'), _LIT(')'),
+         _NT('expression_if_block'), _NT('expression_else')],
+    ],
+    'expression_while_loop': [
+        [_NT('das_while'), _LIT('('), _NT('expr_bool'), _LIT(')'), _NT('expression_block')],
+    ],
+    'expression_assert': [
+        [_NT('das_assert'), _LIT('('), _NT('expr_bool'), _LIT(')')],
+        [_NT('das_verify'), _LIT('('), _NT('expr_bool'), _LIT(')')],
+        [_NT('das_panic'), _LIT('('), _NT('string_builder'), _LIT(')')],
+    ],
+    'expression_else': [
+        [_LIT('\n')],
+        [_NT('das_else'), _NT('expression_else_block'), _LIT('\n')],
+        [_NT('elif_or_static_elif'), _LIT('('), _NT('expr_bool'), _LIT(')'),
+         _NT('expression_else_block'), _NT('expression_else')],
+    ],
+    'expression_if_then_else_oneliner': [
+        [_NT('expression_if_one_liner'), _NT('das_if'), _LIT('('), _NT('expr_bool'), _LIT(')'),
+         _NT('expression_else_one_liner'), _LIT(';\n')],
+    ],
+    'expression_break': [
+        [_NT('das_break'), _LIT(';\n')],
+        [_NT('das_break'), _NT('das_if'), _LIT('('), _NT('expr_bool'), _LIT(')'), _LIT(';\n')],
+    ],
+    'expression_continue': [
+        [_NT('das_continue'), _LIT(';\n')],
+        [_NT('das_continue'), _NT('das_if'), _LIT('('), _NT('expr_bool'), _LIT(')'), _LIT(';\n')],
     ],
     'das_def': [[_LIT(' def ')]],
     # Top-level annotated `def`. Only valid for global functions.
@@ -599,11 +801,17 @@ REPLACE_RULES = {
     # ds2 `options` only accepts an annotation_argument_list (name=value
     # pairs where value is a literal — no expressions, no calls).
     'options_decl': [
-        [_NT('das_options'), _NT('name'), _LIT(';\n')],
-        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('das_true'),  _LIT(';\n')],
-        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('das_false'), _LIT(';\n')],
-        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('expr_numeric_const'), _LIT(';\n')],
-        [_NT('das_options'), _NT('name'), _LIT(' = '), _NT('string_constant'),    _LIT(';\n')],
+        [_NT('das_options'), _NT('unit_test_option'), _LIT(' = '), _NT('das_true'),  _LIT(';\n')],
+        [_NT('das_options'), _NT('unit_test_option'), _LIT(' = '), _NT('das_false'), _LIT(';\n')],
+    ],
+    # Capture entries: keep only real capture modes (&, =, <-, := / clone).
+    # The original grammar's `<name> ( <name> )` alt produced `var6(var3)`,
+    # rejected with "unknown capture mode".
+    'capture_entry': [
+        [_LIT('&'), _NT('name')],
+        [_LIT('='), _NT('name')],
+        [_NT('larrow'), _NT('name')],
+        [_NT('cloneequ'), _NT('name')],
     ],
     # Enum / bitfield bodies must not start with a comma — split into a
     # non-empty list helper so leading-comma forms become unreachable.
@@ -647,6 +855,49 @@ REPLACE_RULES = {
 }
 
 
+# The original <name> rule had only 8 alternatives (var1..var8), so any
+# program declaring more than a few aliases / globals / enums / function
+# args collided constantly ("type alias is already defined", "global
+# variable is already declared", ...). A larger pool makes redeclaration
+# collisions rare without otherwise changing behaviour (bare-name value
+# references are not a significant share of generated exprs).
+REPLACE_RULES['name'] = [[_LIT('var%d' % i)] for i in range(1, 65)]
+
+
+def prune_dangling(tree):
+    """Drop alternatives that reference a non-terminal nothing defines.
+
+    Upstream grammar changes retire constructs (e.g. `assert` stopped being a
+    keyword), which leaves REPLACE_RULES / UNIT_TEST_RULES entries pointing at
+    names that no longer exist. Emitting them verbatim would inject literal
+    "<das_assert>" text into every generated program, so prune to a fixpoint.
+    """
+
+    def refs(alt):
+        return [t for t in alt
+                if t.startswith('"<') and t.endswith('>"')]
+
+    # Token non-terminals (<das_tint>, <shl>, ...) are not part of `tree` —
+    # they are emitted after it from __lexer_tokens. Count them as defined.
+    tokens = set('"<%s>"' % k.lower() for k in __lexer_tokens)
+
+    while True:
+        defined = set('"<%s>"' % k for k in tree) | tokens
+        dropped = False
+
+        for k in list(tree):
+            kept = [a for a in tree[k] if all(t in defined for t in refs(a))]
+            if len(kept) != len(tree[k]):
+                dropped = True
+                if kept:
+                    tree[k] = kept
+                else:
+                    del tree[k]
+
+        if not dropped:
+            return tree
+
+
 def apply_extras_and_bias(tree):
     """Inject UnitTest non-terminals and re-weight key rules.
 
@@ -686,7 +937,7 @@ def apply_extras_and_bias(tree):
             kept = [a for a in alts if a != alt]
             alts = kept + ([alt] * desired)
         tree[rule] = alts
-    return tree
+    return prune_dangling(tree)
 
 
 def apply_to_json(path):
@@ -697,7 +948,7 @@ def apply_to_json(path):
     """
     import json
     with open(path, 'r') as f:
-        data = json.load(f)
+        data = json.load(f, strict=False)
     # Tokens in a JSON-encoded grammar are bare strings ('<expr>', ' foo ').
     # The transforms in this module use the raw "<expr>" / "\" foo \"" form
     # used at parse time — convert both directions.
@@ -773,6 +1024,33 @@ def remove_grammar_actions(grammar):
     return remaining
 
 
+def normalize_rule_terminators(grammar):
+    """Insert the optional rule-terminating ';' where Bison lets it be omitted.
+
+    parse_rules() splits on ';', so a rule that ends without one swallows the
+    rule that follows it (upstream `expr_reader` does exactly this).
+    """
+
+    head = re.compile(r'(?m)^([A-Za-z_][A-Za-z0-9_]*)[ \t]*(?:\n[ \t]*)?:')
+
+    out = []
+    last = 0
+
+    for m in head.finditer(grammar):
+        start = m.start()
+        before = grammar[last:start]
+        stripped = before.rstrip()
+        if stripped and not stripped.endswith(';'):
+            before = stripped + '\n;\n'
+        out.append(before)
+        out.append(m.group(0))
+        last = m.end()
+
+    out.append(grammar[last:])
+
+    return ''.join(out)
+
+
 def is_upper(text):
     """State if a string is upper case."""
 
@@ -784,7 +1062,8 @@ def parse_rule_definition(grammar):
 
     result = []
 
-    regex = re.compile('(?<!")\\|')
+    # Do not split on a '|' / "|" that is itself a terminal.
+    regex = re.compile('(?<![\'"])\\|(?![\'"])')
 
     definitions = regex.split(grammar)
 
@@ -796,9 +1075,20 @@ def parse_rule_definition(grammar):
 
         converted = []
 
+        skip_next = False
+
         for t in tokens:
-            if t == "%prec":
+            # `%prec TOKEN` only sets precedence; TOKEN is not part of the rule.
+            if skip_next:
+                skip_next = False
                 continue
+            if t == "%prec":
+                skip_next = True
+                continue
+            # bison's error-recovery token has no textual form.
+            if t == "error":
+                converted = None
+                break
             if not t.startswith("'['") and not t.startswith('"["'):
                 t = t.split('[')[0]
             else:
@@ -826,6 +1116,9 @@ def parse_rule_definition(grammar):
             else:
                 converted.append('"<%s>"' % t)
 
+        if converted is None:
+            continue
+
         result.append(converted)
     return result
 
@@ -835,7 +1128,9 @@ def parse_rules(grammar):
 
     tree = {}
 
-    regex = re.compile('[\n\t ]*([^\n\t :]+)[\n\t ]*:([^;]+);')
+    # A rule body may contain a quoted ';' terminal — match quoted chunks
+    # atomically so only a bare ';' ends the rule.
+    regex = re.compile('[\n\t ]*([^\n\t :]+)[\n\t ]*:((?:\'[^\']*\'|[^;])*);')
 
     rules = regex.findall(grammar)
 
@@ -944,6 +1239,16 @@ def remove_indirect_left_recursion(tree):
                 replaced[k] = v
                 break
 
+    # Inlining only rewrites single-symbol alternatives ("<k>" alone). A rule
+    # that is also referenced inside a longer alternative cannot be dropped —
+    # doing so would leave a dangling "<k>" the generator emits verbatim.
+    for k in list(replaced.keys()):
+        token = '"<%s>"' % k
+        for kk, vv in tree.items():
+            if any(len(alt) != 1 and token in alt for alt in vv):
+                del replaced[k]
+                break
+
     new_tree = {}
 
     for k, v in tree.items():
@@ -1031,6 +1336,8 @@ if __name__ == '__main__':
     grammar = remove_grammar_comments(grammar)
 
     grammar = remove_grammar_actions(grammar)
+
+    grammar = normalize_rule_terminators(grammar)
 
     print('{')
 
