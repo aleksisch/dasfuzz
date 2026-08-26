@@ -31,6 +31,9 @@
 #include "daScript/ast/dyn_modules.h"
 #include "module_unitTest.h"
 
+// upstream requires custom modules be forward-declared before NEED_MODULE
+DECLARE_MODULE(Module_UnitTest);
+
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
@@ -91,6 +94,7 @@ struct NullWriter : public TextWriter {
 static CXIndex   g_cxIndex   = nullptr;
 static char      g_pchPath[] = "/tmp/das_fuzz_aot_XXXXXX.pch";
 static bool      g_pchReady  = false;
+static pid_t     g_pchOwner  = 0;
 
 // Common args for both PCH build and per-input parse.
 static const char * kClangCommonArgs[] = {
@@ -152,7 +156,12 @@ static void buildAotPch() {
     clang_disposeTranslationUnit(tu);
     if (sv == CXSaveError_None) {
         g_pchReady = true;
-        atexit([]{ if (g_pchReady) unlink(g_pchPath); });
+        g_pchOwner = getpid();
+        // Only the creating process may remove it. atexit handlers survive
+        // fork(), so without this guard the first AFL child to finish its
+        // __AFL_LOOP budget unlinks the PCH that every later child needs —
+        // they then all fail the -include-pch parse and abort() on any input.
+        atexit([]{ if (g_pchReady && getpid() == g_pchOwner) unlink(g_pchPath); });
     }
 }
 
@@ -185,7 +194,11 @@ static unsigned aotCheckCpp(const char * src, unsigned len) {
         &tu);
     if (rc != CXError_Success || !tu) {
         if (tu) clang_disposeTranslationUnit(tu);
-        return 1;  // treat parser bail as one error
+        // libclang could not even build a TU (missing PCH, OOM, ...). That is
+        // our own infrastructure failing, not AOT C++ daslang got wrong —
+        // reporting it as an error would abort() and save a bogus crash.
+        fprintf(stderr, "fuzz: libclang failed to parse (rc=%d) — not a daslang error\n", (int)rc);
+        return 0;
     }
     unsigned errors = 0;
     unsigned ndiag  = clang_getNumDiagnostics(tu);
@@ -273,7 +286,7 @@ static void setupAotDriver() {
     g_aotInputCop.fail_on_no_aot             = false;
     g_aotInputCop.fail_on_lack_of_aot_export = false;
     g_aotInputCop.version_2_syntax           = true;
-    g_aotInputCop.export_all                 = true;
+    g_aotInputCop.export_all                 = false;
     g_aotInputCop.aot_macros                 = true;
     g_aotInputCop.stack                      = 1 * 1024 * 1024;
 }
@@ -312,6 +325,7 @@ static void runAotPass(const unsigned char * buf, uint32_t len) {
                     fprintf(stdout, "[aot-cc] %u error(s); generated C++:\n%s\n",
                             errs, resultStr);
                 }
+                fflush(stdout);
                 abort();
             }
         }

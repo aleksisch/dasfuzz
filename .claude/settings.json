@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__daslang__lint",
+      "mcp__daslang__compile_check",
+      "mcp__daslang__grep_usage",
+      "mcp__daslang__ast_dump",
+      "Bash(objdump *)",
+      "Bash(nm *)",
+      "Bash(readelf *)",
+      "Bash(luacheck *)",
+      "Bash(getent *)"
+    ]
+  }
+}
