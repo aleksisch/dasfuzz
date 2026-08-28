@@ -36,7 +36,7 @@ mkdir -p "$OUT"
 # $1 = instance id, $2 = afl args -> a self-restarting supervised command
 sup() {
     local id=$1; shift
-    echo "while true; do $AFL $* -o $OUT -- $BIN; echo \"\$(date -Is) $id exited rc=\$? - restarting\" >> $SRC/restarts.log; sleep 15; done"
+    echo "while true; do for p in \$(pgrep -x das_fuzz); do [ \"\$(ps -o ppid= -p \$p 2>/dev/null | tr -d ' ')\" = 1 ] && kill -9 \$p 2>/dev/null; done; $AFL $* -o $OUT -- $BIN; echo \"\$(date -Is) $id exited rc=\$? - restarting\" >> $SRC/restarts.log; sleep 15; done"
 }
 
 tmux new-session -d -s "$SESSION" -n fuzzer01 "$(sup fuzzer01 -t 3000 -M fuzzer01 -i "$CORPUS")"

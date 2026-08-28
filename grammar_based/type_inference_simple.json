@@ -1536,6 +1536,11 @@
             "<expression_block_finally>"
         ],
         [
+            " debug (",
+            "<expr>",
+            ");\n"
+        ],
+        [
             "<unit_test_call>",
             ";\n"
         ],
@@ -1866,27 +1871,15 @@
     "<expr_type_info>": [
         [
             "<das_typeinfo>",
-            "<name_in_namespace>",
+            "<typeinfo_trait>",
             "(",
             "<expr>",
             ")"
         ],
         [
             "<das_typeinfo>",
-            "<name_in_namespace>",
+            "<typeinfo_trait>",
             "<",
-            "<name>",
-            ">",
-            "(",
-            "<expr>",
-            ")"
-        ],
-        [
-            "<das_typeinfo>",
-            "<name_in_namespace>",
-            "<",
-            "<name>",
-            "<c_or_s>",
             "<name>",
             ">",
             "(",
@@ -3019,9 +3012,6 @@
             "<basic_type_declaration>"
         ],
         [
-            "<expr_type_info>"
-        ],
-        [
             "<expr_type_decl>"
         ],
         [
@@ -3077,6 +3067,126 @@
             "<expr_no_bracket>",
             "<mapto>",
             "<array_comprehension>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
+        ],
+        [
+            "<expr_type_info>"
         ]
     ],
     "<expr_generator>": [
@@ -4698,6 +4808,221 @@
             "<expr>"
         ]
     ],
+    "<typeinfo_trait>": [
+        [
+            "alignof"
+        ],
+        [
+            "builtin_module_exists"
+        ],
+        [
+            "can_be_placed_in_container"
+        ],
+        [
+            "can_clone"
+        ],
+        [
+            "can_clone_from_const"
+        ],
+        [
+            "can_copy"
+        ],
+        [
+            "can_delete"
+        ],
+        [
+            "can_delete_ptr"
+        ],
+        [
+            "can_move"
+        ],
+        [
+            "can_new"
+        ],
+        [
+            "fulltypename"
+        ],
+        [
+            "has_nontrivial_copy"
+        ],
+        [
+            "has_nontrivial_ctor"
+        ],
+        [
+            "has_nontrivial_dtor"
+        ],
+        [
+            "is_any_vector"
+        ],
+        [
+            "is_argument"
+        ],
+        [
+            "is_array"
+        ],
+        [
+            "is_bitfield"
+        ],
+        [
+            "is_class"
+        ],
+        [
+            "is_const"
+        ],
+        [
+            "is_dim"
+        ],
+        [
+            "is_distinct"
+        ],
+        [
+            "is_double"
+        ],
+        [
+            "is_enum"
+        ],
+        [
+            "is_float"
+        ],
+        [
+            "is_function"
+        ],
+        [
+            "is_handle"
+        ],
+        [
+            "is_int"
+        ],
+        [
+            "is_int64"
+        ],
+        [
+            "is_iterable"
+        ],
+        [
+            "is_iterator"
+        ],
+        [
+            "is_lambda"
+        ],
+        [
+            "is_local"
+        ],
+        [
+            "is_numeric"
+        ],
+        [
+            "is_numeric_comparable"
+        ],
+        [
+            "is_pod"
+        ],
+        [
+            "is_pod_delete"
+        ],
+        [
+            "is_pointer"
+        ],
+        [
+            "is_raw"
+        ],
+        [
+            "is_ref"
+        ],
+        [
+            "is_ref_type"
+        ],
+        [
+            "is_ref_value"
+        ],
+        [
+            "is_safe_to_delete"
+        ],
+        [
+            "is_smart_ptr"
+        ],
+        [
+            "is_string"
+        ],
+        [
+            "is_struct"
+        ],
+        [
+            "is_table"
+        ],
+        [
+            "is_temp"
+        ],
+        [
+            "is_temp_type"
+        ],
+        [
+            "is_tuple"
+        ],
+        [
+            "is_unsafe_when_uninitialized"
+        ],
+        [
+            "is_variant"
+        ],
+        [
+            "is_vector"
+        ],
+        [
+            "is_void"
+        ],
+        [
+            "is_void_pointer"
+        ],
+        [
+            "is_workhorse"
+        ],
+        [
+            "modulename"
+        ],
+        [
+            "need_delete"
+        ],
+        [
+            "need_inscope"
+        ],
+        [
+            "needs_container_finalize"
+        ],
+        [
+            "needs_container_init"
+        ],
+        [
+            "needs_nontrivial_init"
+        ],
+        [
+            "safe_has_field"
+        ],
+        [
+            "safe_variant_index"
+        ],
+        [
+            "sizeof"
+        ],
+        [
+            "stripped_typename"
+        ],
+        [
+            "struct_safe_has_annotation"
+        ],
+        [
+            "struct_safe_has_annotation_argument"
+        ],
+        [
+            "typename"
+        ],
+        [
+            "undecorated_typename"
+        ],
+        [
+            "vector_dim"
+        ]
+    ],
     "<table_key_type>": [
         [
             "int"
@@ -5572,6 +5897,11 @@
             "<expressions>",
             "}",
             "<expression_block_finally>"
+        ],
+        [
+            " debug (",
+            "<expr>",
+            ");\n"
         ],
         [
             "<unit_test_call>",
