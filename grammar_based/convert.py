@@ -544,6 +544,9 @@ UNIT_TEST_RULES = {
         [_NT('unit_test_stmt_closure')],
         [_NT('unit_test_stmt_geniter')],
         [_NT('unit_test_stmt_clone')],
+        # `debug(expr)` is a real builtin the grammar never emitted, which left
+        # InferTypes::visit(ExprDebug*) at 0% coverage.
+        [_LIT(' debug ('), _NT('expr'), _LIT(');\n')],
     ],
     # Calls into the C++ binding surface from modules/dasUnitTest/test_handles.cpp.
     'unit_test_call': [
@@ -610,6 +613,13 @@ BIAS = {
     ],
     'expr_call': [
         ([_NT('unit_test_call')], 6),
+    ],
+    # typeinfo is reachable but the generator almost never picks it: the rule is
+    # expensive next to the cheap leaves of <expr_no_bracket>, so 0 of 500 seeds
+    # contained one. Weight it up -- InferTypes::visit(ExprTypeInfo*) is 587
+    # lines at 42.8%, the coldest function in type inference.
+    'expr_no_bracket': [
+        ([_NT('expr_type_info')], 40),
     ],
 }
 
@@ -690,6 +700,18 @@ REPLACE_RULES = {
     'table_entry_list': [
         [_NT('expr'), _NT('mapto'), _NT('expr')],
         [_NT('table_entry_list'), _LIT(','), _NT('expr'), _NT('mapto'), _NT('expr')],
+    ],
+    # typeinfo's trait name came from <name_in_namespace> (var1..var64), so
+    # every `typeinfo varN(x)` was rejected as an unknown trait and the 85 real
+    # trait branches in InferTypes::visit(ExprTypeInfo*) -- 587 lines, the
+    # coldest function in type inference -- were never reached. These 71
+    # are the traits verified to compile with a simple expression argument.
+    'typeinfo_trait': [
+        [_LIT('alignof')], [_LIT('builtin_module_exists')], [_LIT('can_be_placed_in_container')], [_LIT('can_clone')], [_LIT('can_clone_from_const')], [_LIT('can_copy')], [_LIT('can_delete')], [_LIT('can_delete_ptr')], [_LIT('can_move')], [_LIT('can_new')], [_LIT('fulltypename')], [_LIT('has_nontrivial_copy')], [_LIT('has_nontrivial_ctor')], [_LIT('has_nontrivial_dtor')], [_LIT('is_any_vector')], [_LIT('is_argument')], [_LIT('is_array')], [_LIT('is_bitfield')], [_LIT('is_class')], [_LIT('is_const')], [_LIT('is_dim')], [_LIT('is_distinct')], [_LIT('is_double')], [_LIT('is_enum')], [_LIT('is_float')], [_LIT('is_function')], [_LIT('is_handle')], [_LIT('is_int')], [_LIT('is_int64')], [_LIT('is_iterable')], [_LIT('is_iterator')], [_LIT('is_lambda')], [_LIT('is_local')], [_LIT('is_numeric')], [_LIT('is_numeric_comparable')], [_LIT('is_pod')], [_LIT('is_pod_delete')], [_LIT('is_pointer')], [_LIT('is_raw')], [_LIT('is_ref')], [_LIT('is_ref_type')], [_LIT('is_ref_value')], [_LIT('is_safe_to_delete')], [_LIT('is_smart_ptr')], [_LIT('is_string')], [_LIT('is_struct')], [_LIT('is_table')], [_LIT('is_temp')], [_LIT('is_temp_type')], [_LIT('is_tuple')], [_LIT('is_unsafe_when_uninitialized')], [_LIT('is_variant')], [_LIT('is_vector')], [_LIT('is_void')], [_LIT('is_void_pointer')], [_LIT('is_workhorse')], [_LIT('modulename')], [_LIT('need_delete')], [_LIT('need_inscope')], [_LIT('needs_container_finalize')], [_LIT('needs_container_init')], [_LIT('needs_nontrivial_init')], [_LIT('safe_has_field')], [_LIT('safe_variant_index')], [_LIT('sizeof')], [_LIT('stripped_typename')], [_LIT('struct_safe_has_annotation')], [_LIT('struct_safe_has_annotation_argument')], [_LIT('typename')], [_LIT('undecorated_typename')], [_LIT('vector_dim')],
+    ],
+    'expr_type_info': [
+        [_NT('das_typeinfo'), _NT('typeinfo_trait'), _LIT('('), _NT('expr'), _LIT(')')],
+        [_NT('das_typeinfo'), _NT('typeinfo_trait'), _LIT('<'), _NT('name'), _LIT('>'), _LIT('('), _NT('expr'), _LIT(')')],
     ],
     'table_key_type': [
         [_LIT('int')], [_LIT('uint')], [_LIT('int64')],
