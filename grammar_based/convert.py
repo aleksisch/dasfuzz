@@ -814,6 +814,24 @@ REMOVE_ALTS = {
 # `options` lines once, before any other declarations. Avoids the
 # "module name has to be first" error and ensures UnitTest is reachable
 # without polluting the recursive <program> rule.
+# Macro programs are held out of <START> by default.
+#
+# They work: 83% of them compile, against 32% for normal programs, and they
+# are the only path into the quote/template reification subsystem. But in the
+# AFL persistent loop they manufacture false crashes. A 25-minute 8-instance
+# run produced 75 crashes, every one of them a macro program, and NONE of them
+# reproduces standalone -- not under the plain build, not under ASan, not when
+# the same input is fed twice through one process. Throughput also fell from
+# ~404 to ~82 execs/s. The abort comes from aotCheckCpp() rejecting the
+# generated C++, so the suspicion is state shared between the fuzzed program's
+# `require daslib/ast` and the AOT driver context (which runs aot_cpp.das,
+# itself a daslib/ast client) accumulating across loop iterations.
+#
+# Until that is understood, the alternative stays out: a false-crash generator
+# starves real discovery, which is exactly what the inherited-atexit PCH bug
+# did earlier. Set this to True to put it back.
+ENABLE_MACRO_PROGRAMS = False
+
 START_PROLOGUE = [
     # Default — most fuzz inputs start with require UnitTest only.
     [_NT('unit_test_require'), _NT('support_decls'),
@@ -821,6 +839,7 @@ START_PROLOGUE = [
     # Some inputs declare a module first (must precede any other decl).
     [_NT('module_decl'), _NT('unit_test_require'), _NT('support_decls'),
      _NT('program'), _NT('global_main_declaration')],
+    # DISABLED -- see ENABLE_MACRO_PROGRAMS below.
     # Macro program: the two daslib requires that <unit_test_stmt_quote>
     # needs, paired with the main that can actually emit those statements.
     # Kept as its own <START> alternative rather than a global require
@@ -829,9 +848,10 @@ START_PROLOGUE = [
     # uniformly, so the two normal forms are repeated to hold the macro share
     # near 11% -- enough to keep the reification subsystem under test without
     # paying that 240x front-end cost on a quarter of all executions.
+] + ([
     [_NT('unit_test_macro_require'), _NT('support_decls'),
      _NT('program'), _NT('macro_main_declaration')],
-] + [
+] if ENABLE_MACRO_PROGRAMS else []) + [
     [_NT('unit_test_require'), _NT('support_decls'),
      _NT('program'), _NT('global_main_declaration')],
 ] * 4 + [
