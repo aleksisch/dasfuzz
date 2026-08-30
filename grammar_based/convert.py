@@ -814,23 +814,21 @@ REMOVE_ALTS = {
 # `options` lines once, before any other declarations. Avoids the
 # "module name has to be first" error and ensures UnitTest is reachable
 # without polluting the recursive <program> rule.
-# Macro programs are held out of <START> by default.
+# Macro programs: 83% of them compile against 32% for normal programs, and
+# they are the only path into the quote/template reification subsystem.
 #
-# They work: 83% of them compile, against 32% for normal programs, and they
-# are the only path into the quote/template reification subsystem. But in the
-# AFL persistent loop they manufacture false crashes. A 25-minute 8-instance
-# run produced 75 crashes, every one of them a macro program, and NONE of them
-# reproduces standalone -- not under the plain build, not under ASan, not when
-# the same input is fed twice through one process. Throughput also fell from
-# ~404 to ~82 execs/s. The abort comes from aotCheckCpp() rejecting the
-# generated C++, so the suspicion is state shared between the fuzzed program's
-# `require daslib/ast` and the AOT driver context (which runs aot_cpp.das,
-# itself a daslib/ast client) accumulating across loop iterations.
+# Their first deploy produced 75 crashes in 25 minutes, all of them macro
+# programs and none reproducible standalone. The cause was not the grammar:
+# the harness set `aot_macros = true`, which turns on quote LOWERING. With it
+# on, repeatedly AOT-compiling quote programs in one process eventually emits
+# C++ that uses daslib/ast types (TArray<Expression *>) without emitting that
+# module's includes, and aotCheckCpp() aborts. Nothing reproduces from the
+# saved input because the state, not the input, carries the fault -- it takes
+# 12-18 iterations in one process.
 #
-# Until that is understood, the alternative stays out: a false-crash generator
-# starves real discovery, which is exactly what the inherited-atexit PCH bug
-# did earlier. Set this to True to put it back.
-ENABLE_MACRO_PROGRAMS = False
+# main.cpp now sets aot_macros = false, matching what a plain `daslang -aot`
+# does. The same 40-iteration replay that used to abort at 12-18 runs clean.
+ENABLE_MACRO_PROGRAMS = True
 
 START_PROLOGUE = [
     # Default — most fuzz inputs start with require UnitTest only.

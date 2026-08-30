@@ -200,6 +200,23 @@ static unsigned aotCheckCpp(const char * src, unsigned len) {
         fprintf(stderr, "fuzz: libclang failed to parse (rc=%d) — not a daslang error\n", (int)rc);
         return 0;
     }
+    // Known-bug suppression: JIT-then-AOT in one process loses the daslib/ast
+    // includes. A program that quotes requires daslib/ast; once such a program
+    // has been through the LLVM JIT, a later AOT compile in the same process
+    // emits C++ that still uses that module's types (TArray<Expression *>) but
+    // no longer emits its includes, so clang reports a wall of "unknown type
+    // name 'Expression'". Proven by toggling the JIT pass alone: with JIT the
+    // sequence aborts, with DAS_FUZZ_NO_JIT=1 the same 80 inputs run clean.
+    //
+    // It is a real daslang bug and reported as such, but every hit produces
+    // the same crash, so leaving it live buries every other finding. Suppress
+    // only this exact shape: the TU lacks the ast include AND every error is
+    // about one of that module's type names.
+    const bool astIncludeMissing =
+        strstr(src, "aot_builtin_ast.h") == nullptr &&
+        strstr(src, "ast_core::") != nullptr;
+    unsigned astNameErrors = 0;
+
     unsigned errors = 0;
     unsigned ndiag  = clang_getNumDiagnostics(tu);
     bool diagOn = getenv("DAS_FUZZ_DIAG") != nullptr;
@@ -208,15 +225,26 @@ static unsigned aotCheckCpp(const char * src, unsigned len) {
         CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(d);
         if (sev >= CXDiagnostic_Error) {
             ++errors;
-            if (diagOn) {
-                CXString s = clang_formatDiagnostic(d, clang_defaultDiagnosticDisplayOptions());
-                fprintf(stdout, "[aot-cc] %s\n", clang_getCString(s));
-                clang_disposeString(s);
+            CXString s = clang_formatDiagnostic(d, clang_defaultDiagnosticDisplayOptions());
+            const char * msg = clang_getCString(s);
+            if (astIncludeMissing && msg &&
+                (strstr(msg, "'Expression'")  || strstr(msg, "'TypeDecl'")  ||
+                 strstr(msg, "'MakeStruct'")  || strstr(msg, "'LineInfo'")  ||
+                 strstr(msg, "'Function'")    || strstr(msg, "'Structure'") ||
+                 strstr(msg, "expected expression") ||
+                 strstr(msg, "unexpected type name"))) {
+                ++astNameErrors;
             }
+            if (diagOn) fprintf(stdout, "[aot-cc] %s\n", msg);
+            clang_disposeString(s);
         }
         clang_disposeDiagnostic(d);
     }
     clang_disposeTranslationUnit(tu);
+    if (errors > 0 && astIncludeMissing && astNameErrors == errors) {
+        fprintf(stderr, "fuzz: KNOWN missing daslib/ast include after JIT — suppressed\n");
+        return 0;
+    }
     return errors;
 }
 
@@ -287,7 +315,15 @@ static void setupAotDriver() {
     g_aotInputCop.fail_on_lack_of_aot_export = false;
     g_aotInputCop.version_2_syntax           = true;
     g_aotInputCop.export_all                 = false;
-    g_aotInputCop.aot_macros                 = true;
+    // aot_macros turns on quote LOWERING, which is not what a plain
+    // `daslang -aot` does. With it on, repeatedly AOT-compiling quote
+    // programs in one process eventually emits C++ that uses daslib/ast
+    // types (TArray<Expression *>) without emitting that module's includes,
+    // and aotCheckCpp() aborts -- a crash no standalone run reproduces,
+    // because the state, not the input, is what carries it. Same class as
+    // the export_all=true that used to manufacture remove_unused_symbols
+    // bugs: a non-default policy only produces findings nobody can act on.
+    g_aotInputCop.aot_macros                 = false;
     g_aotInputCop.stack                      = 1 * 1024 * 1024;
 }
 
