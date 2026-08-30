@@ -513,6 +513,113 @@ UNIT_TEST_RULES = {
     # typecheck. All forms validated against daslang -aot.
     # ---------------------------------------------------------------------
     # Invoked closures/lambdas — exercise closure-struct + capture codegen.
+    # Constructs whose inference visitors were cold in the llvm-cov map because
+    # the grammar never emitted them at all. Each is self-contained in a bare
+    # block so the fixed local names cannot collide across repeats, and each
+    # form was verified to compile before being added.
+    #   ExprSafeAt    113 lines, 20.4% covered
+    #   ExprNamedCall 138 lines, 39.1%
+    #   ExprSwizzle    42 lines, 38.1%
+    #   ExprKeyExists / ExprErase  ~30 lines each, <47%
+    'unit_test_stmt_cold': [
+        # a?[i] ?? d -- safe index
+        [_LIT(' { var sa : array<int>; sa |> push('), _NT('expr_numeric_const'),
+         _LIT('); var sv = sa?['), _NT('expr_numeric_const'), _LIT('] ?? '),
+         _NT('expr_numeric_const'), _LIT('; }\n')],
+        # key_exists / erase over a table
+        [_LIT(' { var st : table<int;int>; st['), _NT('expr_numeric_const'),
+         _LIT('] = '), _NT('expr_numeric_const'),
+         _LIT('; var sk = key_exists(st,'), _NT('expr_numeric_const'),
+         _LIT('); erase(st,'), _NT('expr_numeric_const'), _LIT('); }\n')],
+        # vector swizzle
+        [_LIT(' { var sw = float4(1.,2.,3.,4.); var s2 = sw.'), _NT('swizzle_mask'), _LIT('; }\n')],
+    ],
+    # Second batch of cold visitors, same method: the construct exists in the
+    # compiler but the grammar never emitted a form it accepts. Coverage from
+    # the llvm-cov map (uncovered lines / covered):
+    #   ExprAssume     48 / 37.7%     ExprSafeField  43 / 53.3%
+    #   ExprNew        52 / 60.0%     ExprMemZero    13 / 40.9%
+    # Each form verified to compile standalone before being added.
+    'support_decls': [
+        [_LIT('struct SafeS { sfield : int; }\n')],
+    ],
+    # break / continue are only legal inside a loop, and typed deref needs a
+    # real pointer -- both are built here with their context attached rather
+    # than emitted as free-floating statements.
+    'unit_test_stmt_loop': [
+        [_LIT(' for (li in range(0,4)) {\n'), _NT('expression_any'),
+         _LIT(' break;\n}\n')],
+        [_LIT(' for (li in range(0,4)) {\n'),
+         _LIT(' continue if ('), _NT('expr_bool'), _LIT(');\n'),
+         _NT('expression_any'), _LIT('}\n')],
+        [_LIT(' while ('), _NT('expr_bool'), _LIT(') {\n'),
+         _NT('expression_any'), _LIT(' break;\n}\n')],
+        [_LIT(' for (li in range(0,4)) {\n'),
+         _LIT(' break if ('), _NT('expr_bool'), _LIT(');\n'),
+         _LIT(' continue;\n}\n')],
+        # typed deref: <expr_no_bracket> lost the untyped `*` alt above
+        [_LIT(' unsafe {\n var lp = new SafeS();\n debug(*lp);\n delete lp;\n}\n')],
+    ],
+    # goto/label, emitted as a matched pair (see REMOVE_ALTS). Label ids are
+    # function-scoped, so a fixed id collides on the second occurrence --
+    # REPLACE_RULES below expands this to one alt per id.
+    'unit_test_stmt_goto': [],
+    # ---------------------------------------------------------------------
+    # Macro programs.
+    #
+    # `qmacro_block() { ... }` and friends REIFY their body into an AST
+    # instead of compiling it, so the statements inside are only parsed --
+    # never type-checked. `break` outside a loop, `yield` outside a
+    # generator, calls to undefined functions and undeclared types all
+    # compile there. That does two things at once: it opens the quote /
+    # template / reification subsystem (previously never fuzzed at all),
+    # and it gives every type-invalid statement the grammar can produce a
+    # context where it still reaches the back end.
+    #
+    # These need `daslib/ast` + `daslib/templates_boost`, which cost ~246 ms
+    # per input to load -- far too much to require unconditionally in a
+    # persistent loop. So they are reachable only from the macro <START>
+    # alternative, which pairs the requires with <macro_main_declaration>.
+    # ---------------------------------------------------------------------
+    'unit_test_stmt_quote': [
+        # Reified statement block: the body is parsed but not type-checked.
+        [_LIT(' { var qe <- qmacro_block() {\n'), _NT('expression_any'),
+         _LIT(' }\n}\n')],
+        [_LIT(' { var qe <- qmacro_block() {\n'), _NT('expression_any'),
+         _NT('expression_any'), _LIT(' }\n}\n')],
+        # Reified single expression.
+        [_LIT(' { var qe = quote('), _NT('expr'), _LIT('); }\n')],
+        # Macro tags. Valid only under a quote -- REMOVE_ALTS strips every
+        # other alt that mentions one.
+        [_LIT(' { let qn = "'), _NT('name'), _LIT('"; var qe = qmacro($i(qn) + 1); }\n')],
+        [_LIT(' { let qv = '), _NT('expr_numeric_const'),
+         _LIT('; var qe = qmacro($v(qv)); }\n')],
+        [_LIT(' { var qs = quote('), _NT('expr'),
+         _LIT('); var qe = qmacro(1 + $e(qs)); }\n')],
+        [_LIT(' { let qn = "'), _NT('name'),
+         _LIT('"; var qe = qmacro($c(qn)('), _NT('expr'), _LIT(')); }\n')],
+        [_LIT(' { let qn = "'), _NT('name'),
+         _LIT('"; var qe = qmacro($i(qn).$f(qn)); }\n')],
+        [_LIT(' { var qe <- qmacro_expr() {\n'), _NT('expression_any'), _LIT(' }\n}\n')],
+        [_LIT(' { let qn = "'), _NT('name'),
+         _LIT('"; var qf <- qmacro_function(qn) <| $ ( var rules : Template ) { }; }\n')],
+    ],
+    'unit_test_stmt_cold2': [
+        # assume alias over an expression
+        [_LIT(' { var ax = '), _NT('expr_numeric_const'), _LIT('; var ay = '),
+         _NT('expr_numeric_const'), _LIT('; assume aq = ax + ay; var az = aq; }\n')],
+        # ?. safe field on a nullable struct pointer
+        [_LIT(' { var fp : SafeS?; var fv = fp?.sfield ?? '),
+         _NT('expr_numeric_const'), _LIT('; }\n')],
+        # heap new + delete, which needs unsafe
+        [_LIT(' unsafe { var np = new SafeS(); delete np; }\n')],
+        # memzero over a local
+        [_LIT(' { var mz : int; memzero(mz); }\n')],
+    ],
+    'swizzle_mask': [
+        [_LIT('x')], [_LIT('y')], [_LIT('z')], [_LIT('w')],
+        [_LIT('xy')], [_LIT('zyx')], [_LIT('wzyx')], [_LIT('xxy')], [_LIT('yz')],
+    ],
     'unit_test_stmt_closure': [
         [_LIT(' invoke($() {\n'), _NT('expression_any_nonempty'), _LIT('}) ;\n')],
         [_LIT(' invoke($( '), _NT('name'), _LIT(':int ) {\n'),
@@ -547,6 +654,10 @@ UNIT_TEST_RULES = {
         # `debug(expr)` is a real builtin the grammar never emitted, which left
         # InferTypes::visit(ExprDebug*) at 0% coverage.
         [_LIT(' debug ('), _NT('expr'), _LIT(');\n')],
+        [_NT('unit_test_stmt_cold')],
+        [_NT('unit_test_stmt_cold2')],
+        [_NT('unit_test_stmt_loop')],
+        [_NT('unit_test_stmt_goto')],
     ],
     # Calls into the C++ binding surface from modules/dasUnitTest/test_handles.cpp.
     'unit_test_call': [
@@ -571,7 +682,7 @@ UNIT_TEST_RULES = {
         [_LIT(' testGetDiv ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
         [_LIT(' testGetNan ()')],
         [_LIT(' test_das_string ('), _NT('expr_full_block'), _LIT(')')],
-        [_LIT(' printw ('), _NT('expr'), _LIT(')')],
+        [_LIT(' printw ('), _NT('string_builder'), _LIT(')')],
         [_LIT(' hit_me ('), _NT('expr'), _LIT(','), _NT('expr'), _LIT(','), _NT('expr'), _LIT(')')],
         [_LIT(' efn_flip ('), _NT('expr'), _LIT(')')],
         [_LIT(' efn_takeOne_giveTwo ('), _NT('expr'), _LIT(')')],
@@ -604,6 +715,11 @@ BIAS = {
         ([_NT('unit_test_stmt_closure')], 5),
         ([_NT('unit_test_stmt_geniter')], 4),
         ([_NT('unit_test_stmt_clone')],   3),
+        ([_NT('unit_test_stmt_cold')],   25),
+        ([_NT('unit_test_stmt_cold2')],  20),
+        ([_NT('unit_test_stmt_loop')],  18),
+        ([_NT('unit_test_stmt_goto')],  10),
+        ([_LIT(' debug ('), _NT('expr'), _LIT(');\n')], 8),
     ],
     'name_in_namespace': [
         ([_NT('unit_test_type')], 6),
@@ -654,6 +770,34 @@ REMOVE_ALTS = {
     ],
     'expression_any': [
         [_NT('unit_test_call'), _LIT(';\\n')],
+        # `break` / `continue` as a generic statement is only valid inside a
+        # loop body, and the grammar has no loop context -- it emitted them at
+        # function scope and inside `finally`, which is a hard error. They come
+        # back via <unit_test_stmt_loop>, which builds the loop around them.
+        [_NT('das_break'), _LIT(';')],
+        [_NT('das_continue'), _LIT(';')],
+        # `yield` outside a generator is a hard error. Generators still get
+        # yielded values -- <unit_test_stmt_geniter> writes them inside its
+        # own `generator<int>() <| $()` body.
+        [_NT('expression_yield'), _LIT(';')],
+        # A bare `label N:` and a bare `goto` are unrelated draws, so the goto
+        # target almost never exists ("can't find label"), and `goto <expr>`
+        # produces a negative label from `~1`. <unit_test_stmt_goto> emits the
+        # pair together with a matching id.
+        [_NT('expression_label'), _LIT(';')],
+        [_NT('expression_goto'), _LIT(';')],
+    ],
+    # Untyped unary `!` and `*`: <expr_no_bracket> is numeric-heavy, so these
+    # became `!(int)` and `*(non-pointer)`. Boolean negation already exists as
+    # `(!<expr_bool>)`; typed deref is in <unit_test_stmt_loop>.
+    'expr_no_bracket': [
+        [_LIT('!'), _NT('expr_no_bracket')],
+        [_LIT('*'), _NT('expr_no_bracket')],
+    ],
+    # `$name` as a type is a macro type tag; used as an array element type it
+    # is always "macro can`t be used as array base type".
+    'type_declaration_no_options_no_dim': [
+        [_LIT('$'), _NT('name_in_namespace'), _NT('optional_expr_list_in_braces')],
     ],
     # Bare `;` inside struct body is rejected — parser needs a field/method
     # declaration. Function prototypes (`def name;` without a body) are
@@ -672,11 +816,28 @@ REMOVE_ALTS = {
 # without polluting the recursive <program> rule.
 START_PROLOGUE = [
     # Default — most fuzz inputs start with require UnitTest only.
-    [_NT('unit_test_require'), _NT('program'), _NT('global_main_declaration')],
-    # Some inputs declare a module first (must precede any other decl).
-    [_NT('module_decl'), _NT('unit_test_require'),
+    [_NT('unit_test_require'), _NT('support_decls'),
      _NT('program'), _NT('global_main_declaration')],
-]
+    # Some inputs declare a module first (must precede any other decl).
+    [_NT('module_decl'), _NT('unit_test_require'), _NT('support_decls'),
+     _NT('program'), _NT('global_main_declaration')],
+    # Macro program: the two daslib requires that <unit_test_stmt_quote>
+    # needs, paired with the main that can actually emit those statements.
+    # Kept as its own <START> alternative rather than a global require
+    # because loading daslib/ast + templates_boost costs ~241 ms per input
+    # against ~1 ms for a normal program. Grammar-Mutator picks alternatives
+    # uniformly, so the two normal forms are repeated to hold the macro share
+    # near 11% -- enough to keep the reification subsystem under test without
+    # paying that 240x front-end cost on a quarter of all executions.
+    [_NT('unit_test_macro_require'), _NT('support_decls'),
+     _NT('program'), _NT('macro_main_declaration')],
+] + [
+    [_NT('unit_test_require'), _NT('support_decls'),
+     _NT('program'), _NT('global_main_declaration')],
+] * 4 + [
+    [_NT('module_decl'), _NT('unit_test_require'), _NT('support_decls'),
+     _NT('program'), _NT('global_main_declaration')],
+] * 3
 
 
 # Whole-rule replacements. Whatever was previously defined for these names is
@@ -776,6 +937,20 @@ REPLACE_RULES = {
     'expression_continue': [
         [_NT('das_continue'), _LIT(';\n')],
         [_NT('das_continue'), _NT('das_if'), _LIT('('), _NT('expr_bool'), _LIT(')'), _LIT(';\n')],
+    ],
+    'unit_test_macro_require': [
+        [_LIT('require UnitTest\nrequire daslib/ast\nrequire daslib/templates_boost\n')],
+    ],
+    # Same shape as <global_main_declaration>, but its body draws from
+    # <macro_expressions>, which is the only path to <unit_test_stmt_quote>.
+    'macro_main_declaration': [[
+        _NT('das_export_def'), _LIT('main'), _LIT('{\n'),
+        _NT('unit_test_stmt_quote'), _NT('macro_expressions'), _LIT('}'),
+    ]],
+    'macro_expressions': [
+        [],
+        [_NT('macro_expressions'), _NT('expression_any')],
+        [_NT('macro_expressions'), _NT('unit_test_stmt_quote')],
     ],
     'das_def': [[_LIT(' def ')]],
     # Top-level annotated `def`. Only valid for global functions.
@@ -885,6 +1060,15 @@ REPLACE_RULES = {
 # references are not a significant share of generated exprs).
 REPLACE_RULES['name'] = [[_LIT('var%d' % i)] for i in range(1, 65)]
 
+# One alt per label id: a grammar cannot correlate two draws of the same
+# non-terminal, so the id has to be baked into the alt for `goto label N` and
+# `label N:` to agree.
+REPLACE_RULES['unit_test_stmt_goto'] = (
+    [[_LIT(' { goto label %d;\n label %d:; }\n' % (i, i))] for i in range(64)]
+    + [[_LIT(' { goto label %d;\n' % i), _NT('expression_any'),
+        _LIT(' label %d:; }\n' % i)] for i in range(64)]
+)
+
 
 def prune_dangling(tree):
     """Drop alternatives that reference a non-terminal nothing defines.
@@ -935,6 +1119,19 @@ def apply_extras_and_bias(tree):
             if alt not in existing:
                 existing.append(alt)
         tree[name] = existing
+    # Drop every alt that mentions a macro-only token. `$i` / `$v` / `$b` /
+    # `$a` / `$c` / `$f` / `$t` and `@field` parse only inside a quote or
+    # macro block, which this grammar never generates, so every one of the
+    # ~35 alts carrying them is a guaranteed parse or "macro tags can only
+    # appear in macro blocks" error. A rule whose alts would all be removed
+    # is left alone rather than made unproductive.
+    macro_only = {_NT(n) for n in ('mtag_i', 'mtag_v', 'mtag_b', 'mtag_a',
+                                   'mtag_t', 'mtag_c', 'mtag_f', 'at_field')}
+    for rule, alts in tree.items():
+        kept = [a for a in alts if not (macro_only & set(a))]
+        if kept and len(kept) != len(alts):
+            tree[rule] = kept
+
     # Drop noisy alts.
     for rule, drop in REMOVE_ALTS.items():
         alts = tree.get(rule)
