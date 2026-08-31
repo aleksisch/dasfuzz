@@ -490,12 +490,21 @@ UNIT_TEST_RULES = {
     # `options var3`, all rejected with "invalid option". Restricting the
     # name to real options (see options_decl in REPLACE_RULES) kills that
     # whole error bucket.
+    # Options that CHANGE what the compiler is allowed to drop are excluded on
+    # purpose. `remove_unused_symbols = false` keeps dead symbols alive, so the
+    # back end then codegens declarations real code never reaches -- every
+    # finding under it needs that line in the repro and is worthless: 11 of 11
+    # reproducible candidates in one 592-crash run carried it, and all 11 were
+    # unreportable for exactly that reason. `no_aot` is excluded for the
+    # matching reason: it turns the AOT pass we are fuzzing off. Same mistake
+    # as export_all=true and aot_macros=true in the harness -- the fuzzer must
+    # not manufacture findings that only exist under a non-default policy.
     'unit_test_option': [
-        [_LIT('indenting')], [_LIT('no_aot')], [_LIT('rtti')],
+        [_LIT('indenting')], [_LIT('rtti')],
         [_LIT('optimize')], [_LIT('persistent_heap')],
         [_LIT('no_global_variables')], [_LIT('unsafe_table_lookup')],
         [_LIT('strict_smart_pointers')], [_LIT('no_unused_function_arguments')],
-        [_LIT('no_unused_block_arguments')], [_LIT('remove_unused_symbols')],
+        [_LIT('no_unused_block_arguments')],
     ],
     # ---------------------------------------------------------------------
     # New AOT-codegen-heavy statement families.
@@ -802,6 +811,12 @@ REMOVE_ALTS = {
     # Bare `;` inside struct body is rejected — parser needs a field/method
     # declaration. Function prototypes (`def name;` without a body) are
     # also rejected by ds2 in struct contexts.
+    # `[no_aot]` on a function turns off the AOT pass for it -- the pass this
+    # fuzzer exists to exercise. Same reasoning as dropping the `no_aot`
+    # option above.
+    'annotation_declaration_name': [
+        [_LIT('no_aot')],
+    ],
     'struct_variable_declaration_list': [
         [_NT('struct_variable_declaration_list'), _NT('das_emit_semicolon')],
         [_NT('struct_variable_declaration_list'), _NT('das_def'),
