@@ -227,14 +227,14 @@ static unsigned aotCheckCpp(const char * src, unsigned len) {
             ++errors;
             CXString s = clang_formatDiagnostic(d, clang_defaultDiagnosticDisplayOptions());
             const char * msg = clang_getCString(s);
-            if (astIncludeMissing && msg &&
-                (strstr(msg, "'Expression'")  || strstr(msg, "'TypeDecl'")  ||
-                 strstr(msg, "'MakeStruct'")  || strstr(msg, "'LineInfo'")  ||
-                 strstr(msg, "'Function'")    || strstr(msg, "'Structure'") ||
-                 strstr(msg, "expected expression") ||
-                 strstr(msg, "unexpected type name"))) {
-                ++astNameErrors;
-            }
+            // Once the ast include is missing, EVERY diagnostic in the TU is
+            // downstream of it -- the first unknown type name derails the
+            // parser and the rest are recovery noise ("expected expression",
+            // "expected '(' for function-style cast", ...). Matching a fixed
+            // list of messages missed those and let the flood through, so the
+            // structural check alone decides.
+            (void)msg;
+            ++astNameErrors;
             if (diagOn) fprintf(stdout, "[aot-cc] %s\n", msg);
             clang_disposeString(s);
         }
