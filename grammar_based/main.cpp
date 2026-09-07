@@ -35,6 +35,9 @@
 DECLARE_MODULE(Module_UnitTest);
 
 #include <unistd.h>
+#include <dirent.h>
+#include <signal.h>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -92,7 +95,12 @@ struct NullWriter : public TextWriter {
 #ifdef DAS_FUZZ_AOT_CHECK
 
 static CXIndex   g_cxIndex   = nullptr;
-static char      g_pchPath[] = "/tmp/das_fuzz_aot_XXXXXX.pch";
+// The pid goes in the name so a later process can tell whose PCH this is.
+// atexit cannot survive SIGKILL, and AFL kills children that way on every
+// restart, so orphans are guaranteed -- 4519 of them once filled a 98G disk
+// and silently killed all 8 instances. sweepStalePch() below is the actual
+// defence; the atexit unlink is just the tidy path.
+static char      g_pchPath[64];
 static bool      g_pchReady  = false;
 static pid_t     g_pchOwner  = 0;
 
@@ -113,10 +121,34 @@ static const char * kClangCommonArgs[] = {
 static constexpr int kClangCommonArgc =
     sizeof(kClangCommonArgs) / sizeof(kClangCommonArgs[0]);
 
+// Delete /tmp PCH files whose owning pid is gone. Called once at startup, so
+// a fresh run always clears whatever earlier runs leaked.
+static void sweepStalePch() {
+    DIR * d = opendir("/tmp");
+    if (!d) return;
+    unsigned swept = 0;
+    struct dirent * e;
+    while ((e = readdir(d)) != nullptr) {
+        int pid = 0;
+        if (sscanf(e->d_name, "das_fuzz_aot_%d_", &pid) != 1 || pid <= 0) continue;
+        // kill(pid, 0) failing with ESRCH means no such process -- an orphan.
+        if (kill((pid_t)pid, 0) == 0 || errno != ESRCH) continue;
+        char path[512];
+        snprintf(path, sizeof(path), "/tmp/%s", e->d_name);
+        if (unlink(path) == 0) ++swept;
+    }
+    closedir(d);
+    if (swept) fprintf(stderr, "fuzz: swept %u stale PCH file(s)\n", swept);
+}
+
 static void buildAotPch() {
     g_cxIndex = clang_createIndex(/*excludeDeclarations*/0, /*displayDiagnostics*/0);
     if (!g_cxIndex) return;
 
+    sweepStalePch();
+
+    snprintf(g_pchPath, sizeof(g_pchPath),
+             "/tmp/das_fuzz_aot_%d_XXXXXX.pch", (int)getpid());
     // Pick a unique filename. mkstemps wants suffix length.
     int fd = mkstemps(g_pchPath, /*suffixlen=*/4);
     if (fd < 0) return;
