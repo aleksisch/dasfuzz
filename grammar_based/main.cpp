@@ -419,8 +419,37 @@ static bool runCompilePass(const unsigned char * buf, uint32_t len) {
     return program && !program->failed();
 }
 
+// Compile + simulate WITHOUT the JIT. The control run for the JIT oracle
+// below: it answers "would this program have worked anyway?", so a generic
+// simulate failure is never blamed on the JIT.
+static bool simulateWithoutJit(const unsigned char * buf, uint32_t len) {
+    auto access = makeAccess(buf, len);
+    if (!access) return false;
+
+    ModuleGroup dummyGroup;
+    CodeOfPolicies policies;
+    policies.jit_enabled                = false;
+    policies.fail_on_no_aot             = false;
+    policies.fail_on_lack_of_aot_export = false;
+    policies.version_2_syntax           = true;
+
+    NullWriter logs;
+    auto program = compileDaScript("__fuzz__.das", access, logs, dummyGroup, policies);
+    if ( !program || program->failed() ) return false;
+    return SimulateWithErrReport(program, logs) != nullptr;
+}
+
 // JIT pass — mirror utils/daScript/main.cpp's compile_and_run() JIT branch
 // minus the execution step. Compile + simulate with JIT enabled.
+//
+// The oracle: a program the interpreter compiles and simulates must also
+// compile and simulate with jit_enabled. If the JIT path fails where the
+// non-JIT path succeeds, the JIT backend rejected valid code -- a bug.
+//
+// Both halves matter. Previously this pass discarded the diagnostics into a
+// NullWriter AND threw away SimulateWithErrReport's return value, so the only
+// JIT defect it could ever report was a hard crash during codegen. That is
+// why the campaign found zero JIT bugs.
 static void runJitPass(const unsigned char * buf, uint32_t len) {
     auto access = makeAccess(buf, len);
     if (!access) return;
@@ -434,11 +463,26 @@ static void runJitPass(const unsigned char * buf, uint32_t len) {
     policies.version_2_syntax          = true;
     policies.dll_search_paths.emplace_back(getDasRoot() + "/lib");
 
-    NullWriter logs;
-    auto program = compileDaScript("__fuzz__.das", access, logs, dummyGroup, policies);
-    if ( program && !program->failed() ) {
-        SimulateWithErrReport(program, logs);
+    TextWriter jitLog;
+    auto program = compileDaScript("__fuzz__.das", access, jitLog, dummyGroup, policies);
+
+    const bool compileFailed  = !program || program->failed();
+    bool       simulateFailed = false;
+    if ( !compileFailed ) {
+        simulateFailed = SimulateWithErrReport(program, jitLog) == nullptr;
     }
+    if ( !compileFailed && !simulateFailed ) return;
+
+    // Control run decides whose fault it is.
+    if ( !simulateWithoutJit(buf, len) ) return;   // not the JIT -- ignore
+
+    if ( program ) for ( auto & err : program->errors ) {
+        jitLog << reportError(err.at, err.what, err.extra, err.fixme, err.cerr);
+    }
+    fprintf(stdout, "fuzz: JIT %s failed on a program that works without JIT\n%s\n",
+            compileFailed ? "compile" : "simulate", jitLog.str().c_str());
+    fflush(stdout);
+    abort();
 }
 
 // ---------------------------------------------------------------------------
