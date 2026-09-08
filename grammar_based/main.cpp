@@ -450,7 +450,47 @@ static bool simulateWithoutJit(const unsigned char * buf, uint32_t len) {
 // NullWriter AND threw away SimulateWithErrReport's return value, so the only
 // JIT defect it could ever report was a hard crash during codegen. That is
 // why the campaign found zero JIT bugs.
+// Is the JIT actually usable in this build? daslib/just_in_time.das binds
+// LLVM through [extern(library="LLVM.dll")], so without that shared library
+// EVERY compile with jit_enabled fails at macro application -- and the oracle
+// below would then report every input as a JIT bug. It did: 3353 "findings",
+// all of them "macro [extern] failed to apply to a function LLVMVerifyModule".
+// Probed once with a trivial program; the pass is skipped entirely if unusable.
+static bool jitUsable() {
+    static int cached = -1;
+    if (cached >= 0) return cached != 0;
+    static const char probe[] = "[export]\ndef main {}\n";
+    auto access = makeAccess((const unsigned char *)probe, (uint32_t)(sizeof(probe) - 1));
+    cached = 0;
+    if (access) {
+        access->addExtraModule("just_in_time", getDasRoot() + "/daslib/just_in_time.das");
+        ModuleGroup mg;
+        CodeOfPolicies pol;
+        pol.jit_enabled                = true;
+        pol.fail_on_no_aot             = false;
+        pol.fail_on_lack_of_aot_export = false;
+        pol.version_2_syntax           = true;
+        pol.dll_search_paths.emplace_back(getDasRoot() + "/lib");
+        // makeAccess registers the buffer under "__fuzz__.das"; any other name
+        // fails with "missing prerequisite" and would look like a dead JIT.
+        TextWriter nw;
+        auto pr = compileDaScript("__fuzz__.das", access, nw, mg, pol);
+        cached = (pr && !pr->failed()) ? 1 : 0;
+        if (!cached && getenv("DAS_FUZZ_DIAG")) {
+            fprintf(stderr, "fuzz: jit probe log: %s\n", nw.str().c_str());
+            if (pr) for (auto & e : pr->errors)
+                fprintf(stderr, "fuzz: jit probe err: %s\n",
+                        reportError(e.at, e.what, e.extra, e.fixme, e.cerr).c_str());
+        }
+    }
+    if (!cached)
+        fprintf(stderr, "fuzz: JIT unusable in this build - JIT pass disabled\n");
+    return cached != 0;
+}
+
 static void runJitPass(const unsigned char * buf, uint32_t len) {
+    if (!jitUsable()) return;
+
     auto access = makeAccess(buf, len);
     if (!access) return;
     access->addExtraModule("just_in_time", getDasRoot() + "/daslib/just_in_time.das");
