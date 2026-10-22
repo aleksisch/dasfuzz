@@ -1,0 +1,1 @@
+test { const e: error{A,B}!u32 = error.A; if (e) |v| { _ = v; } else |err| switch (err) { error.B => {}, error.A => |*foo| { _ = foo; }, } }

@@ -1,0 +1,1 @@
+fn f() type { return u8; } fn g() u29 { return 1; } test { var v: f() align(g()) = 0; _ = &v; }
