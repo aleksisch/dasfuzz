@@ -1,0 +1,90 @@
+From d5b75d958c51470deb71e0719836d5072e07e9d8 Mon Sep 17 00:00:00 2001
+From: Churkin Aleksey <lekhachurkin@gmail.com>
+Date: Tue, 12 May 2026 10:12:10 +0300
+Subject: [PATCH] do not crash on null term
+
+---
+ lib/antlr4_shim/antlr4_shim.cpp |  8 ++++++++
+ src/tree_mutation.c             | 19 +++++--------------
+ 2 files changed, 13 insertions(+), 14 deletions(-)
+
+diff --git a/lib/antlr4_shim/antlr4_shim.cpp b/lib/antlr4_shim/antlr4_shim.cpp
+index 6792594..84d213e 100644
+--- a/lib/antlr4_shim/antlr4_shim.cpp
++++ b/lib/antlr4_shim/antlr4_shim.cpp
+@@ -110,6 +110,14 @@ tree_t *tree_from_buf(const uint8_t *data_buf, size_t data_size) {
+ 
+   if (!root) return nullptr;  // parse error
+ 
++  // Reject degenerate trees whose root is a terminal/error node (id==0).
++  // Such trees have non_term_size==0 and break every mutation that picks a
++  // non-terminal node.
++  if (root->id == 0) {
++    node_free(root);
++    return nullptr;
++  }
++
+   tree_t *tree = tree_create();
+   tree->root = root;
+   return tree;
+diff --git a/src/tree_mutation.c b/src/tree_mutation.c
+index 68e91f9..baa97a7 100644
+--- a/src/tree_mutation.c
++++ b/src/tree_mutation.c
+@@ -36,13 +36,7 @@ tree_t *random_mutation(tree_t *tree) {
+ 
+   // Randomly pick a node in the tree
+   node_t *node = node_pick_non_term_subnode(mutated_tree->root);
+-  if (unlikely(node == NULL)) {
+-
+-    // By design, _pick_non_term_node should not return NULL
+-    perror("_pick_non_term_node returns NULL");
+-    exit(EXIT_FAILURE);
+-
+-  }
++  if (unlikely(node == NULL)) return mutated_tree;
+ 
+   node_t *parent = node->parent;
+ 
+@@ -50,6 +44,7 @@ tree_t *random_mutation(tree_t *tree) {
+   gen_func_t gen_func = gen_funcs[node->id];
+   int        consumed = 0;
+   node_t *   replace_node = gen_func(max_tree_len, &consumed, -1);
++  node_get_size(replace_node);
+ 
+   if (!parent) {  // no parent, meaning that the picked node is the root node
+     // Destroy the original root node
+@@ -63,6 +58,7 @@ tree_t *random_mutation(tree_t *tree) {
+   if (node_replace_subnode(parent, node, replace_node)) {
+ 
+     node_free(node);
++    node_get_size(mutated_tree->root);
+ 
+   } else {
+ 
+@@ -200,13 +196,7 @@ tree_t *splicing_mutation(tree_t *tree) {
+ 
+   // randomly pick a node in the tree
+   node_t *node = node_pick_non_term_subnode(mutated_tree->root);
+-  if (unlikely(node == NULL)) {
+-
+-    // By design, _pick_non_term_node should not return NULL
+-    perror("_pick_non_term_node returns NULL");
+-    exit(EXIT_FAILURE);
+-
+-  }
++  if (unlikely(node == NULL)) return mutated_tree;
+ 
+   node_t *parent = node->parent;
+ 
+@@ -232,6 +222,7 @@ tree_t *splicing_mutation(tree_t *tree) {
+   if (node_replace_subnode(parent, node, replace_node)) {
+ 
+     node_free(node);
++    node_get_size(mutated_tree->root);
+ 
+   } else {
+ 
+-- 
+2.43.0
+

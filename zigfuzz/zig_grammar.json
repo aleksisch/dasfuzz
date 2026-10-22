@@ -1,0 +1,3150 @@
+{
+    "<Root>": [
+        [
+            "<skip>",
+            "<ContainerMembers>",
+            "<eof>"
+        ]
+    ],
+    "<ContainerMembers_opt1>": [
+        [],
+        [
+            "<container_doc_comment>"
+        ]
+    ],
+    "<ContainerMembers_star2>": [
+        [],
+        [
+            "<ContainerDeclaration>"
+        ],
+        [
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>"
+        ],
+        [
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>"
+        ]
+    ],
+    "<ContainerMembers_star3>": [
+        [],
+        [
+            "<ContainerField>",
+            "<COMMA>"
+        ],
+        [
+            "<ContainerField>",
+            "<COMMA>",
+            "<ContainerField>",
+            "<COMMA>"
+        ],
+        [
+            "<ContainerField>",
+            "<COMMA>",
+            "<ContainerField>",
+            "<COMMA>",
+            "<ContainerField>",
+            "<COMMA>"
+        ]
+    ],
+    "<ContainerMembers_star5>": [
+        [],
+        [
+            "<ContainerDeclaration>"
+        ],
+        [
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>"
+        ],
+        [
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>",
+            "<ContainerDeclaration>"
+        ]
+    ],
+    "<ContainerMembers_alt4>": [
+        [
+            "<ContainerField>"
+        ],
+        [
+            "<ContainerMembers_star5>"
+        ]
+    ],
+    "<ContainerMembers>": [
+        [
+            "<ContainerMembers_opt1>",
+            "<ContainerMembers_star2>",
+            "<ContainerMembers_star3>",
+            "<ContainerMembers_alt4>"
+        ]
+    ],
+    "<ContainerDeclaration_opt6>": [
+        [],
+        [
+            "<doc_comment>"
+        ]
+    ],
+    "<ContainerDeclaration_opt7>": [
+        [],
+        [
+            "<KEYWORD_pub>"
+        ]
+    ],
+    "<ContainerDeclaration>": [
+        [
+            "<TestDecl>"
+        ],
+        [
+            "<ComptimeDecl>"
+        ],
+        [
+            "<ContainerDeclaration_opt6>",
+            "<ContainerDeclaration_opt7>",
+            "<Decl>"
+        ]
+    ],
+    "<TestDecl_alt9>": [
+        [
+            "<STRINGLITERALSINGLE>"
+        ],
+        [
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<TestDecl_opt8>": [
+        [],
+        [
+            "<TestDecl_alt9>"
+        ]
+    ],
+    "<TestDecl>": [
+        [
+            "<KEYWORD_test>",
+            "<TestDecl_opt8>",
+            "<Block>"
+        ]
+    ],
+    "<ComptimeDecl>": [
+        [
+            "<KEYWORD_comptime>",
+            "<Block>"
+        ]
+    ],
+    "<Decl>": [
+        [
+            "<FnProto>",
+            "<Block>"
+        ],
+        [
+            "<KEYWORD_export>",
+            "<FnProto>",
+            "<Block>"
+        ],
+        [
+            "<KEYWORD_inline>",
+            "<FnProto>",
+            "<Block>"
+        ],
+        [
+            "<KEYWORD_extern>",
+            "<FnProto>",
+            "<SEMICOLON>"
+        ],
+        [
+            "<GlobalVarDecl>"
+        ],
+        [
+            "<KEYWORD_threadlocal>",
+            "<GlobalVarDecl>"
+        ]
+    ],
+    "<FnProto_opt18>": [
+        [],
+        [
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<FnProto_opt19>": [
+        [],
+        [
+            "<ByteAlign>"
+        ]
+    ],
+    "<FnProto_opt20>": [
+        [],
+        [
+            "<AddrSpace>"
+        ]
+    ],
+    "<FnProto_opt21>": [
+        [],
+        [
+            "<LinkSection>"
+        ]
+    ],
+    "<FnProto_opt22>": [
+        [],
+        [
+            "<CallConv>"
+        ]
+    ],
+    "<FnProto_opt23>": [
+        [],
+        [
+            "<EXCLAMATIONMARK>"
+        ]
+    ],
+    "<FnProto>": [
+        [
+            "<KEYWORD_fn>",
+            "<FnProto_opt18>",
+            "<LPAREN>",
+            "<ParamDeclList>",
+            "<RPAREN>",
+            "<FnProto_opt19>",
+            "<FnProto_opt20>",
+            "<FnProto_opt21>",
+            "<FnProto_opt22>",
+            "<FnProto_opt23>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<VarDeclProto_alt24>": [
+        [
+            "<KEYWORD_const>"
+        ],
+        [
+            "<KEYWORD_var>"
+        ]
+    ],
+    "<VarDeclProto_opt25>": [
+        [],
+        [
+            "<COLON>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<VarDeclProto_opt26>": [
+        [],
+        [
+            "<ByteAlign>"
+        ]
+    ],
+    "<VarDeclProto_opt27>": [
+        [],
+        [
+            "<AddrSpace>"
+        ]
+    ],
+    "<VarDeclProto_opt28>": [
+        [],
+        [
+            "<LinkSection>"
+        ]
+    ],
+    "<VarDeclProto>": [
+        [
+            "<VarDeclProto_alt24>",
+            "<IDENTIFIER>",
+            "<VarDeclProto_opt25>",
+            "<VarDeclProto_opt26>",
+            "<VarDeclProto_opt27>",
+            "<VarDeclProto_opt28>"
+        ]
+    ],
+    "<GlobalVarDecl>": [
+        [
+            "<VarDeclProto>",
+            "<EQUAL>",
+            "<Expr>",
+            "<SEMICOLON>"
+        ]
+    ],
+    "<ContainerField>": [
+        [
+            "<IDENTIFIER>",
+            "<COLON>",
+            "<TypeExpr>"
+        ],
+        [
+            "<IDENTIFIER>",
+            "<COLON>",
+            "<TypeExpr>",
+            "<EQUAL>",
+            "<Expr>"
+        ]
+    ],
+    "<Statement_opt35>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<Statement>": [
+        [
+            "<KEYWORD_comptime>",
+            "<ComptimeStatement>"
+        ],
+        [
+            "<KEYWORD_nosuspend>",
+            "<BlockExprStatement>"
+        ],
+        [
+            "<KEYWORD_suspend>",
+            "<BlockExprStatement>"
+        ],
+        [
+            "<KEYWORD_defer>",
+            "<BlockExprStatement>"
+        ],
+        [
+            "<KEYWORD_errdefer>",
+            "<Statement_opt35>",
+            "<BlockExprStatement>"
+        ],
+        [
+            "<IfStatement>"
+        ],
+        [
+            "<LabeledStatement>"
+        ],
+        [
+            "<VarDeclExprStatement>"
+        ]
+    ],
+    "<ComptimeStatement>": [
+        [
+            "<BlockExpr>"
+        ],
+        [
+            "<VarDeclExprStatement>"
+        ]
+    ],
+    "<IfStatement_opt37>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<IfStatement_opt36>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<IfStatement_opt37>",
+            "<Statement>"
+        ]
+    ],
+    "<IfStatement_opt39>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<IfStatement_alt38>": [
+        [
+            "<SEMICOLON>"
+        ],
+        [
+            "<KEYWORD_else>",
+            "<IfStatement_opt39>",
+            "<Statement>"
+        ]
+    ],
+    "<IfStatement>": [
+        [
+            "<IfPrefix>",
+            "<BlockExpr>",
+            "<IfStatement_opt36>"
+        ],
+        [
+            "<IfPrefix>",
+            "<AssignExpr>",
+            "<IfStatement_alt38>"
+        ]
+    ],
+    "<LabeledStatement_opt40>": [
+        [],
+        [
+            "<BlockLabel>"
+        ]
+    ],
+    "<LabeledStatement_alt41>": [
+        [
+            "<Block>"
+        ],
+        [
+            "<LoopStatement>"
+        ],
+        [
+            "<SwitchExpr>"
+        ]
+    ],
+    "<LabeledStatement>": [
+        [
+            "<LabeledStatement_opt40>",
+            "<LabeledStatement_alt41>"
+        ]
+    ],
+    "<LoopStatement_opt42>": [
+        [],
+        [
+            "<KEYWORD_inline>"
+        ]
+    ],
+    "<LoopStatement_alt43>": [
+        [
+            "<ForStatement>"
+        ],
+        [
+            "<WhileStatement>"
+        ]
+    ],
+    "<LoopStatement>": [
+        [
+            "<LoopStatement_opt42>",
+            "<LoopStatement_alt43>"
+        ]
+    ],
+    "<ForStatement_opt44>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<Statement>"
+        ]
+    ],
+    "<ForStatement_alt45>": [
+        [
+            "<SEMICOLON>"
+        ],
+        [
+            "<KEYWORD_else>",
+            "<Statement>"
+        ]
+    ],
+    "<ForStatement>": [
+        [
+            "<ForPrefix>",
+            "<BlockExpr>",
+            "<ForStatement_opt44>"
+        ],
+        [
+            "<ForPrefix>",
+            "<AssignExpr>",
+            "<ForStatement_alt45>"
+        ]
+    ],
+    "<WhileStatement_opt47>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<WhileStatement_opt46>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<WhileStatement_opt47>",
+            "<Statement>"
+        ]
+    ],
+    "<WhileStatement_opt49>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<WhileStatement_alt48>": [
+        [
+            "<SEMICOLON>"
+        ],
+        [
+            "<KEYWORD_else>",
+            "<WhileStatement_opt49>",
+            "<Statement>"
+        ]
+    ],
+    "<WhileStatement>": [
+        [
+            "<WhilePrefix>",
+            "<BlockExpr>",
+            "<WhileStatement_opt46>"
+        ],
+        [
+            "<WhilePrefix>",
+            "<AssignExpr>",
+            "<WhileStatement_alt48>"
+        ]
+    ],
+    "<BlockExprStatement>": [
+        [
+            "<BlockExpr>"
+        ],
+        [
+            "<AssignExpr>",
+            "<SEMICOLON>"
+        ]
+    ],
+    "<BlockExpr_opt50>": [
+        [],
+        [
+            "<BlockLabel>"
+        ]
+    ],
+    "<BlockExpr>": [
+        [
+            "<BlockExpr_opt50>",
+            "<Block>"
+        ]
+    ],
+    "<VarDeclExprStatement_alt52>": [
+        [
+            "<VarDeclProto>"
+        ],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<VarDeclExprStatement_star51>": [
+        [],
+        [
+            "<COMMA>",
+            "<VarDeclExprStatement_alt52>",
+            "<VarDeclExprStatement_star51>"
+        ]
+    ],
+    "<VarDeclExprStatement_alt56>": [
+        [
+            "<VarDeclProto>"
+        ],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<VarDeclExprStatement_plus55>": [
+        [
+            "<COMMA>",
+            "<VarDeclExprStatement_alt56>"
+        ],
+        [
+            "<COMMA>",
+            "<VarDeclExprStatement_alt56>",
+            "<VarDeclExprStatement_plus55>"
+        ]
+    ],
+    "<VarDeclExprStatement_alt54>": [
+        [
+            "<AssignOp>",
+            "<Expr>"
+        ],
+        [
+            "<VarDeclExprStatement_plus55>",
+            "<EQUAL>",
+            "<Expr>"
+        ]
+    ],
+    "<VarDeclExprStatement_opt53>": [
+        [],
+        [
+            "<VarDeclExprStatement_alt54>"
+        ]
+    ],
+    "<VarDeclExprStatement>": [
+        [
+            "<VarDeclProto>",
+            "<VarDeclExprStatement_star51>",
+            "<EQUAL>",
+            "<Expr>",
+            "<SEMICOLON>"
+        ],
+        [
+            "<Expr>",
+            "<VarDeclExprStatement_opt53>",
+            "<SEMICOLON>"
+        ]
+    ],
+    "<AssignExpr_plus59>": [
+        [
+            "<COMMA>",
+            "<Expr>"
+        ],
+        [
+            "<COMMA>",
+            "<Expr>",
+            "<AssignExpr_plus59>"
+        ]
+    ],
+    "<AssignExpr_alt58>": [
+        [
+            "<AssignOp>",
+            "<Expr>"
+        ],
+        [
+            "<AssignExpr_plus59>",
+            "<EQUAL>",
+            "<Expr>"
+        ]
+    ],
+    "<AssignExpr_opt57>": [
+        [],
+        [
+            "<AssignExpr_alt58>"
+        ]
+    ],
+    "<AssignExpr>": [
+        [
+            "<Expr>",
+            "<AssignExpr_opt57>"
+        ]
+    ],
+    "<SingleAssignExpr_opt60>": [
+        [],
+        [
+            "<AssignOp>",
+            "<Expr>"
+        ]
+    ],
+    "<SingleAssignExpr>": [
+        [
+            "<Expr>",
+            "<SingleAssignExpr_opt60>"
+        ]
+    ],
+    "<Expr>": [
+        [
+            "<BoolOrExpr>"
+        ]
+    ],
+    "<BoolOrExpr_star61>": [
+        [],
+        [
+            "<KEYWORD_or>",
+            "<BoolAndExpr>"
+        ]
+    ],
+    "<BoolOrExpr>": [
+        [
+            "<BoolAndExpr>",
+            "<BoolOrExpr_star61>"
+        ]
+    ],
+    "<BoolAndExpr_star62>": [
+        [],
+        [
+            "<KEYWORD_and>",
+            "<CompareExpr>"
+        ]
+    ],
+    "<BoolAndExpr>": [
+        [
+            "<CompareExpr>",
+            "<BoolAndExpr_star62>"
+        ]
+    ],
+    "<CompareExpr_opt63>": [
+        [],
+        [
+            "<CompareOp>",
+            "<BitwiseExpr>"
+        ]
+    ],
+    "<CompareExpr>": [
+        [
+            "<BitwiseExpr>",
+            "<CompareExpr_opt63>"
+        ]
+    ],
+    "<BitwiseExpr_star64>": [
+        [],
+        [
+            "<BitwiseOp>",
+            "<BitShiftExpr>"
+        ]
+    ],
+    "<BitwiseExpr>": [
+        [
+            "<BitShiftExpr>",
+            "<BitwiseExpr_star64>"
+        ]
+    ],
+    "<BitShiftExpr_star65>": [
+        [],
+        [
+            "<BitShiftOp>",
+            "<AdditionExpr>"
+        ]
+    ],
+    "<BitShiftExpr>": [
+        [
+            "<AdditionExpr>",
+            "<BitShiftExpr_star65>"
+        ]
+    ],
+    "<AdditionExpr_star66>": [
+        [],
+        [
+            "<AdditionOp>",
+            "<MultiplyExpr>"
+        ],
+        [
+            "<AdditionOp>",
+            "<MultiplyExpr>",
+            "<AdditionOp>",
+            "<MultiplyExpr>"
+        ]
+    ],
+    "<AdditionExpr>": [
+        [
+            "<MultiplyExpr>",
+            "<AdditionExpr_star66>"
+        ]
+    ],
+    "<MultiplyExpr_star67>": [
+        [],
+        [
+            "<MultiplyOp>",
+            "<PrefixExpr>"
+        ],
+        [
+            "<MultiplyOp>",
+            "<PrefixExpr>",
+            "<MultiplyOp>",
+            "<PrefixExpr>"
+        ]
+    ],
+    "<MultiplyExpr>": [
+        [
+            "<PrefixExpr>",
+            "<MultiplyExpr_star67>"
+        ]
+    ],
+    "<PrefixExpr_star68>": [
+        [],
+        [
+            "<PrefixOp>"
+        ],
+        [
+            "<PrefixOp>",
+            "<PrefixOp>"
+        ]
+    ],
+    "<PrefixExpr>": [
+        [
+            "<PrefixExpr_star68>",
+            "<PrimaryExpr>"
+        ]
+    ],
+    "<PrimaryExpr_opt69>": [
+        [],
+        [
+            "<BreakLabel>"
+        ]
+    ],
+    "<PrimaryExpr_opt70>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<PrimaryExpr_opt71>": [
+        [],
+        [
+            "<BreakLabel>"
+        ]
+    ],
+    "<PrimaryExpr_opt72>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<PrimaryExpr_opt73>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<PrimaryExpr_opt74>": [
+        [],
+        [
+            "<BlockLabel>"
+        ]
+    ],
+    "<PrimaryExpr>": [
+        [
+            "<AsmExpr>"
+        ],
+        [
+            "<IfExpr>"
+        ],
+        [
+            "<KEYWORD_break>",
+            "<PrimaryExpr_opt69>",
+            "<PrimaryExpr_opt70>"
+        ],
+        [
+            "<KEYWORD_comptime>",
+            "<Expr>"
+        ],
+        [
+            "<KEYWORD_nosuspend>",
+            "<Expr>"
+        ],
+        [
+            "<KEYWORD_continue>",
+            "<PrimaryExpr_opt71>",
+            "<PrimaryExpr_opt72>"
+        ],
+        [
+            "<KEYWORD_resume>",
+            "<Expr>"
+        ],
+        [
+            "<KEYWORD_return>",
+            "<PrimaryExpr_opt73>"
+        ],
+        [
+            "<PrimaryExpr_opt74>",
+            "<LoopExpr>"
+        ],
+        [
+            "<Block>"
+        ],
+        [
+            "<CurlySuffixExpr>"
+        ]
+    ],
+    "<IfExpr_opt76>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<IfExpr_opt75>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<IfExpr_opt76>",
+            "<Expr>"
+        ]
+    ],
+    "<IfExpr>": [
+        [
+            "<IfPrefix>",
+            "<Expr>",
+            "<IfExpr_opt75>"
+        ]
+    ],
+    "<Block_star77>": [
+        [],
+        [
+            "<Statement>"
+        ],
+        [
+            "<Statement>",
+            "<Statement>"
+        ],
+        [
+            "<Statement>",
+            "<Statement>",
+            "<Statement>"
+        ],
+        [
+            "<Statement>",
+            "<Statement>",
+            "<Statement>",
+            "<Statement>"
+        ]
+    ],
+    "<Block>": [
+        [
+            "<LBRACE>",
+            "<Block_star77>",
+            "<RBRACE>"
+        ]
+    ],
+    "<LoopExpr_opt78>": [
+        [],
+        [
+            "<KEYWORD_inline>"
+        ]
+    ],
+    "<LoopExpr_alt79>": [
+        [
+            "<ForExpr>"
+        ],
+        [
+            "<WhileExpr>"
+        ]
+    ],
+    "<LoopExpr>": [
+        [
+            "<LoopExpr_opt78>",
+            "<LoopExpr_alt79>"
+        ]
+    ],
+    "<ForExpr_opt80>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<Expr>"
+        ]
+    ],
+    "<ForExpr>": [
+        [
+            "<ForPrefix>",
+            "<Expr>",
+            "<ForExpr_opt80>"
+        ]
+    ],
+    "<WhileExpr_opt82>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<WhileExpr_opt81>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<WhileExpr_opt82>",
+            "<Expr>"
+        ]
+    ],
+    "<WhileExpr>": [
+        [
+            "<WhilePrefix>",
+            "<Expr>",
+            "<WhileExpr_opt81>"
+        ]
+    ],
+    "<CurlySuffixExpr_opt83>": [
+        [],
+        [
+            "<InitList>"
+        ]
+    ],
+    "<CurlySuffixExpr>": [
+        [
+            "<TypeExpr>",
+            "<CurlySuffixExpr_opt83>"
+        ]
+    ],
+    "<InitList_star84>": [
+        [],
+        [
+            "<COMMA>",
+            "<FieldInit>",
+            "<InitList_star84>"
+        ]
+    ],
+    "<InitList_opt85>": [
+        [],
+        [
+            "<COMMA>"
+        ]
+    ],
+    "<InitList_star86>": [
+        [],
+        [
+            "<COMMA>",
+            "<Expr>",
+            "<InitList_star86>"
+        ]
+    ],
+    "<InitList_opt87>": [
+        [],
+        [
+            "<COMMA>"
+        ]
+    ],
+    "<InitList>": [
+        [
+            "<LBRACE>",
+            "<FieldInit>",
+            "<InitList_star84>",
+            "<InitList_opt85>",
+            "<RBRACE>"
+        ],
+        [
+            "<LBRACE>",
+            "<Expr>",
+            "<InitList_star86>",
+            "<InitList_opt87>",
+            "<RBRACE>"
+        ],
+        [
+            "<LBRACE>",
+            "<RBRACE>"
+        ]
+    ],
+    "<TypeExpr_star88>": [
+        [],
+        [
+            "<PrefixTypeOp>"
+        ],
+        [
+            "<PrefixTypeOp>",
+            "<PrefixTypeOp>"
+        ]
+    ],
+    "<TypeExpr>": [
+        [
+            "<TypeExpr_star88>",
+            "<ErrorUnionExpr>"
+        ]
+    ],
+    "<ErrorUnionExpr_opt89>": [
+        [],
+        [
+            "<EXCLAMATIONMARK>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<ErrorUnionExpr>": [
+        [
+            "<SuffixExpr>",
+            "<ErrorUnionExpr_opt89>"
+        ]
+    ],
+    "<SuffixExpr_alt91>": [
+        [
+            "<SuffixOp>"
+        ],
+        [
+            "<FnCallArguments>"
+        ]
+    ],
+    "<SuffixExpr_star90>": [
+        [],
+        [
+            "<SuffixExpr_alt91>"
+        ],
+        [
+            "<SuffixExpr_alt91>",
+            "<SuffixExpr_alt91>"
+        ]
+    ],
+    "<SuffixExpr>": [
+        [
+            "<PrimaryTypeExpr>",
+            "<SuffixExpr_star90>"
+        ]
+    ],
+    "<PrimaryTypeExpr>": [
+        [
+            "<BUILTINIDENTIFIER>",
+            "<FnCallArguments>"
+        ],
+        [
+            "<CHAR_LITERAL>"
+        ],
+        [
+            "<ContainerDecl>"
+        ],
+        [
+            "<DOT>",
+            "<IDENTIFIER>"
+        ],
+        [
+            "<DOT>",
+            "<InitList>"
+        ],
+        [
+            "<ErrorSetDecl>"
+        ],
+        [
+            "<FLOAT>"
+        ],
+        [
+            "<FnProto>"
+        ],
+        [
+            "<GroupedExpr>"
+        ],
+        [
+            "<LabeledTypeExpr>"
+        ],
+        [
+            "<IDENTIFIER>"
+        ],
+        [
+            "<IfTypeExpr>"
+        ],
+        [
+            "<INTEGER>"
+        ],
+        [
+            "<KEYWORD_comptime>",
+            "<TypeExpr>"
+        ],
+        [
+            "<KEYWORD_error>",
+            "<DOT>",
+            "<IDENTIFIER>"
+        ],
+        [
+            "<KEYWORD_anyframe>"
+        ],
+        [
+            "<KEYWORD_unreachable>"
+        ],
+        [
+            "<STRINGLITERAL>"
+        ],
+        [
+            "u8 "
+        ],
+        [
+            "u8 "
+        ],
+        [
+            "u16 "
+        ],
+        [
+            "u16 "
+        ],
+        [
+            "u32 "
+        ],
+        [
+            "u32 "
+        ],
+        [
+            "u64 "
+        ],
+        [
+            "u64 "
+        ],
+        [
+            "i8 "
+        ],
+        [
+            "i8 "
+        ],
+        [
+            "i32 "
+        ],
+        [
+            "i32 "
+        ],
+        [
+            "i64 "
+        ],
+        [
+            "i64 "
+        ],
+        [
+            "usize "
+        ],
+        [
+            "usize "
+        ],
+        [
+            "isize "
+        ],
+        [
+            "isize "
+        ],
+        [
+            "bool "
+        ],
+        [
+            "bool "
+        ],
+        [
+            "void "
+        ],
+        [
+            "void "
+        ],
+        [
+            "f32 "
+        ],
+        [
+            "f32 "
+        ],
+        [
+            "f64 "
+        ],
+        [
+            "f64 "
+        ],
+        [
+            "type "
+        ],
+        [
+            "type "
+        ],
+        [
+            "anyerror "
+        ],
+        [
+            "anyerror "
+        ],
+        [
+            "comptime_int "
+        ],
+        [
+            "comptime_int "
+        ]
+    ],
+    "<ContainerDecl_alt93>": [
+        [
+            "<KEYWORD_extern>"
+        ],
+        [
+            "<KEYWORD_packed>"
+        ]
+    ],
+    "<ContainerDecl_opt92>": [
+        [],
+        [
+            "<ContainerDecl_alt93>"
+        ]
+    ],
+    "<ContainerDecl>": [
+        [
+            "<ContainerDecl_opt92>",
+            "<ContainerDeclAuto>"
+        ]
+    ],
+    "<ErrorSetDecl>": [
+        [
+            "<KEYWORD_error>",
+            "<LBRACE>",
+            "<IdentifierList>",
+            "<RBRACE>"
+        ]
+    ],
+    "<GroupedExpr>": [
+        [
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<IfTypeExpr_opt95>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<IfTypeExpr_opt94>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<IfTypeExpr_opt95>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<IfTypeExpr>": [
+        [
+            "<IfPrefix>",
+            "<TypeExpr>",
+            "<IfTypeExpr_opt94>"
+        ]
+    ],
+    "<LabeledTypeExpr_opt96>": [
+        [],
+        [
+            "<BlockLabel>"
+        ]
+    ],
+    "<LabeledTypeExpr_opt97>": [
+        [],
+        [
+            "<BlockLabel>"
+        ]
+    ],
+    "<LabeledTypeExpr>": [
+        [
+            "<BlockLabel>",
+            "<Block>"
+        ],
+        [
+            "<LabeledTypeExpr_opt96>",
+            "<LoopTypeExpr>"
+        ],
+        [
+            "<LabeledTypeExpr_opt97>",
+            "<SwitchExpr>"
+        ]
+    ],
+    "<LoopTypeExpr_opt98>": [
+        [],
+        [
+            "<KEYWORD_inline>"
+        ]
+    ],
+    "<LoopTypeExpr_alt99>": [
+        [
+            "<ForTypeExpr>"
+        ],
+        [
+            "<WhileTypeExpr>"
+        ]
+    ],
+    "<LoopTypeExpr>": [
+        [
+            "<LoopTypeExpr_opt98>",
+            "<LoopTypeExpr_alt99>"
+        ]
+    ],
+    "<ForTypeExpr_opt100>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<ForTypeExpr>": [
+        [
+            "<ForPrefix>",
+            "<TypeExpr>",
+            "<ForTypeExpr_opt100>"
+        ]
+    ],
+    "<WhileTypeExpr_opt102>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<WhileTypeExpr_opt101>": [
+        [],
+        [
+            "<KEYWORD_else>",
+            "<WhileTypeExpr_opt102>",
+            "<TypeExpr>"
+        ]
+    ],
+    "<WhileTypeExpr>": [
+        [
+            "<WhilePrefix>",
+            "<TypeExpr>",
+            "<WhileTypeExpr_opt101>"
+        ]
+    ],
+    "<SwitchExpr>": [
+        [
+            "<KEYWORD_switch>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>",
+            "<LBRACE>",
+            "<SwitchProngList>",
+            "<RBRACE>"
+        ]
+    ],
+    "<AsmExpr_opt103>": [
+        [],
+        [
+            "<KEYWORD_volatile>"
+        ]
+    ],
+    "<AsmExpr_opt104>": [
+        [],
+        [
+            "<AsmOutput>"
+        ]
+    ],
+    "<AsmExpr>": [
+        [
+            "<KEYWORD_asm>",
+            "<AsmExpr_opt103>",
+            "<LPAREN>",
+            "<Expr>",
+            "<AsmExpr_opt104>",
+            "<RPAREN>"
+        ]
+    ],
+    "<AsmOutput_opt105>": [
+        [],
+        [
+            "<AsmInput>"
+        ]
+    ],
+    "<AsmOutput>": [
+        [
+            "<COLON>",
+            "<AsmOutputList>",
+            "<AsmOutput_opt105>"
+        ]
+    ],
+    "<AsmOutputItem_alt106>": [
+        [
+            "<MINUSRARROW>",
+            "<TypeExpr>"
+        ],
+        [
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<AsmOutputItem>": [
+        [
+            "<LBRACKET>",
+            "<IDENTIFIER>",
+            "<RBRACKET>",
+            "<STRINGLITERAL>",
+            "<LPAREN>",
+            "<AsmOutputItem_alt106>",
+            "<RPAREN>"
+        ]
+    ],
+    "<AsmInput_opt107>": [
+        [],
+        [
+            "<AsmClobbers>"
+        ]
+    ],
+    "<AsmInput>": [
+        [
+            "<COLON>",
+            "<AsmInputList>",
+            "<AsmInput_opt107>"
+        ]
+    ],
+    "<AsmInputItem>": [
+        [
+            "<LBRACKET>",
+            "<IDENTIFIER>",
+            "<RBRACKET>",
+            "<STRINGLITERAL>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<AsmClobbers>": [
+        [
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<BreakLabel>": [
+        [
+            "<COLON>",
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<BlockLabel>": [
+        [
+            "<IDENTIFIER>",
+            "<COLON>"
+        ]
+    ],
+    "<FieldInit>": [
+        [
+            "<DOT>",
+            "<IDENTIFIER>",
+            "<EQUAL>",
+            "<Expr>"
+        ]
+    ],
+    "<WhileContinueExpr>": [
+        [
+            "<COLON>",
+            "<LPAREN>",
+            "<AssignExpr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<LinkSection>": [
+        [
+            "<KEYWORD_linksection>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<AddrSpace>": [
+        [
+            "<KEYWORD_addrspace>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<CallConv>": [
+        [
+            "<KEYWORD_callconv>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<ParamDecl>": [
+        [
+            "<IDENTIFIER>",
+            "<COLON>",
+            "<ParamType>"
+        ],
+        [
+            "<KEYWORD_comptime>",
+            "<IDENTIFIER>",
+            "<COLON>",
+            "<ParamType>"
+        ],
+        [
+            "<KEYWORD_noalias>",
+            "<IDENTIFIER>",
+            "<COLON>",
+            "<ParamType>"
+        ]
+    ],
+    "<ParamType>": [
+        [
+            "<KEYWORD_anytype>"
+        ],
+        [
+            "<TypeExpr>"
+        ]
+    ],
+    "<IfPrefix_opt112>": [
+        [],
+        [
+            "<PtrPayload>"
+        ]
+    ],
+    "<IfPrefix>": [
+        [
+            "<KEYWORD_if>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>",
+            "<IfPrefix_opt112>"
+        ]
+    ],
+    "<WhilePrefix_opt113>": [
+        [],
+        [
+            "<PtrPayload>"
+        ]
+    ],
+    "<WhilePrefix_opt114>": [
+        [],
+        [
+            "<WhileContinueExpr>"
+        ]
+    ],
+    "<WhilePrefix>": [
+        [
+            "<KEYWORD_while>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>",
+            "<WhilePrefix_opt113>",
+            "<WhilePrefix_opt114>"
+        ]
+    ],
+    "<ForPrefix>": [
+        [
+            "<KEYWORD_for>",
+            "<LPAREN>",
+            "<ForArgumentsList>",
+            "<RPAREN>",
+            "<PtrListPayload>"
+        ]
+    ],
+    "<Payload>": [
+        [
+            "<PIPE>",
+            "<IDENTIFIER>",
+            "<PIPE>"
+        ]
+    ],
+    "<PtrPayload_opt115>": [
+        [],
+        [
+            "<ASTERISK>"
+        ]
+    ],
+    "<PtrPayload>": [
+        [
+            "<PIPE>",
+            "<PtrPayload_opt115>",
+            "<IDENTIFIER>",
+            "<PIPE>"
+        ]
+    ],
+    "<PtrIndexPayload_opt116>": [
+        [],
+        [
+            "<ASTERISK>"
+        ]
+    ],
+    "<PtrIndexPayload_opt117>": [
+        [],
+        [
+            "<COMMA>",
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<PtrIndexPayload>": [
+        [
+            "<PIPE>",
+            "<PtrIndexPayload_opt116>",
+            "<IDENTIFIER>",
+            "<PtrIndexPayload_opt117>",
+            "<PIPE>"
+        ]
+    ],
+    "<PtrListPayload_opt118>": [
+        [],
+        [
+            "<ASTERISK>"
+        ]
+    ],
+    "<PtrListPayload_opt120>": [
+        [],
+        [
+            "<ASTERISK>"
+        ]
+    ],
+    "<PtrListPayload_star119>": [
+        [],
+        [
+            "<COMMA>",
+            "<PtrListPayload_opt120>",
+            "<IDENTIFIER>",
+            "<PtrListPayload_star119>"
+        ]
+    ],
+    "<PtrListPayload_opt121>": [
+        [],
+        [
+            "<COMMA>"
+        ]
+    ],
+    "<PtrListPayload>": [
+        [
+            "<PIPE>",
+            "<PtrListPayload_opt118>",
+            "<IDENTIFIER>",
+            "<PtrListPayload_star119>",
+            "<PtrListPayload_opt121>",
+            "<PIPE>"
+        ]
+    ],
+    "<SwitchProng_opt122>": [
+        [],
+        [
+            "<KEYWORD_inline>"
+        ]
+    ],
+    "<SwitchProng_opt123>": [
+        [],
+        [
+            "<PtrIndexPayload>"
+        ]
+    ],
+    "<SwitchProng>": [
+        [
+            "<SwitchProng_opt122>",
+            "<SwitchCase>",
+            "<EQUALRARROW>",
+            "<SwitchProng_opt123>",
+            "<SingleAssignExpr>"
+        ]
+    ],
+    "<SwitchCase_star124>": [
+        [],
+        [
+            "<COMMA>",
+            "<SwitchItem>",
+            "<SwitchCase_star124>"
+        ]
+    ],
+    "<SwitchCase_opt125>": [
+        [],
+        [
+            "<COMMA>"
+        ]
+    ],
+    "<SwitchCase>": [
+        [
+            "<SwitchItem>",
+            "<SwitchCase_star124>",
+            "<SwitchCase_opt125>"
+        ],
+        [
+            "<KEYWORD_else>"
+        ]
+    ],
+    "<SwitchItem_opt126>": [
+        [],
+        [
+            "<DOT3>",
+            "<Expr>"
+        ]
+    ],
+    "<SwitchItem>": [
+        [
+            "<Expr>",
+            "<SwitchItem_opt126>"
+        ]
+    ],
+    "<ForArgumentsList_star127>": [
+        [],
+        [
+            "<COMMA>",
+            "<ForItem>",
+            "<ForArgumentsList_star127>"
+        ]
+    ],
+    "<ForArgumentsList_opt128>": [
+        [],
+        [
+            "<COMMA>"
+        ]
+    ],
+    "<ForArgumentsList>": [
+        [
+            "<ForItem>",
+            "<ForArgumentsList_star127>",
+            "<ForArgumentsList_opt128>"
+        ]
+    ],
+    "<ForItem_opt130>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<ForItem_opt129>": [
+        [],
+        [
+            "<DOT2>",
+            "<ForItem_opt130>"
+        ]
+    ],
+    "<ForItem>": [
+        [
+            "<Expr>",
+            "<ForItem_opt129>"
+        ]
+    ],
+    "<AssignOp>": [
+        [
+            "<ASTERISKEQUAL>"
+        ],
+        [
+            "<ASTERISKPIPEEQUAL>"
+        ],
+        [
+            "<SLASHEQUAL>"
+        ],
+        [
+            "<PERCENTEQUAL>"
+        ],
+        [
+            "<PLUSEQUAL>"
+        ],
+        [
+            "<PLUSPIPEEQUAL>"
+        ],
+        [
+            "<MINUSEQUAL>"
+        ],
+        [
+            "<MINUSPIPEEQUAL>"
+        ],
+        [
+            "<LARROW2EQUAL>"
+        ],
+        [
+            "<LARROW2PIPEEQUAL>"
+        ],
+        [
+            "<RARROW2EQUAL>"
+        ],
+        [
+            "<AMPERSANDEQUAL>"
+        ],
+        [
+            "<CARETEQUAL>"
+        ],
+        [
+            "<PIPEEQUAL>"
+        ],
+        [
+            "<ASTERISKPERCENTEQUAL>"
+        ],
+        [
+            "<PLUSPERCENTEQUAL>"
+        ],
+        [
+            "<MINUSPERCENTEQUAL>"
+        ],
+        [
+            "<EQUAL>"
+        ]
+    ],
+    "<CompareOp>": [
+        [
+            "<EQUALEQUAL>"
+        ],
+        [
+            "<EXCLAMATIONMARKEQUAL>"
+        ],
+        [
+            "<LARROW>"
+        ],
+        [
+            "<RARROW>"
+        ],
+        [
+            "<LARROWEQUAL>"
+        ],
+        [
+            "<RARROWEQUAL>"
+        ]
+    ],
+    "<BitwiseOp_opt131>": [
+        [],
+        [
+            "<Payload>"
+        ]
+    ],
+    "<BitwiseOp>": [
+        [
+            "<AMPERSAND>"
+        ],
+        [
+            "<CARET>"
+        ],
+        [
+            "<PIPE>"
+        ],
+        [
+            "<KEYWORD_orelse>"
+        ],
+        [
+            "<KEYWORD_catch>",
+            "<BitwiseOp_opt131>"
+        ]
+    ],
+    "<BitShiftOp>": [
+        [
+            "<LARROW2>"
+        ],
+        [
+            "<RARROW2>"
+        ],
+        [
+            "<LARROW2PIPE>"
+        ]
+    ],
+    "<AdditionOp>": [
+        [
+            "<PLUS>"
+        ],
+        [
+            "<MINUS>"
+        ],
+        [
+            "<PLUS2>"
+        ],
+        [
+            "<PLUSPERCENT>"
+        ],
+        [
+            "<MINUSPERCENT>"
+        ],
+        [
+            "<PLUSPIPE>"
+        ],
+        [
+            "<MINUSPIPE>"
+        ]
+    ],
+    "<MultiplyOp>": [
+        [
+            "<PIPE2>"
+        ],
+        [
+            "<ASTERISK>"
+        ],
+        [
+            "<SLASH>"
+        ],
+        [
+            "<PERCENT>"
+        ],
+        [
+            "<ASTERISK2>"
+        ],
+        [
+            "<ASTERISKPERCENT>"
+        ],
+        [
+            "<ASTERISKPIPE>"
+        ]
+    ],
+    "<PrefixOp>": [
+        [
+            "<EXCLAMATIONMARK>"
+        ],
+        [
+            "<MINUS>"
+        ],
+        [
+            "<TILDE>"
+        ],
+        [
+            "<MINUSPERCENT>"
+        ],
+        [
+            "<AMPERSAND>"
+        ],
+        [
+            "<KEYWORD_try>"
+        ]
+    ],
+    "<PrefixTypeOp_alt133>": [
+        [
+            "<ByteAlign>"
+        ],
+        [
+            "<AddrSpace>"
+        ],
+        [
+            "<KEYWORD_const>"
+        ],
+        [
+            "<KEYWORD_volatile>"
+        ],
+        [
+            "<KEYWORD_allowzero>"
+        ]
+    ],
+    "<PrefixTypeOp_star132>": [
+        [],
+        [
+            "<PrefixTypeOp_alt133>",
+            "<PrefixTypeOp_star132>"
+        ]
+    ],
+    "<PrefixTypeOp_opt136>": [
+        [],
+        [
+            "<COLON>",
+            "<Expr>",
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<PrefixTypeOp_alt135>": [
+        [
+            "<AddrSpace>"
+        ],
+        [
+            "<KEYWORD_align>",
+            "<LPAREN>",
+            "<Expr>",
+            "<PrefixTypeOp_opt136>",
+            "<RPAREN>"
+        ],
+        [
+            "<KEYWORD_const>"
+        ],
+        [
+            "<KEYWORD_volatile>"
+        ],
+        [
+            "<KEYWORD_allowzero>"
+        ]
+    ],
+    "<PrefixTypeOp_star134>": [
+        [],
+        [
+            "<PrefixTypeOp_alt135>",
+            "<PrefixTypeOp_star134>"
+        ]
+    ],
+    "<PrefixTypeOp>": [
+        [
+            "<QUESTIONMARK>"
+        ],
+        [
+            "<KEYWORD_anyframe>",
+            "<MINUSRARROW>"
+        ],
+        [
+            "<SliceTypeStart>",
+            "<PrefixTypeOp_star132>"
+        ],
+        [
+            "<PtrTypeStart>",
+            "<PrefixTypeOp_star134>"
+        ],
+        [
+            "<ArrayTypeStart>"
+        ]
+    ],
+    "<SuffixOp_opt139>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<SuffixOp_opt140>": [
+        [],
+        [
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<SuffixOp_opt138>": [
+        [],
+        [
+            "<SuffixOp_opt139>",
+            "<SuffixOp_opt140>"
+        ]
+    ],
+    "<SuffixOp_opt137>": [
+        [],
+        [
+            "<DOT2>",
+            "<SuffixOp_opt138>"
+        ]
+    ],
+    "<SuffixOp>": [
+        [
+            "<LBRACKET>",
+            "<Expr>",
+            "<SuffixOp_opt137>",
+            "<RBRACKET>"
+        ],
+        [
+            "<DOT>",
+            "<IDENTIFIER>"
+        ],
+        [
+            "<DOTASTERISK>"
+        ],
+        [
+            "<DOTQUESTIONMARK>"
+        ]
+    ],
+    "<FnCallArguments>": [
+        [
+            "<LPAREN>",
+            "<ExprList>",
+            "<RPAREN>"
+        ]
+    ],
+    "<SliceTypeStart_opt141>": [
+        [],
+        [
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<SliceTypeStart>": [
+        [
+            "<LBRACKET>",
+            "<SliceTypeStart_opt141>",
+            "<RBRACKET>"
+        ]
+    ],
+    "<PtrTypeStart_alt143>": [
+        [
+            "<LETTERC>"
+        ],
+        [
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<PtrTypeStart_opt142>": [
+        [],
+        [
+            "<PtrTypeStart_alt143>"
+        ]
+    ],
+    "<PtrTypeStart>": [
+        [
+            "<ASTERISK>"
+        ],
+        [
+            "<ASTERISK2>"
+        ],
+        [
+            "<LBRACKET>",
+            "<ASTERISK>",
+            "<PtrTypeStart_opt142>",
+            "<RBRACKET>"
+        ]
+    ],
+    "<ArrayTypeStart_opt144>": [
+        [],
+        [
+            "<COLON>",
+            "<Expr>"
+        ]
+    ],
+    "<ArrayTypeStart>": [
+        [
+            "<LBRACKET>",
+            "<Expr>",
+            "<ArrayTypeStart_opt144>",
+            "<RBRACKET>"
+        ]
+    ],
+    "<ContainerDeclAuto>": [
+        [
+            "<ContainerDeclType>",
+            "<LBRACE>",
+            "<ContainerMembers>",
+            "<RBRACE>"
+        ]
+    ],
+    "<ContainerDeclType_opt145>": [
+        [],
+        [
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<ContainerDeclType_opt146>": [
+        [],
+        [
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<ContainerDeclType_opt149>": [
+        [],
+        [
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<ContainerDeclType_alt148>": [
+        [
+            "<KEYWORD_enum>",
+            "<ContainerDeclType_opt149>"
+        ],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<ContainerDeclType_opt147>": [
+        [],
+        [
+            "<LPAREN>",
+            "<ContainerDeclType_alt148>",
+            "<RPAREN>"
+        ]
+    ],
+    "<ContainerDeclType>": [
+        [
+            "<KEYWORD_struct>",
+            "<ContainerDeclType_opt145>"
+        ],
+        [
+            "<KEYWORD_opaque>"
+        ],
+        [
+            "<KEYWORD_enum>",
+            "<ContainerDeclType_opt146>"
+        ],
+        [
+            "<KEYWORD_union>",
+            "<ContainerDeclType_opt147>"
+        ]
+    ],
+    "<ByteAlign>": [
+        [
+            "<KEYWORD_align>",
+            "<LPAREN>",
+            "<Expr>",
+            "<RPAREN>"
+        ]
+    ],
+    "<IdentifierList_opt151>": [
+        [],
+        [
+            "<doc_comment>"
+        ]
+    ],
+    "<IdentifierList_star150>": [
+        [],
+        [
+            "<IdentifierList_opt151>",
+            "<IDENTIFIER>",
+            "<COMMA>",
+            "<IdentifierList_star150>"
+        ]
+    ],
+    "<IdentifierList_opt153>": [
+        [],
+        [
+            "<doc_comment>"
+        ]
+    ],
+    "<IdentifierList_opt152>": [
+        [],
+        [
+            "<IdentifierList_opt153>",
+            "<IDENTIFIER>"
+        ]
+    ],
+    "<IdentifierList>": [
+        [
+            "<IdentifierList_star150>",
+            "<IdentifierList_opt152>"
+        ]
+    ],
+    "<SwitchProngList_star154>": [
+        [],
+        [
+            "<SwitchProng>",
+            "<COMMA>",
+            "<SwitchProngList_star154>"
+        ]
+    ],
+    "<SwitchProngList_opt155>": [
+        [],
+        [
+            "<SwitchProng>"
+        ]
+    ],
+    "<SwitchProngList>": [
+        [
+            "<SwitchProngList_star154>",
+            "<SwitchProngList_opt155>"
+        ]
+    ],
+    "<AsmOutputList_star156>": [
+        [],
+        [
+            "<AsmOutputItem>",
+            "<COMMA>",
+            "<AsmOutputList_star156>"
+        ]
+    ],
+    "<AsmOutputList_opt157>": [
+        [],
+        [
+            "<AsmOutputItem>"
+        ]
+    ],
+    "<AsmOutputList>": [
+        [
+            "<AsmOutputList_star156>",
+            "<AsmOutputList_opt157>"
+        ]
+    ],
+    "<AsmInputList_star158>": [
+        [],
+        [
+            "<AsmInputItem>",
+            "<COMMA>",
+            "<AsmInputList_star158>"
+        ]
+    ],
+    "<AsmInputList_opt159>": [
+        [],
+        [
+            "<AsmInputItem>"
+        ]
+    ],
+    "<AsmInputList>": [
+        [
+            "<AsmInputList_star158>",
+            "<AsmInputList_opt159>"
+        ]
+    ],
+    "<ParamDeclList_star160>": [
+        [],
+        [
+            "<ParamDecl>",
+            "<COMMA>"
+        ],
+        [
+            "<ParamDecl>",
+            "<COMMA>",
+            "<ParamDecl>",
+            "<COMMA>"
+        ],
+        [
+            "<ParamDecl>",
+            "<COMMA>",
+            "<ParamDecl>",
+            "<COMMA>",
+            "<ParamDecl>",
+            "<COMMA>"
+        ]
+    ],
+    "<ParamDeclList_opt161>": [
+        [],
+        [
+            "<ParamDecl>"
+        ]
+    ],
+    "<ParamDeclList>": [
+        [
+            "<ParamDeclList_star160>",
+            "<ParamDeclList_opt161>"
+        ]
+    ],
+    "<ExprList_star162>": [
+        [],
+        [
+            "<Expr>",
+            "<COMMA>",
+            "<ExprList_star162>"
+        ]
+    ],
+    "<ExprList_opt163>": [
+        [],
+        [
+            "<Expr>"
+        ]
+    ],
+    "<ExprList>": [
+        [
+            "<ExprList_star162>",
+            "<ExprList_opt163>"
+        ]
+    ],
+    "<eof>": [
+        []
+    ],
+    "<container_doc_comment>": [
+        []
+    ],
+    "<doc_comment>": [
+        []
+    ],
+    "<skip>": [
+        [
+            " "
+        ]
+    ],
+    "<CHAR_LITERAL>": [
+        [
+            "'a' "
+        ],
+        [
+            "'0' "
+        ]
+    ],
+    "<FLOAT>": [
+        [
+            "0.0 "
+        ],
+        [
+            "1.5 "
+        ],
+        [
+            "2.5e3 "
+        ]
+    ],
+    "<INTEGER>": [
+        [
+            "0 "
+        ],
+        [
+            "1 "
+        ],
+        [
+            "2 "
+        ],
+        [
+            "7 "
+        ],
+        [
+            "42 "
+        ],
+        [
+            "255 "
+        ],
+        [
+            "0x1f "
+        ]
+    ],
+    "<STRINGLITERALSINGLE>": [
+        [
+            "\"s\" "
+        ],
+        [
+            "\"\" "
+        ],
+        [
+            "\"abc\" "
+        ]
+    ],
+    "<STRINGLITERAL>": [
+        [
+            "\"s\" "
+        ],
+        [
+            "\"\" "
+        ],
+        [
+            "\"abc\" "
+        ]
+    ],
+    "<IDENTIFIER>": [
+        [
+            "a "
+        ],
+        [
+            "b "
+        ],
+        [
+            "c "
+        ],
+        [
+            "d "
+        ],
+        [
+            "x "
+        ],
+        [
+            "y "
+        ],
+        [
+            "z "
+        ],
+        [
+            "i "
+        ],
+        [
+            "n "
+        ],
+        [
+            "v "
+        ],
+        [
+            "foo "
+        ],
+        [
+            "bar "
+        ],
+        [
+            "baz "
+        ],
+        [
+            "T "
+        ],
+        [
+            "U "
+        ],
+        [
+            "S "
+        ],
+        [
+            "E "
+        ],
+        [
+            "f0 "
+        ],
+        [
+            "f1 "
+        ],
+        [
+            "v0 "
+        ],
+        [
+            "v1 "
+        ]
+    ],
+    "<BUILTINIDENTIFIER>": [
+        [
+            "@as "
+        ],
+        [
+            "@sizeOf "
+        ],
+        [
+            "@TypeOf "
+        ],
+        [
+            "@intCast "
+        ],
+        [
+            "@truncate "
+        ],
+        [
+            "@bitCast "
+        ],
+        [
+            "@min "
+        ],
+        [
+            "@max "
+        ]
+    ],
+    "<AMPERSAND>": [
+        [
+            "&",
+            "<skip>"
+        ]
+    ],
+    "<AMPERSANDEQUAL>": [
+        [
+            "&=",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISK>": [
+        [
+            "*",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISK2>": [
+        [
+            "**",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISKEQUAL>": [
+        [
+            "*=",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISKPERCENT>": [
+        [
+            "*%",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISKPERCENTEQUAL>": [
+        [
+            "*%=",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISKPIPE>": [
+        [
+            "*|",
+            "<skip>"
+        ]
+    ],
+    "<ASTERISKPIPEEQUAL>": [
+        [
+            "*|=",
+            "<skip>"
+        ]
+    ],
+    "<CARET>": [
+        [
+            "^",
+            "<skip>"
+        ]
+    ],
+    "<CARETEQUAL>": [
+        [
+            "^=",
+            "<skip>"
+        ]
+    ],
+    "<COLON>": [
+        [
+            ":",
+            "<skip>"
+        ]
+    ],
+    "<COMMA>": [
+        [
+            ",",
+            "<skip>"
+        ]
+    ],
+    "<DOT>": [
+        [
+            ".",
+            "<skip>"
+        ]
+    ],
+    "<DOT2>": [
+        [
+            "..",
+            "<skip>"
+        ]
+    ],
+    "<DOT3>": [
+        [
+            "...",
+            "<skip>"
+        ]
+    ],
+    "<DOTASTERISK>": [
+        [
+            ".*",
+            "<skip>"
+        ]
+    ],
+    "<DOTQUESTIONMARK>": [
+        [
+            ".?",
+            "<skip>"
+        ]
+    ],
+    "<EQUAL>": [
+        [
+            "=",
+            "<skip>"
+        ]
+    ],
+    "<EQUALEQUAL>": [
+        [
+            "==",
+            "<skip>"
+        ]
+    ],
+    "<EQUALRARROW>": [
+        [
+            "=>",
+            "<skip>"
+        ]
+    ],
+    "<EXCLAMATIONMARK>": [
+        [
+            "!",
+            "<skip>"
+        ]
+    ],
+    "<EXCLAMATIONMARKEQUAL>": [
+        [
+            "!=",
+            "<skip>"
+        ]
+    ],
+    "<LARROW>": [
+        [
+            "<",
+            "<skip>"
+        ]
+    ],
+    "<LARROW2>": [
+        [
+            "<<",
+            "<skip>"
+        ]
+    ],
+    "<LARROW2EQUAL>": [
+        [
+            "<<=",
+            "<skip>"
+        ]
+    ],
+    "<LARROW2PIPE>": [
+        [
+            "<<|",
+            "<skip>"
+        ]
+    ],
+    "<LARROW2PIPEEQUAL>": [
+        [
+            "<<|=",
+            "<skip>"
+        ]
+    ],
+    "<LARROWEQUAL>": [
+        [
+            "<=",
+            "<skip>"
+        ]
+    ],
+    "<LBRACE>": [
+        [
+            "{",
+            "<skip>"
+        ]
+    ],
+    "<LBRACKET>": [
+        [
+            "[",
+            "<skip>"
+        ]
+    ],
+    "<LPAREN>": [
+        [
+            "(",
+            "<skip>"
+        ]
+    ],
+    "<MINUS>": [
+        [
+            "-",
+            "<skip>"
+        ]
+    ],
+    "<MINUSEQUAL>": [
+        [
+            "-=",
+            "<skip>"
+        ]
+    ],
+    "<MINUSPERCENT>": [
+        [
+            "-%",
+            "<skip>"
+        ]
+    ],
+    "<MINUSPERCENTEQUAL>": [
+        [
+            "-%=",
+            "<skip>"
+        ]
+    ],
+    "<MINUSPIPE>": [
+        [
+            "-|",
+            "<skip>"
+        ]
+    ],
+    "<MINUSPIPEEQUAL>": [
+        [
+            "-|=",
+            "<skip>"
+        ]
+    ],
+    "<MINUSRARROW>": [
+        [
+            "->",
+            "<skip>"
+        ]
+    ],
+    "<PERCENT>": [
+        [
+            "%",
+            "<skip>"
+        ]
+    ],
+    "<PERCENTEQUAL>": [
+        [
+            "%=",
+            "<skip>"
+        ]
+    ],
+    "<PIPE>": [
+        [
+            "|",
+            "<skip>"
+        ]
+    ],
+    "<PIPE2>": [
+        [
+            "||",
+            "<skip>"
+        ]
+    ],
+    "<PIPEEQUAL>": [
+        [
+            "|=",
+            "<skip>"
+        ]
+    ],
+    "<PLUS>": [
+        [
+            "+",
+            "<skip>"
+        ]
+    ],
+    "<PLUS2>": [
+        [
+            "++",
+            "<skip>"
+        ]
+    ],
+    "<PLUSEQUAL>": [
+        [
+            "+=",
+            "<skip>"
+        ]
+    ],
+    "<PLUSPERCENT>": [
+        [
+            "+%",
+            "<skip>"
+        ]
+    ],
+    "<PLUSPERCENTEQUAL>": [
+        [
+            "+%=",
+            "<skip>"
+        ]
+    ],
+    "<PLUSPIPE>": [
+        [
+            "+|",
+            "<skip>"
+        ]
+    ],
+    "<PLUSPIPEEQUAL>": [
+        [
+            "+|=",
+            "<skip>"
+        ]
+    ],
+    "<LETTERC>": [
+        [
+            "c",
+            "<skip>"
+        ]
+    ],
+    "<QUESTIONMARK>": [
+        [
+            "?",
+            "<skip>"
+        ]
+    ],
+    "<RARROW>": [
+        [
+            ">",
+            "<skip>"
+        ]
+    ],
+    "<RARROW2>": [
+        [
+            ">>",
+            "<skip>"
+        ]
+    ],
+    "<RARROW2EQUAL>": [
+        [
+            ">>=",
+            "<skip>"
+        ]
+    ],
+    "<RARROWEQUAL>": [
+        [
+            ">=",
+            "<skip>"
+        ]
+    ],
+    "<RBRACE>": [
+        [
+            "}",
+            "<skip>"
+        ]
+    ],
+    "<RBRACKET>": [
+        [
+            "]",
+            "<skip>"
+        ]
+    ],
+    "<RPAREN>": [
+        [
+            ")",
+            "<skip>"
+        ]
+    ],
+    "<SEMICOLON>": [
+        [
+            ";",
+            "<skip>"
+        ]
+    ],
+    "<SLASH>": [
+        [
+            "/",
+            "<skip>"
+        ]
+    ],
+    "<SLASHEQUAL>": [
+        [
+            "/=",
+            "<skip>"
+        ]
+    ],
+    "<TILDE>": [
+        [
+            "~",
+            "<skip>"
+        ]
+    ],
+    "<end_of_word>": [
+        [
+            "<skip>"
+        ]
+    ],
+    "<KEYWORD_addrspace>": [
+        [
+            "addrspace",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_align>": [
+        [
+            "align",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_allowzero>": [
+        [
+            "allowzero",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_and>": [
+        [
+            "and",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_anyframe>": [
+        [
+            "anyframe",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_anytype>": [
+        [
+            "anytype",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_asm>": [
+        [
+            "asm",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_break>": [
+        [
+            "break",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_callconv>": [
+        [
+            "callconv",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_catch>": [
+        [
+            "catch",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_comptime>": [
+        [
+            "comptime",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_const>": [
+        [
+            "const",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_continue>": [
+        [
+            "continue",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_defer>": [
+        [
+            "defer",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_else>": [
+        [
+            "else",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_enum>": [
+        [
+            "enum",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_errdefer>": [
+        [
+            "errdefer",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_error>": [
+        [
+            "error",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_export>": [
+        [
+            "export",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_extern>": [
+        [
+            "extern",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_fn>": [
+        [
+            "fn",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_for>": [
+        [
+            "for",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_if>": [
+        [
+            "if",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_inline>": [
+        [
+            "inline",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_noalias>": [
+        [
+            "noalias",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_nosuspend>": [
+        [
+            "nosuspend",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_opaque>": [
+        [
+            "opaque",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_or>": [
+        [
+            "or",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_orelse>": [
+        [
+            "orelse",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_packed>": [
+        [
+            "packed",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_pub>": [
+        [
+            "pub",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_resume>": [
+        [
+            "resume",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_return>": [
+        [
+            "return",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_linksection>": [
+        [
+            "linksection",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_struct>": [
+        [
+            "struct",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_suspend>": [
+        [
+            "suspend",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_switch>": [
+        [
+            "switch",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_test>": [
+        [
+            "test",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_threadlocal>": [
+        [
+            "threadlocal",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_try>": [
+        [
+            "try",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_union>": [
+        [
+            "union",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_unreachable>": [
+        [
+            "unreachable",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_var>": [
+        [
+            "var",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_volatile>": [
+        [
+            "volatile",
+            "<end_of_word>"
+        ]
+    ],
+    "<KEYWORD_while>": [
+        [
+            "while",
+            "<end_of_word>"
+        ]
+    ],
+    "<START>": [
+        [
+            "<Root>"
+        ]
+    ]
+}

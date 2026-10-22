@@ -1,0 +1,1 @@
+c:inline for(2,2..)|E|S
